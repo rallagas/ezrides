@@ -1,0 +1,29 @@
+SELECT distinct v.vehicle_id, 
+              v.vehicle_type, 
+              v.vehicle_plate_no, 
+              v.vehicle_color, 
+              v.vehicle_model, 
+              v.vehicle_img, 
+              v.vehicle_owner_id, 
+              v.vehicle_price_rate_per_hr, 
+              v.vehicle_price_rate_per_day, 
+              v.vehicle_price_rate_per_km, 
+              v.vehicle_txn_type, 
+              at.book_start_dte AS book_start_dte, 
+              at.book_end_dte AS book_end_dte 
+            FROM  vehicle v 
+              LEFT JOIN items_inventory ii ON (
+                ii.item_reference_id = v.vehicle_id
+              ) 
+              LEFT JOIN app_transactions as at ON (
+                at.book_item_inventory_id = ii.items_inventory_id 
+                AND at.txn_category_id = ii.txn_category_id
+              ) 
+            WHERE v.vehicle_txn_type = 1
+              AND (
+                  (at.book_start_dte is null and at.book_end_dte is null)
+                  OR
+                  (('2024-10-08' NOT BETWEEN at.book_start_dte AND at.book_end_dte)
+                  AND
+                  ('2024-10-31' NOT BETWEEN at.book_start_dte AND at.book_end_dte))
+                  );
