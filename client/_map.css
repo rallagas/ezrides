@@ -255,10 +255,10 @@ body {
 
 .commutes-destinations .destination .location-marker {
   background-color: #f1f3f4;
-  border-radius: 8px;
+  border-radius: 30px;
   color: #616161;
   display: inline-block;
-  font-size: 14px;
+  font-size: 20px;
   font-weight: bold;
   line-height: 16px;
   text-align: center;
@@ -281,7 +281,7 @@ body {
   color: #202124;
   font-weight: bold;
   font-size: 22px;
-  line-height: 28px;
+  line-height: 20px;
 }
 
 .commutes-destinations .destination-container .destination-controls {

@@ -3,7 +3,7 @@ $(document).ready(function(){
     
 
 
-// $('input#f_rent_from_date').on('change', function() {
+ $('input#f_rent_from_date').on('change', function() {
         var selectedDate = $('input#f_rent_from_date').val();
         var minDate = new Date(selectedDate);
         var maxDate = new Date(selectedDate);
@@ -11,7 +11,7 @@ $(document).ready(function(){
         maxDate.setDate(maxDate.getDate() + 30); // Add 30 days
         $('input#f_rent_to_date').attr('max', maxDate.toISOString().slice(0, 10));
         $('input#f_rent_to_date').attr('min', minDate.toISOString().slice(0, 10));
-  //  });
+    });
   
    
    //load Regions 
@@ -140,6 +140,26 @@ $('#formFindCar').submit(function(e){
 		e.preventDefault();
 });
     
+$('#formFindAngkas').submit(function(e){
+
+				$.ajax({
+				type: "POST"
+				, url: "ajax_process_find_angkas.php"
+				, data: $("#formFindAngkas").serialize()
+				, success: function(data){	
+                            if(data == '0'){
+                                $("#infoAlert").removeClass("alert-warning").addClass("alert alert-success").html("Looking for a rider.").append("<div class='spinner-grow spinner-grow-sm'><span class='visually-hidden'>Thank you for your patience.</span></div>");
+                            }else{
+                                $("#infoAlert").removeClass("alert-success").addClass("alert alert-warning").html(data);
+                            }
+                          // $("#findMeARiderBTN").append("<span class='alert alert-info'>"+data+"</span>");    
+                                
+						}
+				});		
+		e.preventDefault();
+});
+    
+
     
 
     

@@ -80,7 +80,6 @@ function getReadableAddress(location) {
 function setLatLngInputs(location) {
     // Set the longitude in the input element with ID 'currentLoc_long'
     document.getElementById('currentLoc_long').value = location.lng;
-    
     // (Optional) If you also need to store latitude in another field, for example, 'currentLoc_lat'
     document.getElementById('currentLoc_lat').value = location.lat;
 }

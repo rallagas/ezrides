@@ -48,8 +48,10 @@ $list = query(CONN, $sql_get_list_of_available, $params);
 if(empty($list)){
     echo "No Available Vehicle at the moment.";
 }
-else {
-foreach($list as $car){ ?>
+else { ?>
+    
+<h3 class="fw-bold">Select Car</h3>
+<?php foreach($list as $car){ ?>
         <div class="card col-lg-3 col-md-4 col-sm-6 col-xs-12 px-2 mb-5 mx-0 border-0">
           <img src="../car_image/<?php echo $car['vehicle_img'];?>" class="rounded card-img-top mb-3 object-fit-cover h-75"  alt="...">
           <div class="card-body">
@@ -98,5 +100,7 @@ $(document).ready(function(){
     
 });
 </script>
+
+
 
 

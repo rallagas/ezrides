@@ -16,13 +16,13 @@ include_once "../_sql_utility.php";
 <body>
   
    
-   <div class="container">
+   <div class="container-fluid px-0">
       <div class="row">
           <div class="col-lg-12">  
               <?php include_once "nav-client.php";?>
           </div>
       </div>
-      <div class="row">
+      <div class="row p-5">
               <?php include_once "menu.php"; 
           
                 $txn_cat = select_data(CONN,"txn_category",NULL,"txn_category_id",15); ?>
@@ -31,14 +31,10 @@ include_once "../_sql_utility.php";
          <?php  foreach($txn_cat as $cat){
               ifPageis($cat['page_action'],$cat['txn_link']);
           } ?>
-                  </div>
-                
-              
-           
+         </div>
+                  
       </div>
-      <div class="row" id="queryresult">
-
-      </div>
+      <div class="row px-5" id="queryresult"></div>
    </div>
     
 </body>

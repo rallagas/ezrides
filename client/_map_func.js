@@ -110,6 +110,18 @@ const TravelMode = {
  * Defines instance of Commutes widget to be instantiated when Map library
  * loads.
  */
+
+function setDestinationLatLng(location) {
+    
+        // Log the lat/lng values for debugging
+    console.log('Longitude:', location.lng());
+    console.log('Latitude:', location.lat());
+    // Set longitude and latitude values in the respective input fields
+    document.getElementById('formToDest_long').value = location.lng();
+    document.getElementById('formToDest_lat').value = location.lat();
+}
+
+
 function Commutes(configuration) {
   let commutesMap;
   let activeDestinationIndex;
@@ -227,6 +239,9 @@ function Commutes(configuration) {
         const travelModeEnum = configuration.defaultTravelModeEnum || TravelMode.DRIVING;
         const travelModeId = travelModeEnum.toLowerCase() + '-mode';
         document.forms['destination-form'][travelModeId].checked = true;
+          
+        
+        
       });
     });
 
@@ -281,14 +296,35 @@ function Commutes(configuration) {
       destinationModalEl.errorMessage.innerHTML = '';
     });
 
-    destinationModalEl.addButton.addEventListener('click', () => {
-      const isValidInput = validateDestinationInput(destinationToAdd);
-      if (!isValidInput) return;
-      const selectedTravelMode = destinationModalEl.getTravelModeInput().value;
-      addDestinationToList(destinationToAdd, selectedTravelMode);
-      destinationFormReset();
-      hideModal();
-    });
+/*Added Long Lat value*/
+destinationModalEl.addButton.addEventListener('click', () => {
+    const isValidInput = validateDestinationInput(destinationToAdd);
+    if (!isValidInput) return;
+
+    const selectedTravelMode = destinationModalEl.getTravelModeInput().value;
+
+    // Add this line to set longitude and latitude in the input fields
+    // Ensure the coordinates are extracted correctly
+    if (destinationToAdd) {
+        console.log('Destination object:', destinationToAdd); // Log destination object
+
+        if (destinationToAdd.geometry && destinationToAdd.geometry.location) {
+            console.log('Location object:', destinationToAdd.geometry.location); // Log location
+            
+            // Make sure lat() and lng() methods are available
+            setDestinationLatLng(destinationToAdd.geometry.location);
+        } else {
+            console.error('Geometry or location is not defined.');
+        }
+    } else {
+        console.error('Destination is not defined.');
+    }
+
+    addDestinationToList(destinationToAdd, selectedTravelMode);
+    destinationFormReset();
+    hideModal();
+});
+
 
     destinationModalEl.editButton.addEventListener('click', () => {
       const destination = {...destinations[activeDestinationIndex]};
@@ -351,9 +387,10 @@ function Commutes(configuration) {
         const lastIndex = destinations.length - 1;
         handleRouteClick(destinations[lastIndex], lastIndex);
         elToFocus = destinationPanelEl.getActiveDestination();
-      } else {
-        elToFocus = commutesEl.initialStatePanel.querySelector('.add-button');
-      }
+      } 
+//        else {
+//        elToFocus = commutesEl.initialStatePanel.querySelector('.add-button');
+//      }
       hideModal(elToFocus);
     });
 
@@ -472,19 +509,19 @@ function Commutes(configuration) {
     let editButtonEl;
     switch (destinationOperation) {
       case DestinationOperation.ADD:
-        destinationPanelEl.list.insertAdjacentHTML(
-            'beforeend',
-            '<div class="destination-container">' +
-                generateDestinationTemplate(destination) + '</div>'
-        );
-        const destinationContainerEl = destinationPanelEl.list.lastElementChild;
-        destinationContainerEl.addEventListener('click', () => {
-          handleRouteClick(destination, destinationIdx);
-        });
-        editButtonEl = destinationContainerEl.querySelector('.edit-button');
-        destinationPanelEl.container.scrollLeft =
-            destinationPanelEl.container.scrollWidth;
-        break;
+            destinationPanelEl.list.insertAdjacentHTML(
+                'beforeend',
+                '<div class="destination-container">' +
+                    generateDestinationTemplate(destination) + '</div>'
+            );
+            const destinationContainerEl = destinationPanelEl.list.lastElementChild;
+            destinationContainerEl.addEventListener('click', () => {
+              handleRouteClick(destination, destinationIdx);
+            });
+            editButtonEl = destinationContainerEl.querySelector('.edit-button');
+            destinationPanelEl.container.scrollLeft =
+                destinationPanelEl.container.scrollWidth;
+            break;
       case DestinationOperation.EDIT:
         const activeDestinationContainerEl =
             destinationPanelEl.getActiveDestination().parentElement;
@@ -623,7 +660,8 @@ function Commutes(configuration) {
     const directionLeg = directionResponse.routes[0].legs[0];
     const destinationLocation = directionLeg.end_location;
     const distance = directionLeg.distance.text;
-    const duration = convertDurationValueAsString(directionLeg.duration.value);
+//    const duration = convertDurationValueAsString(directionLeg.duration.value);
+    const duration =   (directionLeg.duration.value / 60).toFixed(2); //in minutes
 
     const innerStroke = new google.maps.Polyline({
       path: path,
@@ -805,10 +843,10 @@ function Commutes(configuration) {
         return TravelMode.DRIVING;
       case 'BICYCLING':
         return TravelMode.BICYCLING;
-      case 'PUBLIC_TRANSIT':
-        return TravelMode.TRANSIT;
-      case 'WALKING':
-        return TravelMode.WALKING;
+//      case 'PUBLIC_TRANSIT':
+//        return TravelMode.TRANSIT;
+//      case 'WALKING':
+//        return TravelMode.WALKING;
       default:
         return null;
     }
@@ -928,9 +966,73 @@ function handlePanelScroll() {
 /**
  * Generates new destination template based on destination info properties.
  */
+
 function generateDestinationTemplate(destination) {
   const travelModeIconTemplate = '<use href="#commutes-' +
       destination.travelModeEnum.toLowerCase() + '-icon"/>';
+
+  // Function to convert distance to kilometers
+  function convertToKilometers(distanceText) {
+    const distanceValue = parseFloat(distanceText); // Extract numeric value
+    if (distanceText.includes('mi')) {
+      // Convert miles to kilometers
+      return (distanceValue * 1.60934).toFixed(2);
+    }
+    return distanceText; // Assume already in kilometers
+  }
+
+  // Function to compute cost by distance
+  function computeCostbyDistance(distanceText) {
+    const distanceValue = parseFloat(distanceText); // Extract numeric value
+    const currentDate = new Date();
+    const currentHour = currentDate.getHours();
+    let flagDownRate = 0.00;  // Changed from const to let for reassignment
+
+    // Set flag down rate based on time (6PM to 5AM)
+    if (currentHour >= 18 || currentHour < 5) {
+      flagDownRate = 100;
+    } else {
+      flagDownRate = 60;
+    }
+
+    const rateAfter3KMs = 10.00;
+    const MIN_DISTANCE = 3.00;
+
+    // Convert distance if in miles and compute the cost
+    if (distanceText.includes('mi')) {
+        if(distanceValue * 1.60934 > 3){
+            return ((((distanceValue * 1.60934) - MIN_DISTANCE) * rateAfter3KMs) + flagDownRate).toFixed(2);   
+        }
+        else{
+            return (((MIN_DISTANCE) * rateAfter3KMs) + flagDownRate).toFixed(2);   
+        }
+    }
+    // If already in kilometers, subtract minimum distance and calculate cost
+    return (((distanceValue - MIN_DISTANCE) * rateAfter3KMs) + flagDownRate).toFixed(2);
+  }
+
+  // Set the duration and converted distance in the input fields
+  if (document.getElementById('form_ETA_duration')) {
+    document.getElementById('form_ETA_duration').value = destination.duration;
+  }
+
+  if (document.getElementById('form_TotalDistance')) {
+    const distanceInKm = convertToKilometers(destination.distance);
+    document.getElementById('form_TotalDistance').value = distanceInKm;
+  }
+
+  if (document.getElementById('form_Est_Cost')) {
+    const estCost = computeCostbyDistance(destination.distance);
+    document.getElementById('form_Est_Cost').value = estCost;
+  }
+
+  // Set destination name in form_to_dest
+  if (document.getElementById('form_to_dest')) {
+    document.getElementById('form_to_dest').value = destination.name;
+  }
+
+
+  // Return the updated template
   return `
     <div class="destination" tabindex="0" role="button">
       <div class="destination-content">
@@ -938,21 +1040,24 @@ function generateDestinationTemplate(destination) {
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
               ${travelModeIconTemplate}
           </svg>
-          ${destination.distance}
+
+  <div class="destination-eta"> ${convertToKilometers(destination.distance)}</div>
+         
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
             <use href="#commutes-arrow-icon"/>
           </svg>
           <span class="location-marker">${destination.label}</span>
+            <div class="address">To
+                <abbr title="${destination.name}">${destination.name}</abbr>
+                <div class="destination-eta">ETA ${destination.duration} mins</div>
+            </div>
         </div>
-        <div class="address">To
-          <abbr title="${destination.name}">${destination.name}</abbr>
-        </div>
-        <div class="destination-eta">${destination.duration}</div>
+        
+      
       </div>
     </div>
 
     <div class="destination-controls">
-      
       <button class="edit-button" aria-label="Edit Destination">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
           <use href="#commutes-edit-icon"/>
@@ -960,6 +1065,106 @@ function generateDestinationTemplate(destination) {
         Edit
       </button>
     </div>`;
-    
-    
 }
+
+//function generateDestinationTemplate(destination) {
+//    
+//    
+//  const travelModeIconTemplate = '<use href="#commutes-' +
+//      destination.travelModeEnum.toLowerCase() + '-icon"/>';
+//    
+//  // Function to convert distance to kilometers
+//  function convertToKilometers(distanceText) {
+//    const distanceValue = parseFloat(distanceText); // Extract numeric value
+//    if (distanceText.includes('mi')) {
+//      // Convert miles to kilometers
+//      return (distanceValue * 1.60934).toFixed(2) + ' km';
+//    }
+//    return distanceText; // Assume already in kilometers
+//  }
+//  // Function to compute distance 
+//
+//    
+//  function computeCostbyDistance(distanceText) {
+//    const distanceValue = parseFloat(distanceText); // Extract numeric value
+//    
+//
+//      const currentDate = new Date();
+//      const currentHour = currentDate.getHours();
+//    let flagDownRate = 0.00;
+// if (currentHour >= 18 || currentHour < 5) {
+//    flagDownRate = 100;
+//  } else {
+//    flagDownRate = 60; // Set another value if not within the time range (for example, 0)
+//  }
+//    const rateAfter3KMs = 10.00;
+//    const MIN_DISTANCE = 3.00;
+//    if (distanceText.includes('mi')) {
+//      // Convert miles to kilometers
+//      return ((((distanceValue * 1.60934) - MIN_DISTANCE ) * rateAfter3KMs) + flagDownRate).toFixed(2);
+//    }
+//    return distanceText; // Assume already in kilometers
+//  }
+//    
+//
+//  // Set the duration and converted distance in the input fields
+//  if (document.getElementById('form_ETA_duration')) {
+//    document.getElementById('form_ETA_duration').value = destination.duration;
+//  }
+//
+//  if (document.getElementById('form_TotalDistance')) {
+//    const distanceInKm = convertToKilometers(destination.distance);
+//    document.getElementById('form_TotalDistance').value = distanceInKm;
+//  }
+//
+//
+//  if (document.getElementById('form_Est_Cost')) {
+//    const EstCost = computeCostbyDistance(destination.distance);
+//    document.getElementById('form_Est_Cost').value = EstCost;
+//  }
+//    
+//    console.log(parseString(destination.name));
+//    document.getElementById('form_to_dest').value = destination.name;
+//    
+////  if(document.getElementById('form_to_dest')){
+////      const AddressName = destination.name;
+////    document.getElementById('form_to_dest').value = AddressName;
+////  }
+////    
+////console.log();
+//// 
+//  
+//  return `
+//    <div class="destination" tabindex="0" role="button">
+//      <div class="destination-content">
+//        <div class="metadata">
+//          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+//              ${travelModeIconTemplate}
+//          </svg>
+//          ${destination.distance}
+//          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+//            <use href="#commutes-arrow-icon"/>
+//          </svg>
+//          <span class="location-marker">${destination.label}</span>
+//        </div>
+//        <div class="address">To
+//          <abbr title="${destination.name}">${destination.name}</abbr>
+//        </div>
+//        <div class="destination-eta">${destination.duration}</div>
+//      </div>
+//    </div>
+//
+//    <div class="destination-controls">
+//      
+//      <button class="edit-button" aria-label="Edit Destination">
+//        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+//          <use href="#commutes-edit-icon"/>
+//        </svg>
+//        Edit
+//      </button>
+//    </div>`;
+//    
+//    
+//}
+
+

@@ -117,30 +117,46 @@
     <div class="row">
         <div class="col-8 offset-2">
             
-            <form action="">
-               <div class="mb-3">
-                   <label for="" class="form-label"></label>
-                   <input id="currentLoc_lat" type="text" class="form-control">
-               </div>
-               <div class="mb-3">
-                   <label for="" class="form-label"></label>
-                   <input id="currentLoc_long" type="text" class="form-control">
-               </div>
+            <form id="formFindAngkas" action="">
+              
                 <div class="mb-3">
-                   <label for="form_from_dest" class="form-label">Nearest Possible Pickup Location</label>
-                    <input id="form_from_dest" type="text" class="form-control">
+                   <label for="form_from_dest" class="form-label">Pickup Location </label>
+                        <input readonly id="form_from_dest" name="form_from_dest" type="text" class="form-control">
+                   
                 </div>
+               <div class="mb-3 input-group collapsed">
+                   <input hidden id="currentLoc_lat" name="currentLoc_lat" type="text" class="form-control">
+                   <input hidden id="currentLoc_long" name="currentLoc_long" type="text" class="form-control">
+               </div>
                 <div class="mb-3">
-                    <input id="form_to_dest" type="text" class="form-control">
+                     <label for="form_from_dest" class="form-label">Destination</label>
+                    <input readonly id="form_to_dest" name="form_to_dest" type="text" class="form-control">
                 </div>
                 
+                <div class="mb-3 input-group">
+                    <input hidden type="text" class="form-control" id="formToDest_long" name="formToDest_long">
+                    <input hidden type="text" class="form-control" id="formToDest_lat" name="formToDest_lat">
+                    
+                </div>
+                
+                <div class="mb-3 input-group">
+                <input readonly type="text" class="form-control" id="form_ETA_duration" name="form_ETA_duration">
+                <span class="input-group-text">minutes </span>
+                <input readonly type="text" class="form-control" id="form_TotalDistance" name="form_TotalDistance">
+                <span class="input-group-text">km/s</span>
+                <span class="input-group-text">Php</span>
+                <input readonly type="text" class="form-control" id="form_Est_Cost" name="form_Est_Cost">
+                </div>
+                
+                <button type="submit" id="findMeARiderBTN" class="btn d-flex btn-lg btn-primary">Find me a Rider</button>
+                <div id="infoAlert"></div>
             </form>
             
         </div>
     </div>
 </div>
    
-    <main class="commutes">
+<main class="commutes">
      
      <div class="commutes-info">
         <div class="commutes-initial-state">
@@ -162,12 +178,14 @@
         <div class="commutes-destinations">
           <div class="destinations-container">
             <div class="destination-list"></div>
+<!--
             <button class="add-button">
               <svg aria-label="Add Icon" width="24px" height="24px" xmlns="http://www.w3.org/2000/svg">
                 <use href="#commutes-add-icon"/>
               </svg>
               <div class="label">Add destination</div>
             </button>
+-->
           </div>
           <button class="left-control hide" data-direction="-1" aria-label="Scroll left">
             <svg width="24px" height="24px" xmlns="http://www.w3.org/2000/svg" data-direction="-1">
