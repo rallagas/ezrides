@@ -279,3 +279,15 @@ function getLocationAddress ($location_id){
     return $address;
     
 }
+
+
+function getUserInfo ($user_id){
+    $user_profile = select_data(CONN,"user_profile","user_id = $user_id");
+    return $user_profile;
+}
+
+
+
+
+
+

@@ -58,6 +58,8 @@ if (isset($_POST['log_username'])) {
             }
         } else {
             echo "Username not found.";
+            header("location: index.php?err=usernotfound");
+            exit;
         }
     }
 }

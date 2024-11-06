@@ -9,7 +9,7 @@ include_once "url_checker.php";
 <head>
     <meta charset="UTF-8">
     <title>Document</title>
-    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -20,12 +20,16 @@ include_once "url_checker.php";
            </div>
            
            <div class="col-2 offset-4">
-               <a href="" class="btn btn-outline-secondary mt-5 float-end">Join Us</a>
+                <a class="btn btn-outline-secondary mt-5 float-end" role="button" data-bs-toggle="collapse" href="#collapseRegister" aria-expanded="false" aria-controls="collapseRegister">Join Us</a>
            </div>
            <div class="col-2">
                <a  class="btn btn-secondary bg-purple mt-5 float-start" role="button" data-bs-toggle="collapse" href="#collapseLogin" aria-expanded="false" aria-controls="collapseLogin">Sign In</a>
            </div>
        </div>
+       
+           <div class="col-8 offset-2 collapse" id="collapseRegister">
+               <?php include "_registration.php";?>
+           </div>
        <div class="row">
           <div class="col-4 offset-2">
               <h1 class="fw-bold display-3 mt-5"> Receive orders, dispatch drivers, and track deliveries easily </h1>
@@ -61,9 +65,6 @@ include_once "url_checker.php";
                  </form>
            </div>
            
-           <div class="col-8 offset-2 collapse" id="collapseRegister">
-               <?php include "_registration.php";?>
-           </div>
        </div>
        
        
@@ -88,51 +89,7 @@ include_once "url_checker.php";
     
 </body>
   
-   <script src="js/bootstrap.min.js"></script>
-   <script src="js/jquery-3.5.1.min.js"></script>
-   <script>
-    $(document).ready(function(){
-        
-        var spinner="<div class='spinner-border spinner-border-sm'></div>";
-        var grower="<div class='spinner-grow spinner-grow-sm'></div>";
-         
-        
-        $('form#formRegistration').submit(function(e){
-
-				$.ajax({
-				type: "POST",
-				url: "_action_register_user.php",
-				data: $("form#formRegistration").serialize(),
-				success: function(data){	
-			//alert(data);//return false;
-                            if(data){
-                              
-                                $("button.reset-button").click();
-                              $("div.status").addClass("alert alert-success").html(data);
-                            }
-				        }
-				});		
-		e.preventDefault();
-        });
-         $('form#formUserLog').submit(function(e){
-
-				$.ajax({
-				type: "POST",
-				url: "_action_log_user.php",
-				data: $("form#formUserLog").serialize(),
-				success: function(data){
-                            if(data=1){
-                                  $("#loginButton").removeClass("btn-secondary").addClass("btn-success").html("Loading..."+spinner);
-                                setTimeout(function(){
-                                    location.assign("client/?page=user");
-                                },2500);
-                            }
-				        }
-				});		
-		e.preventDefault();
-        });
-        
-        
-    });
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+   <script src="_multipurpose_ajax.js"></script>
 </html>

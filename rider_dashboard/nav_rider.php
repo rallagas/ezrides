@@ -6,10 +6,12 @@
     </a>
      
      
+<!--
     <form class="d-flex mt-2 pt-2" role="search">
       <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
       <button class="btn btn-outline-light" type="submit"><i class="fi fi-rr-search"></i></button>
     </form>
+-->
     
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
@@ -22,27 +24,39 @@
           <a class="nav-link text-white" aria-current="page" href="#">Home</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white" href="#">My Wallet</a>
+          <a class="nav-link text-white" href="#">Bookings</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white" href="#">Order Something</a>
+          <a class="nav-link text-white" href="#">Earnings</a>
         </li>
         <li class="nav-item">
          <?php
             if ($_SESSION['t_rider_status'] == 'R'){ ?>
-                <a class="btn btn-warning float-end" href="#">Rider</a>
+                <a class="btn btn-warning float-end me-5" href="../rider_dashboard/">Rider</a>
             <?php }
             else {  ?>
-                <a class="btn btn-outline-warning" href="?activate_rider=1">Become a Rider</a>               
+                <a class="btn btn-outline-warning" href="#">Become a Rider</a>               
             <?php } ?>
           
         </li>
-        <li class="nav-item">
-            <a id="userLogOut" href="#" class="nav-link">Logout</a>
-        </li>
-        
-         
       </ul>
+        
+        <div class="d-flex me-5 float-end">
+           <div class="dropdown">
+               <button class="nav-link btn text-white dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                       <svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+  <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
+  <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
+</svg>
+               </button>
+               <ul id="profileDD" class="dropdown-menu">
+                   <li><span class="dropdown-item">  </span></li>
+                   <li><a href="#" class="dropdown-item">Profile</a></li>
+                   <li><a id="btnUserLogout" href="#" class="dropdown-item">Logout</a></li>
+               </ul>
+           </div>
+            
+        </div>
     </div>
     
 

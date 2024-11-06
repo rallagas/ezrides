@@ -16,15 +16,44 @@ if(isset($_POST['form_from_dest'])){
     $ref_num=gen_book_ref_num(8,"ANG");
     
     
+    
     $check_data=select_data(CONN, "angkas_bookings","user_id = {$user_logged} AND DATE(date_booked) = CURRENT_DATE AND booking_status = 'P'");
     
     if(!empty($check_data)){
-        echo "There is still a pending booking. see details below:";
-        foreach($check_data as $booking){
-            echo $booking['angkas_booking_reference'];
-        }
+        echo "There is still a pending booking. see details below:"; ?>
+
+<?php foreach($check_data as $booking){ ?>
+
+<div class="btn-group mb-2">
+    <a data-bs-toggle="collapse" href="#BookingInfo" role="button" aria-expanded="false" aria-controls="BookingInfo" class="btn btn-primary btn-angkas-booking-ref">
+        <?php echo $booking['angkas_booking_reference']; ?>
+    </a>
+    <a onclick="confirm('do you want to cancel this booking?')" href="?cancelBooking=<?php echo $booking['angkas_booking_reference']; ?>" class='btn btn-danger'>
+        <svg xmlns='http://www.w3.org/2000/svg' width='20' height='23' fill='currentColor' class='bi bi-x-circle' viewBox='0 0 16 16'>
+            <path d='M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16' />
+            <path d='M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708' />
+        </svg>
+    </a>
+</div>
+<div class="collapse" id="BookingInfo">
+    <?php
+    foreach($check_data as $cd){
+        echo "You booked this ";
+    }
+    ?>
+</div>
+
+
+
+<?php } ?>
+
+
+<?php
     }
     else{
+        
+        preg_match('/\d+/', $eta_mins, $matches);
+        $eta_in_minutes = (float) $matches[0];
         $table = "angkas_bookings";
         $data = array(
                   "angkas_booking_reference" => $ref_num
@@ -35,7 +64,7 @@ if(isset($_POST['form_from_dest'])){
                 , "form_to_dest_name" => $to_loc_name
                 , "formToDest_long" => $to_loc_long
                 , "formToDest_lat" => $to_loc_lat
-                , "form_ETA_duration" => $eta_mins
+                , "form_ETA_duration" => $eta_in_minutes
                 , "form_TotalDistance" => $total_dis
                 , "form_Est_Cost" => $total_cost
                 );

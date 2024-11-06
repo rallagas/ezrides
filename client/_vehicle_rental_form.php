@@ -39,5 +39,11 @@
 
 
     <div class="container">
-        <?php include_once "_map.php";?>
+       <div class="row">
+           <div class="col-8">
+             
+                <?php include_once "_map.php";?>  
+           </div>
+           <div class="col-4"></div>
+       </div>
     </div>
