@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Oct 20, 2024 at 10:12 AM
+-- Generation Time: Nov 13, 2024 at 10:31 AM
 -- Server version: 10.4.21-MariaDB
 -- PHP Version: 8.1.6
 
@@ -24,6 +24,111 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `angkas_bookings`
+--
+
+CREATE TABLE `angkas_bookings` (
+  `angkas_booking_id` int(11) NOT NULL,
+  `angkas_booking_reference` varchar(20) DEFAULT NULL,
+  `transaction_category_id` int(2) NOT NULL DEFAULT 2,
+  `user_id` int(11) NOT NULL COMMENT '(FK) to user as customer',
+  `angkas_rider_user_id` int(11) DEFAULT NULL COMMENT '(FK) to user as rider',
+  `form_from_dest_name` varchar(255) NOT NULL,
+  `user_currentLoc_lat` varchar(55) NOT NULL,
+  `user_currentLoc_long` varchar(55) NOT NULL,
+  `form_to_dest_name` varchar(255) NOT NULL,
+  `formToDest_long` varchar(55) NOT NULL,
+  `formToDest_lat` varchar(55) NOT NULL,
+  `form_ETA_duration` decimal(6,2) NOT NULL,
+  `form_TotalDistance` decimal(6,2) NOT NULL,
+  `form_Est_Cost` decimal(8,2) NOT NULL,
+  `date_booked` timestamp NOT NULL DEFAULT current_timestamp(),
+  `booking_status` varchar(1) NOT NULL DEFAULT 'P' COMMENT 'case when ab.booking_status = ''P'' THEN ''Waiting for Driver''\r\n                                         when ab.booking_status = ''A'' THEN ''Driver Found''\r\n                                         when ab.booking_status = ''R'' THEN ''Driver Arrived in Your Location''\r\n                                         when ab.booking_status = ''I'' THEN ''In Transit''\r\n                                         when ab.booking_status = ''C'' THEN ''Completed''\r\n                                    end as booking_status\r\n',
+  `payment_status` char(1) NOT NULL DEFAULT 'P' COMMENT 'P = Pending, D=Declined, C=Completed Payment'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `angkas_rider_queue`
+--
+
+CREATE TABLE `angkas_rider_queue` (
+  `angkas_rider_queue_id` int(11) NOT NULL,
+  `angkas_rider_id` int(11) NOT NULL COMMENT '(FK) to user_id for riders',
+  `queue_date` timestamp NOT NULL DEFAULT current_timestamp(),
+  `queue_status` varchar(1) NOT NULL DEFAULT 'A' COMMENT 'A - available\r\nI - In Transit\r\nD - Done'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `angkas_rider_queue`
+--
+
+INSERT INTO `angkas_rider_queue` (`angkas_rider_queue_id`, `angkas_rider_id`, `queue_date`, `queue_status`) VALUES
+(51, 26, '2024-11-13 09:30:26', 'A'),
+(52, 17, '2024-11-13 09:30:26', 'A');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `angkas_vehicle_model`
+--
+
+CREATE TABLE `angkas_vehicle_model` (
+  `vehicle_model_id` int(11) NOT NULL,
+  `vehicle_model` varchar(100) NOT NULL,
+  `model_body_type` varchar(20) NOT NULL,
+  `number_of_seats` int(11) NOT NULL,
+  `allowed_ind` varchar(1) NOT NULL DEFAULT 'Y'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `angkas_vehicle_model`
+--
+
+INSERT INTO `angkas_vehicle_model` (`vehicle_model_id`, `vehicle_model`, `model_body_type`, `number_of_seats`, `allowed_ind`) VALUES
+(1, 'Toyota Vios', 'Sedan', 5, 'Y'),
+(2, 'Toyota Avanza', 'MPV', 7, 'Y'),
+(3, 'Toyota Innova', 'MPV', 8, 'Y'),
+(4, 'Toyota Wigo', 'Hatchback', 5, 'Y'),
+(5, 'Toyota Altis', 'Sedan', 5, 'Y'),
+(6, 'Nissan Almera', 'Sedan', 5, 'Y'),
+(7, 'Nissan NV350 Urvan', 'Van', 15, 'Y'),
+(8, 'Nissan Sylphy', 'Sedan', 5, 'Y'),
+(9, 'Hyundai Accent', 'Sedan', 5, 'Y'),
+(10, 'Hyundai Reina', 'Sedan', 5, 'Y'),
+(11, 'Hyundai H-100', 'Truck', 3, 'Y'),
+(12, 'Hyundai Eon', 'Hatchback', 5, 'Y'),
+(13, 'Mitsubishi Mirage', 'Hatchback', 5, 'Y'),
+(14, 'Mitsubishi Mirage G4', 'Sedan', 5, 'Y'),
+(15, 'Mitsubishi Adventure', 'MPV', 7, 'Y'),
+(16, 'Mitsubishi L300', 'Truck', 3, 'Y'),
+(17, 'Suzuki Celerio', 'Hatchback', 5, 'Y'),
+(18, 'Suzuki Dzire', 'Sedan', 5, 'Y'),
+(19, 'Suzuki Alto', 'Hatchback', 4, 'Y'),
+(20, 'Suzuki Ertiga', 'MPV', 7, 'Y'),
+(21, 'Suzuki APV', 'MPV', 8, 'Y'),
+(22, 'Kia Soluto', 'Sedan', 5, 'Y'),
+(23, 'Kia Picanto', 'Hatchback', 5, 'Y'),
+(24, 'Kia K2700', 'Truck', 3, 'Y'),
+(25, 'Isuzu Crosswind', 'MPV', 7, 'Y'),
+(26, 'Isuzu Traviz', 'Truck', 3, 'Y'),
+(27, 'Isuzu D-Max', 'Pickup', 5, 'Y'),
+(28, 'Chevrolet Spark', 'Hatchback', 5, 'Y'),
+(29, 'Chevrolet Sail', 'Sedan', 5, 'Y'),
+(30, 'Ford Fiesta', 'Hatchback', 5, 'Y'),
+(31, 'Ford EcoSport', 'SUV', 5, 'Y'),
+(32, 'Honda City', 'Sedan', 5, 'Y'),
+(33, 'Honda Brio', 'Hatchback', 5, 'Y'),
+(34, 'Honda Jazz', 'Hatchback', 5, 'Y'),
+(35, 'Honda Mobilio', 'MPV', 7, 'Y'),
+(36, 'Geely Coolray', 'SUV', 5, 'Y'),
+(37, 'Chery Tiggo 2', 'SUV', 5, 'Y'),
+(38, 'Foton Gratour', 'Van', 11, 'Y');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `app_transactions`
 --
 
@@ -40,23 +145,6 @@ CREATE TABLE `app_transactions` (
   `amount_to_pay` decimal(7,2) DEFAULT NULL,
   `payment_status` char(1) NOT NULL DEFAULT 'P' COMMENT 'P - Pending\r\nD - Done Payment'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `app_transactions`
---
-
-INSERT INTO `app_transactions` (`app_txn_id`, `user_id`, `txn_category_id`, `txn_status`, `txn_tm_ts`, `book_start_dte`, `book_end_dte`, `book_location_id`, `book_item_inventory_id`, `amount_to_pay`, `payment_status`) VALUES
-(1, 3, 1, 'P', '2024-10-05 07:46:31', '2024-10-09', '2024-10-31', '05-0505-050507 ', 10, '0.00', 'P'),
-(2, 3, 1, 'P', '2024-10-05 07:51:16', '2024-10-23', '2024-10-31', '05-0520-052005 ', 14, '4800.00', 'P'),
-(3, 3, 1, 'P', '2024-10-05 07:59:36', '2024-10-23', '2024-10-31', '05-0520-052005 ', 15, '1600.00', 'P'),
-(4, 3, 1, 'P', '2024-10-11 20:29:59', '2024-10-16', '2024-10-31', '04-0410-041005 ', 16, '1500.00', 'P'),
-(5, 3, 1, 'P', '2024-10-11 20:33:56', '2024-10-15', '2024-10-23', '01-0129-012905 ', 17, '3200.00', 'P'),
-(6, 3, 1, 'P', '2024-10-11 20:33:59', '2024-10-15', '2024-10-23', '01-0129-012905 ', 18, '2400.00', 'P'),
-(7, 3, 1, 'P', '2024-10-11 20:34:00', '2024-10-15', '2024-10-23', '01-0129-012905 ', 19, '4000.00', 'P'),
-(8, 3, 1, 'P', '2024-10-11 20:34:01', '2024-10-15', '2024-10-23', '01-0129-012905 ', 20, '2000.00', 'P'),
-(9, 3, 1, 'P', '2024-10-11 20:34:03', '2024-10-15', '2024-10-23', '01-0129-012905 ', 21, '1600.00', 'P'),
-(10, 3, 1, 'P', '2024-10-11 20:34:05', '2024-10-15', '2024-10-23', '01-0129-012905 ', 22, '480.00', 'P'),
-(11, 3, 1, 'P', '2024-10-11 20:34:07', '2024-10-15', '2024-10-23', '01-0129-012905 ', 23, '160.00', 'P');
 
 -- --------------------------------------------------------
 
@@ -118,14 +206,6 @@ CREATE TABLE `lu_cars` (
   `car_img` varchar(255) NOT NULL,
   `car_year_model` varchar(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `lu_cars`
---
-
-INSERT INTO `lu_cars` (`car_id`, `car_brand`, `car_rent_price`, `car_plate_no`, `car_owner_id`, `car_color_id`, `car_model_id`, `car_body_type_id`, `car_img`, `car_year_model`) VALUES
-(1, 'Volvo', '0.00', 'XXX 123', 8, 1, 1, 1, 'volvo.jpg', '2000'),
-(2, 'Toyota', '2000.00', 'XXX 124', 8, 1, 1, 1, 'toyota_vios.jpg', '2023');
 
 -- --------------------------------------------------------
 
@@ -1943,36 +2023,132 @@ INSERT INTO `refregion` (`id`, `psgcCode`, `regDesc`, `regCode`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `shop_category`
+--
+
+CREATE TABLE `shop_category` (
+  `sc_id` int(11) NOT NULL,
+  `shop_category_name` varchar(55) NOT NULL,
+  `shop_category_status` varchar(1) NOT NULL DEFAULT 'A'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `shop_category`
+--
+
+INSERT INTO `shop_category` (`sc_id`, `shop_category_name`, `shop_category_status`) VALUES
+(1, 'grocery', 'A'),
+(2, 'pharmacy', 'A'),
+(3, 'food-delivery', 'A');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `shop_items`
+--
+
+CREATE TABLE `shop_items` (
+  `item_id` int(11) NOT NULL,
+  `item_name` varchar(255) NOT NULL,
+  `price` decimal(10,2) NOT NULL,
+  `merchant_id` int(11) DEFAULT NULL,
+  `category` int(11) NOT NULL,
+  `quantity` int(11) NOT NULL,
+  `item_img` varchar(255) DEFAULT NULL,
+  `date_added` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `shop_items`
+--
+
+INSERT INTO `shop_items` (`item_id`, `item_name`, `price`, `merchant_id`, `category`, `quantity`, `item_img`, `date_added`) VALUES
+(1, 'Whole Wheat Bread', '2.99', 1, 1, 50, NULL, '2024-11-04 21:19:49'),
+(2, 'Organic Milk', '3.49', 1, 1, 30, NULL, '2024-11-04 21:19:49'),
+(3, 'Fresh Spinach', '1.99', 1, 1, 100, NULL, '2024-11-04 21:19:49'),
+(4, 'Eggs (dozen)', '2.49', 1, 1, 40, NULL, '2024-11-04 21:19:49'),
+(5, 'Chicken Breast (lb)', '5.99', 1, 1, 25, NULL, '2024-11-04 21:19:49'),
+(6, 'Apples (per lb)', '1.79', 1, 1, 60, NULL, '2024-11-04 21:19:49'),
+(7, 'Almonds (16 oz)', '6.99', 1, 1, 15, NULL, '2024-11-04 21:19:49'),
+(8, 'Oatmeal (18 oz)', '3.29', 1, 1, 20, NULL, '2024-11-04 21:19:49'),
+(9, 'Greek Yogurt (32 oz)', '4.49', 1, 1, 25, NULL, '2024-11-04 21:19:49'),
+(10, 'Olive Oil (500 ml)', '8.99', 1, 1, 10, NULL, '2024-11-04 21:19:49');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `shop_merchants`
+--
+
+CREATE TABLE `shop_merchants` (
+  `merchant_id` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `address` varchar(255) DEFAULT NULL,
+  `phone` varchar(15) DEFAULT NULL,
+  `email` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `shop_merchants`
+--
+
+INSERT INTO `shop_merchants` (`merchant_id`, `name`, `address`, `phone`, `email`) VALUES
+(1, 'LCC Ligao', 'Mckinley Street, Bagumbayan, Ligao, 4504 Albay', '123-456-7890', 'freshmart@example.com');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `shop_orders`
+--
+
+CREATE TABLE `shop_orders` (
+  `order_id` int(11) NOT NULL,
+  `shop_order_ref_num` varchar(20) DEFAULT NULL,
+  `user_id` int(11) NOT NULL,
+  `rider_id` int(11) DEFAULT NULL,
+  `item_id` int(11) DEFAULT NULL,
+  `quantity` int(11) NOT NULL,
+  `amount_to_pay` decimal(9,2) DEFAULT NULL,
+  `order_date` timestamp NULL DEFAULT current_timestamp(),
+  `delivery_status` varchar(1) DEFAULT 'P',
+  `payment_status` varchar(1) DEFAULT 'P',
+  `order_state_ind` char(1) NOT NULL DEFAULT 'C' COMMENT 'C - Cart\r\nO - Checkout\r\nP - Payment\r\nD - Delivered\r\nX - Cancelled'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `txn_category`
 --
 
 CREATE TABLE `txn_category` (
   `txn_category_id` int(11) NOT NULL,
   `page_action` varchar(55) DEFAULT NULL,
+  `txn_link` varchar(55) NOT NULL,
   `page_include_form` varchar(100) NOT NULL,
   `txn_category_name` varchar(55) NOT NULL,
   `txn_category_status` varchar(1) NOT NULL,
   `icon_class` varchar(55) NOT NULL,
   `txn_title` varchar(55) NOT NULL,
-  `txn_link` varchar(55) NOT NULL
+  `load_js_file` varchar(55) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `txn_category`
 --
 
-INSERT INTO `txn_category` (`txn_category_id`, `page_action`, `page_include_form`, `txn_category_name`, `txn_category_status`, `icon_class`, `txn_title`, `txn_link`) VALUES
-(1, 'rent', '_car_rental_form.php', 'Car Rental', 'A', 'car', 'rent', '_car_rental.php'),
-(2, 'angkas', '_vehicle_rent_form.php', 'Angkas', 'A', 'moped', 'angkas', '_vehicle_rent.php'),
-(3, NULL, '', 'Food Delivery', 'A', 'hamburger-soda', 'fooddelivery', '_food_delivery.php'),
-(4, NULL, '', 'Medicine Pabili', 'A', 'file-prescription', 'rx', '_rx.php'),
-(5, NULL, '', 'Document Processing', 'A', 'legal', 'legal', '_legal.php'),
-(6, NULL, '', 'Grocery', 'A', 'grocery-bag', 'grocery', '_grocery.php'),
-(7, NULL, '', 'Top-Up Wallet', 'A', 'wallet', 'wallet', '_wallet.php'),
-(8, NULL, '', 'Coupons', 'A', 'ticket', 'coupons', '_coupons.php'),
-(9, NULL, '', 'Motorcycle Surprises', 'A', 'gift-box-benefits', 'motorcyclesurprises', '_surprise.php'),
-(10, 'earnings', '', 'My Earnings', 'R', 'peso-sign', 'My Earnings', '_my_earnings.php'),
-(11, NULL, '', 'My Bookings', 'R', 'location-alt', 'My Bookings', '');
+INSERT INTO `txn_category` (`txn_category_id`, `page_action`, `txn_link`, `page_include_form`, `txn_category_name`, `txn_category_status`, `icon_class`, `txn_title`, `load_js_file`) VALUES
+(1, 'rent', '_car_rental.php', '', 'Car Rental', 'A', 'car', 'rent', '_car_rental.js'),
+(2, 'angkas', '_angkas.php', '', 'Angkas', 'A', 'moped', 'angkas', ''),
+(3, NULL, '_food_delivery.php', '', 'Food Delivery', 'A', 'hamburger-soda', 'fooddelivery', ''),
+(4, NULL, '_rx.php', '', 'Medicine Pabili', 'A', 'file-prescription', 'rx', ''),
+(5, NULL, '_legal.php', '', 'Document Processing', 'A', 'legal', 'legal', ''),
+(6, 'shop', '_shop.php', '_shop', 'Grocery', 'A', 'grocery-bag', 'shop', ''),
+(7, 'wallet', '_wallet.php', '', 'Top-Up Wallet', 'A', 'wallet', 'wallet', ''),
+(8, NULL, '_coupons.php', '', 'Coupons', 'A', 'ticket', 'coupons', ''),
+(9, NULL, '_surprise.php', '', 'Motorcycle Surprises', 'A', 'gift-box-benefits', 'motorcyclesurprises', ''),
+(10, 'earnings', '_my_earnings.php', '', 'My Earnings', 'R', 'peso-sign', 'My Earnings', ''),
+(11, NULL, '', '', 'My Bookings', 'R', 'location-alt', 'My Bookings', '');
 
 -- --------------------------------------------------------
 
@@ -1987,25 +2163,10 @@ CREATE TABLE `users` (
   `t_status` varchar(1) NOT NULL DEFAULT 'A',
   `date_joined` timestamp NOT NULL DEFAULT current_timestamp(),
   `t_user_type` varchar(1) NOT NULL DEFAULT 'C',
-  `t_rider_status` varchar(1) DEFAULT NULL
+  `t_rider_status` varchar(1) DEFAULT NULL,
+  `t_online_status` tinyint(1) NOT NULL DEFAULT 0 COMMENT 'Online / Offline',
+  `t_last_online_ts` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `users`
---
-
-INSERT INTO `users` (`user_id`, `t_username`, `t_password`, `t_status`, `date_joined`, `t_user_type`, `t_rider_status`) VALUES
-(1, 'admin', 'admin', 'A', '2024-09-16 19:34:51', 'A', NULL),
-(2, 'user1', 'user1', 'A', '2024-09-16 19:35:02', 'C', NULL),
-(3, 'test', '1234', 'A', '2024-09-17 19:02:33', 'C', 'R'),
-(4, 'test2', '1234', 'A', '2024-09-17 19:04:06', 'C', 'R'),
-(5, 'test3', '1234', 'A', '2024-09-17 19:04:19', 'C', NULL),
-(6, 'test4', '1234', 'A', '2024-09-17 19:05:02', 'C', NULL),
-(7, 'test6', '1234', 'A', '2024-09-17 19:09:41', 'C', NULL),
-(8, 'test7', '1234', 'A', '2024-09-17 19:10:52', 'C', NULL),
-(9, 'test8', '1234', 'A', '2024-09-17 19:16:13', 'C', NULL),
-(10, 'test9', '1234', 'A', '2024-10-11 13:43:04', 'C', NULL),
-(11, 'test11', '1234', 'A', '2024-10-11 13:44:58', 'C', NULL);
 
 -- --------------------------------------------------------
 
@@ -2020,24 +2181,12 @@ CREATE TABLE `user_profile` (
   `user_lastname` varchar(55) DEFAULT NULL,
   `user_mi` varchar(55) DEFAULT NULL,
   `user_contact_no` varchar(255) DEFAULT NULL,
+  `user_gender` varchar(1) DEFAULT NULL,
   `user_email_address` varchar(255) DEFAULT NULL,
-  `user_profile_image` varchar(255) DEFAULT NULL
+  `user_profile_image` varchar(255) DEFAULT 'female_person1.jpg',
+  `rider_plate_no` varchar(10) DEFAULT NULL,
+  `rider_license_no` varchar(55) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `user_profile`
---
-
-INSERT INTO `user_profile` (`user_profile_id`, `user_id`, `user_firstname`, `user_lastname`, `user_mi`, `user_contact_no`, `user_email_address`, `user_profile_image`) VALUES
-(1, 3, NULL, NULL, NULL, NULL, 'test@gmail.com', NULL),
-(2, 4, NULL, NULL, NULL, NULL, 'test@gmail.com', NULL),
-(3, 5, NULL, NULL, NULL, NULL, 'test2@gmail.com', NULL),
-(4, 6, NULL, NULL, NULL, NULL, 'test3@gmail.com', NULL),
-(5, 7, NULL, NULL, NULL, NULL, 'test6@gmail.com', NULL),
-(6, 8, NULL, NULL, NULL, NULL, 'test7@gmail.com', NULL),
-(7, 9, NULL, NULL, NULL, NULL, 'test8@gmail.com', NULL),
-(8, 10, NULL, NULL, NULL, NULL, 'test9@gmail.com', NULL),
-(9, 11, NULL, NULL, NULL, NULL, 'test10@gmail.com', NULL);
 
 -- --------------------------------------------------------
 
@@ -2048,8 +2197,9 @@ INSERT INTO `user_profile` (`user_profile_id`, `user_id`, `user_firstname`, `use
 CREATE TABLE `user_wallet` (
   `user_wallet_id` bigint(11) UNSIGNED ZEROFILL NOT NULL,
   `user_id` int(11) NOT NULL,
-  `wallet_txn_amt` double NOT NULL DEFAULT 0,
+  `wallet_txn_amt` decimal(12,2) NOT NULL DEFAULT 0.00,
   `txn_type_id` int(11) NOT NULL,
+  `wallet_action` varchar(55) NOT NULL,
   `wallet_txn_status` varchar(1) NOT NULL DEFAULT 'P',
   `wallet_txn_start_ts` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -2124,6 +2274,25 @@ INSERT INTO `vendors` (`vendor_id`, `vendor_name`, `vendor_type`, `vendor_status
 --
 
 --
+-- Indexes for table `angkas_bookings`
+--
+ALTER TABLE `angkas_bookings`
+  ADD PRIMARY KEY (`angkas_booking_id`),
+  ADD KEY `transaction_category_id` (`transaction_category_id`);
+
+--
+-- Indexes for table `angkas_rider_queue`
+--
+ALTER TABLE `angkas_rider_queue`
+  ADD PRIMARY KEY (`angkas_rider_queue_id`);
+
+--
+-- Indexes for table `angkas_vehicle_model`
+--
+ALTER TABLE `angkas_vehicle_model`
+  ADD PRIMARY KEY (`vehicle_model_id`);
+
+--
 -- Indexes for table `app_transactions`
 --
 ALTER TABLE `app_transactions`
@@ -2160,6 +2329,33 @@ ALTER TABLE `refprovince`
 --
 ALTER TABLE `refregion`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `shop_category`
+--
+ALTER TABLE `shop_category`
+  ADD PRIMARY KEY (`sc_id`);
+
+--
+-- Indexes for table `shop_items`
+--
+ALTER TABLE `shop_items`
+  ADD PRIMARY KEY (`item_id`),
+  ADD KEY `item-cat` (`category`),
+  ADD KEY `item-merchant` (`merchant_id`);
+
+--
+-- Indexes for table `shop_merchants`
+--
+ALTER TABLE `shop_merchants`
+  ADD PRIMARY KEY (`merchant_id`);
+
+--
+-- Indexes for table `shop_orders`
+--
+ALTER TABLE `shop_orders`
+  ADD PRIMARY KEY (`order_id`),
+  ADD UNIQUE KEY `unique_user_item` (`user_id`,`item_id`);
 
 --
 -- Indexes for table `txn_category`
@@ -2202,10 +2398,28 @@ ALTER TABLE `vendors`
 --
 
 --
+-- AUTO_INCREMENT for table `angkas_bookings`
+--
+ALTER TABLE `angkas_bookings`
+  MODIFY `angkas_booking_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
+-- AUTO_INCREMENT for table `angkas_rider_queue`
+--
+ALTER TABLE `angkas_rider_queue`
+  MODIFY `angkas_rider_queue_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
+
+--
+-- AUTO_INCREMENT for table `angkas_vehicle_model`
+--
+ALTER TABLE `angkas_vehicle_model`
+  MODIFY `vehicle_model_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
+
+--
 -- AUTO_INCREMENT for table `app_transactions`
 --
 ALTER TABLE `app_transactions`
-  MODIFY `app_txn_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `app_txn_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `items_inventory`
@@ -2238,6 +2452,30 @@ ALTER TABLE `refregion`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
+-- AUTO_INCREMENT for table `shop_category`
+--
+ALTER TABLE `shop_category`
+  MODIFY `sc_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `shop_items`
+--
+ALTER TABLE `shop_items`
+  MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=101;
+
+--
+-- AUTO_INCREMENT for table `shop_merchants`
+--
+ALTER TABLE `shop_merchants`
+  MODIFY `merchant_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
+-- AUTO_INCREMENT for table `shop_orders`
+--
+ALTER TABLE `shop_orders`
+  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+
+--
 -- AUTO_INCREMENT for table `txn_category`
 --
 ALTER TABLE `txn_category`
@@ -2247,19 +2485,19 @@ ALTER TABLE `txn_category`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 
 --
 -- AUTO_INCREMENT for table `user_profile`
 --
 ALTER TABLE `user_profile`
-  MODIFY `user_profile_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `user_profile_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
 
 --
 -- AUTO_INCREMENT for table `user_wallet`
 --
 ALTER TABLE `user_wallet`
-  MODIFY `user_wallet_id` bigint(11) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT;
+  MODIFY `user_wallet_id` bigint(11) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `vehicle`
@@ -2278,11 +2516,24 @@ ALTER TABLE `vendors`
 --
 
 --
+-- Constraints for table `angkas_bookings`
+--
+ALTER TABLE `angkas_bookings`
+  ADD CONSTRAINT `angkas_bookings_ibfk_1` FOREIGN KEY (`transaction_category_id`) REFERENCES `txn_category` (`txn_category_id`);
+
+--
 -- Constraints for table `items_inventory`
 --
 ALTER TABLE `items_inventory`
   ADD CONSTRAINT `txn_category_items` FOREIGN KEY (`txn_category_id`) REFERENCES `txn_category` (`txn_category_id`),
   ADD CONSTRAINT `vendor_items` FOREIGN KEY (`vendor_id`) REFERENCES `vendors` (`vendor_id`);
+
+--
+-- Constraints for table `shop_items`
+--
+ALTER TABLE `shop_items`
+  ADD CONSTRAINT `item-cat` FOREIGN KEY (`category`) REFERENCES `shop_category` (`sc_id`),
+  ADD CONSTRAINT `item-merchant` FOREIGN KEY (`merchant_id`) REFERENCES `shop_merchants` (`merchant_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
