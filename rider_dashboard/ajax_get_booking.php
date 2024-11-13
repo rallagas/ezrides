@@ -5,13 +5,13 @@ include_once "../_sql_utility.php";
 $rider_logged = $_SESSION['user_id'];
 
 // Initialize variables
-$current_booking = [];
+$current_booking = array();
 $queue_list = [];
 $current_queue = 0; // Initialize to zero or fetch appropriately
 $status = ''; // Initialize status, determine how you want to set it
 
 // Get the list of bookings needed by the rider
-$current_booking = query(CONN, "SELECT ab.angkas_booking_id
+$current_booking = query( "SELECT ab.angkas_booking_id
                                   , ab.angkas_booking_reference
                                   , ab.user_id AS customer_user_id
                                   , ab.angkas_rider_user_id
@@ -37,12 +37,13 @@ $current_booking = query(CONN, "SELECT ab.angkas_booking_id
                                JOIN user_profile AS up ON ab.user_id = up.user_id
                                JOIN users u ON up.user_id = u.user_id
                                WHERE u.t_status = 'A'
-                               AND ab.booking_status <> 'C'
+                               AND ab.booking_status not in ('C','D')
                                AND ab.angkas_rider_user_id = ?",
                                [$rider_logged]);
 
 if (empty($current_booking)) {
-    $queue_list = "empty";
+    
+     $status = 'No bookings available';
 } else {
     foreach ($current_booking as $cx) {
         $queue_list[] = [
@@ -70,11 +71,12 @@ if (empty($current_booking)) {
             "user_profile_image" => $cx['user_profile_image']
         ];
     }
+    $status = 'Available';
 }
 
 // Set current queue and status based on your logic
 $current_queue = count($queue_list); // For example, set current_queue as the number of bookings
-$status = !empty($queue_list) ? 'Available' : 'No bookings available'; // Example status
+//$status = !empty($queue_list) ? 'Available' : 'No bookings available'; // Example status
 
 // Build the final JSON array
 $response = [

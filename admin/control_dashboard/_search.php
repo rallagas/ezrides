@@ -17,8 +17,8 @@ if (isset($_POST['search'])) {
     // Prepare the SQL statement to fetch matching products
     $query = "
         SELECT gi.item_id, gi.item_name, gi.price, gi.quantity, gi.merchant_id, gm.name AS merchant_name
-        FROM grocery_items gi
-        JOIN grocery_merchants gm ON gi.merchant_id = gm.merchant_id
+        FROM shop_items gi
+        JOIN shop_merchants gm ON gi.merchant_id = gm.merchant_id
         WHERE gi.item_name LIKE :search OR gm.name LIKE :search
     ";
     

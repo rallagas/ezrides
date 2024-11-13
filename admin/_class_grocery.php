@@ -1,39 +1,39 @@
 <?php
-
+include_once "../../_db.php";
 // Database connection settings
-class Database {
-     private $pdo;
-
-    public function dbConnection() {
-        
-            $host = 'localhost';
-            $dbname = 'ezride';
-            $password = '';
-            $username='root';
-            
-         try {
-            $this->pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password);
-            $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        } catch (PDOException $e) {
-            die("Connection failed: " . $e->getMessage()); // Use die to stop execution on failure
-        }
-    }
-
-    public function getConnection() {
-        return $this->pdo;
-    }
-
-    // Example method to perform a query
-    public function select($query) {
-        if ($this->pdo === null) {
-            die("Database connection not established."); // Check for connection
-        }
-        
-        $stmt = $this->pdo->prepare($query);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-}
+//class Database {
+//     private $pdo;
+//
+//    public function dbConnection() {
+//        
+//            $host = 'localhost';
+//            $dbname = 'ezride';
+//            $password = '';
+//            $username='root';
+//            
+//         try {
+//            $this->pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password);
+//            $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+//        } catch (PDOException $e) {
+//            die("Connection failed: " . $e->getMessage()); // Use die to stop execution on failure
+//        }
+//    }
+//
+//    public function getConnection() {
+//        return $this->pdo;
+//    }
+//
+//    // Example method to perform a query
+//    public function select($query) {
+//        if ($this->pdo === null) {
+//            die("Database connection not established."); // Check for connection
+//        }
+//        
+//        $stmt = $this->pdo->prepare($query);
+//        $stmt->execute();
+//        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+//    }
+//}
 
 class Merchant {
     private $id;
@@ -67,7 +67,7 @@ class Merchant {
 
     // Static method to fetch all merchants' names
     public static function getAllMerchantNames(Database $database) {
-        $query = "SELECT name FROM grocery_merchants";
+        $query = "SELECT name FROM shop_merchants";
         $stmt = $database->getConnection()->prepare($query);
         $stmt->execute();
 
@@ -76,7 +76,7 @@ class Merchant {
 
     // Static method to fetch all merchants' details
     public static function getAllMerchants(Database $database) {
-        $query = "SELECT * FROM grocery_merchants";
+        $query = "SELECT * FROM shop_merchants";
         $stmt = $database->getConnection()->prepare($query);
         $stmt->execute();
         
@@ -142,8 +142,8 @@ class Product {
     public static function fetchAllProducts(Database $database) {
         $query = "
             SELECT gi.item_id, gi.item_name, gi.price, gi.quantity, gi.merchant_id, gm.name AS merchant_name
-            FROM grocery_items gi
-            JOIN grocery_merchants gm 
+            FROM shop_items gi
+            JOIN shop_merchants gm 
               ON gi.merchant_id = gm.merchant_id
         ";
         $results = $database->select($query);

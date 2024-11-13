@@ -44,7 +44,7 @@ $sql_get_list_of_available =
                   );
                   ";
 
-$list = query(CONN, $sql_get_list_of_available, $params);
+$list = query( $sql_get_list_of_available, $params);
 if(empty($list)){
     echo "No Available Vehicle at the moment.";
 }

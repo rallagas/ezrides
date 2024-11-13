@@ -11,7 +11,7 @@ if (isset($data['booking_id'])) {
     $bookingId = $data['booking_id'];
 
     // Prepare query to update booking status
-    $update = update_data(CONN,"angkas_bookings",array("booking_status" => $bookingStatus), array("angkas_booking_reference" => $bookingId));
+    $update = update_data("angkas_bookings",array("booking_status" => $bookingStatus), array("angkas_booking_reference" => $bookingId));
     
     // Check if the update was successful
     if($update) {

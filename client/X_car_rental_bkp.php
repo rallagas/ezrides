@@ -31,7 +31,7 @@ ifActionis($page_action,$page_include_form);
 
 /*Show car selection*/
 
-$vehicles = select_data(CONN, "lu_cars");
+$vehicles = select_data( "lu_cars");
 
 foreach($vehicles as $car) {
     ?>

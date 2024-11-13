@@ -1,9 +1,9 @@
 <?php
 include_once "../_db.php";
 include_once "../_sql_utility.php";
-    $user_logged = $_SESSION['user_id'];    
-   // $current_booking=select_data(CONN, "angkas_bookings","user_id = {$user_logged} AND DATE(date_booked) = CURRENT_DATE");
-    $current_booking=query(CONN,"SELECT ab.angkas_booking_id
+
+$user_logged = $_SESSION['user_id'];
+$current_booking = query( "SELECT ab.angkas_booking_id
                                   , ab.angkas_booking_reference
                                   , ab.user_id AS customer_user_id
                                   , ab.angkas_rider_user_id
@@ -18,6 +18,12 @@ include_once "../_sql_utility.php";
                                   , ab.form_Est_Cost
                                   , ab.date_booked
                                   , ab.booking_status
+                                  , ab.payment_status
+                                  , CASE
+                                       WHEN ab.payment_status = 'P' THEN 'Pending Payment'
+                                       WHEN ab.payment_status = 'D' THEN 'Payment Declined'
+                                       WHEN ab.payment_status = 'C' THEN 'Paid'
+                                    END payment_status_text
                                   , up.user_firstname
                                   , up.user_lastname
                                   , up.user_mi
@@ -25,54 +31,42 @@ include_once "../_sql_utility.php";
                                   , up.user_contact_no
                                   , up.user_email_address      
                                   , up.user_profile_image  
-                                  , rp.user_firstname rider_firstname
-                                  , rp.user_lastname rider_lastname
-                                  , case when ab.booking_status = 'P' THEN 'Waiting for Driver'
-                                         when ab.booking_status = 'A' THEN 'Driver Found'
-                                         when ab.booking_status = 'R' THEN 'Driver Arrived in Your Location'
-                                         when ab.booking_status = 'I' THEN 'In Transit'
-                                         when ab.booking_status = 'C' THEN 'Completed'
-                                         when ab.booking_status = 'F' THEN 'Pending Payment'
-                                    end as booking_status
+                                  , rp.user_firstname AS rider_firstname
+                                  , rp.user_lastname AS rider_lastname
+                                  , CASE 
+                                        WHEN ab.booking_status = 'P' THEN 'Waiting for Driver'
+                                        WHEN ab.booking_status = 'A' THEN 'Driver Found'
+                                        WHEN ab.booking_status = 'R' THEN 'Driver Arrived in Your Location'
+                                        WHEN ab.booking_status = 'I' THEN 'In Transit'
+                                        WHEN ab.booking_status = 'C' THEN 'Completed'
+                                        WHEN ab.booking_status = 'F' THEN 'Pending Payment'
+                                    END AS booking_status_text
                                FROM angkas_bookings AS ab
-                               JOIN user_profile AS up ON ab.user_id = up.user_id
-                               JOIN users u ON up.user_id = u.user_id
-                               LEFT JOIN user_profile AS rp ON ab.angkas_rider_user_id = u.user_id
+                               JOIN user_profile AS up 
+                                 ON ab.user_id = up.user_id
+                               JOIN users u 
+                                 ON up.user_id = u.user_id
+                               LEFT JOIN user_profile AS rp 
+                                 ON ab.angkas_rider_user_id = rp.user_id
                                WHERE ab.user_id = ?
-                               and ab.booking_status <> 'C'
                                AND DATE(date_booked) = CURRENT_DATE
-                         ", [$user_logged]);
-if(!empty($current_booking)){ 
-      foreach($current_booking as $cb){
-      extract($cb,EXTR_OVERWRITE);
-      ?>
-        <div class="container">
-                <div class="row">
-                <div class="col-12">
-                 <span class="fw-bold">You have a current booking.</span>
-                 <h6 class="fs-3 text-success"><?php echo $angkas_booking_reference;?></h6>
-                 <span class="fw-bold fs-5">Origin: </span> <span class="fw-semibold fs-5"><?php echo $form_from_dest_name;?></span>
-                 <br>
-                 <span class="fw-bold fs-5">Destination: </span> <span class="fw-semibold fs-5"><?php echo $form_to_dest_name;?></span>
-                 <br>
-                 <span class="fw-bold fs-5">Status: </span> <span class="fw-semibold fs-5 text-danger"><?php echo $booking_status;?></span>
-                 <br>
-                 <?php if($booking_status != "Waiting for Driver") { ?>
-                 <span class="fw-bold fs-5">Driver: </span> <span class="fw-semibold fs-5"><?php echo $rider_firstname . ", " . $rider_lastname ;?></span>
-                 <?php } else { ?>
-                          <div class="spinner-grow text-danger spinner-grow-sm" role="status"></div>
-                          <div class="spinner-grow text-danger spinner-grow-sm" role="status"></div>
-                          <div class="spinner-grow text-danger spinner-grow-sm" role="status"></div>
-          
-                    <?php  } ?>
-                 </div>
-                 </div>
-       </div>
+                               AND ab.booking_status <> 'D'
+                               ORDER by ab.angkas_booking_id DESC
+                               LIMIT 1",
+                         [$user_logged]);
 
-<?php }
+if (!empty($current_booking)) {
+    // Prepare JSON response
+    $response = [
+        'hasBooking' => true,
+        'booking' => $current_booking[0]
+    ];
+} else {
+    $response = [
+        'hasBooking' => false,
+        'message' => 'You currently have no booked rider.'
+    ];
+}
 
-}
-else{
-    
-    echo "You Currently have no booked rider.";
-}
+echo json_encode($response);
+?>

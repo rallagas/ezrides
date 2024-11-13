@@ -7,7 +7,7 @@ if (isset($_GET['query'])) {
     $database->dbConnection();
     
     // Get matching merchants
-    $stmt = $database->getConnection()->prepare("SELECT name FROM grocery_merchants WHERE name LIKE :query LIMIT 10");
+    $stmt = $database->getConnection()->prepare("SELECT name FROM shop_merchants WHERE name LIKE :query LIMIT 10");
     $stmt->execute([':query' => '%' . $query . '%']);
     $merchants = $stmt->fetchAll(PDO::FETCH_ASSOC);
 

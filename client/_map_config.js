@@ -2,16 +2,18 @@ const CONFIGURATION = {
     "defaultTravelMode": "DRIVING",
     "distanceMeasurementType": "IMPERIAL",
     "mapOptions": {
-      "fullscreenControl": true,
-      "mapTypeControl": false,
-      "streetViewControl": false,
-      "zoom": 14,
-      "zoomControl": true,
-      "maxZoom": 20,
-      "mapId": ""
+        "fullscreenControl": true,
+        "mapTypeControl": false,
+        "streetViewControl": false,
+        "zoom": 14,
+        "zoomControl": true,
+        "maxZoom": 20,
+        "mapId": "b3394d825c3c2f44"
     },
     "mapsApiKey": "AIzaSyDB4tE_5d8sQVRR1x2KMTFbQbCpUYWXx8A"
 };
+
+
 
 function initMap() {
     // Check if the browser supports geolocation
@@ -84,59 +86,3 @@ function setLatLngInputs(location) {
     document.getElementById('currentLoc_lat').value = location.lat;
 }
 
-
-// const CONFIGURATION = {
-//
-//         "defaultTravelMode": "DRIVING",
-//    "distanceMeasurementType": "IMPERIAL",
-//    "mapOptions": {
-//      "fullscreenControl": true,
-//      "mapTypeControl": false,
-//      "streetViewControl": false,
-//      "zoom": 14,
-//      "zoomControl": true,
-//      "maxZoom": 20,
-//      "mapId": ""}
-//    ,"mapsApiKey": "AIzaSyDB4tE_5d8sQVRR1x2KMTFbQbCpUYWXx8A"
-//      };
-//
-//      function initMap() {
-//       // new Commutes(CONFIGURATION);
-//          
-//     // Check if the browser supports geolocation
-//            if (navigator.geolocation) {
-//              navigator.geolocation.getCurrentPosition(
-//                function(position) {
-//                  // Get the user's current position
-//                  const currentLocation = {
-//                    lat: position.coords.latitude,
-//                    lng: position.coords.longitude
-//                  };
-//
-//                  // Update the map's center to the current location
-//                  CONFIGURATION.mapOptions.center = currentLocation;
-//                
-//                  // Initialize the map with the updated configuration
-//                  new Commutes(CONFIGURATION);
-//                },
-//                function() {
-//                  // Handle error in case user denies geolocation access or there's an issue
-//                  handleLocationError(true);
-//                }
-//              );
-//            } else {
-//              // Browser doesn't support Geolocation
-//              handleLocationError(false);
-//            }      
-//      }
-//        
-//        
-//  function handleLocationError(browserHasGeolocation) {
-//    const errorMessage = browserHasGeolocation
-//      ? "Error: The Geolocation service failed."
-//      : "Error: Your browser doesn't support geolocation.";
-//    console.error(errorMessage);
-//    // Optionally, set a fallback center point if geolocation fails
-//    CONFIGURATION.mapOptions.center = {lat: 13.1390621, lng: 123.7437995};  // Default location
-//    new Commutes(CONFIGURATION);
-//  }

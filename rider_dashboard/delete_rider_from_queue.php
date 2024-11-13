@@ -7,7 +7,7 @@ if (isset($_SESSION['user_id'])) {
     $rider_logged = $_SESSION['user_id'];
 
     // Delete rider from angkas_rider_queue table
-    $unqueue = delete_data(CONN, "angkas_rider_queue", "angkas_rider_id = {$rider_logged} ");
+    $unqueue = delete_data( "angkas_rider_queue", "angkas_rider_id = {$rider_logged} ");
     
     // Check if the deletion was successful
     if ($unqueue) {

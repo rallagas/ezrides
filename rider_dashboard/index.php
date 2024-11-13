@@ -3,7 +3,11 @@
 
 $rider_logged=$_SESSION['user_id'];
 
-//$myBooking = select_data(CONN, "angkas_bookings", "angkas_rider_user_id = {$rider_logged}");
+query("DELETE FROM angkas_bookings WHERE date_booked < (NOW() - INTERVAL 1 HOUR) and angkas_rider_user_id is NULL and booking_status = 'P'");
+//query("UPDATE angkas_bookings SET booking_status='D' WHERE date_booked < (NOW() - INTERVAL 5 MINUTE) and user_id = ? AND booking_status = 'C'", [USER_LOGGED]);
+
+
+//$myBooking = select_data( "angkas_bookings", "angkas_rider_user_id = {$rider_logged}");
 //if(!empty($myBooking)){
 //    header("location: _current_booking_map.php");
 //}
@@ -12,7 +16,9 @@ $rider_logged=$_SESSION['user_id'];
 
 <html>
 <head>
-    <meta charset="UTF-8">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
     <title>Document</title>
        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.6.0/uicons-regular-rounded/css/uicons-regular-rounded.css'>
@@ -28,19 +34,12 @@ $rider_logged=$_SESSION['user_id'];
               </div>
               <div class="col-12">
                   <h6 class="display-6 fw-bold ms-4">Rider's Dashboard</h6>
-                  <h3 class="fs-6 fw-bold ms-5">Welcome <?php $arr= getUserInfo($rider_logged); foreach($arr as $a){ echo $a['user_firstname'] . ", " . $a['user_lastname'];}?></h3>
+                  <h3 class="fs-6 fw-bold ms-5">Welcome  <?php echo $rider_logged; $arr= getUserInfo($rider_logged); foreach($arr as $a){ echo $a['user_firstname'] . ", " . $a['user_lastname'];}?></h3>
                   <span id="queueStatus" class="ms-4 badge text-bg-info text-dark"></span>
               </div>
       </div>
        <div class="row px-5" id="availableBookings"></div>
-<!--
-       <div class="row px-5">
-           
-          <div id="currentBookingMap" style="height: 500px; width: 100%;" class="col-12 mx-5"></div>
 
-           
-       </div>
--->
    </div>
     
     

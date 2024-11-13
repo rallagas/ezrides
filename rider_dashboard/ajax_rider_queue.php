@@ -2,21 +2,17 @@
 include_once "../_db.php";
 include_once "../_sql_utility.php";
 
-$rider_logged = $_SESSION['user_id'];
+//$rider_logged = $_SESSION['user_id'];
+$rider_logged = USER_LOGGED;
 
 $current_queue = 0;
 $queue_list = [];
 
 // Check if the rider is in the queue
-$check_queue_if_im_in = select_data(
-    CONN, 
-    "angkas_rider_queue", 
-    "angkas_rider_id = {$rider_logged} AND DATE(queue_date) = CURRENT_DATE AND queue_status = 'A'"
+$check_queue_if_im_in = select_data("angkas_rider_queue", "angkas_rider_id = {$rider_logged} AND DATE(queue_date) = CURRENT_DATE"
 );
 
-$check_queue_if_im_in_transit = select_data(
-    CONN, 
-    "angkas_rider_queue", 
+$check_queue_if_im_in_transit = select_data("angkas_rider_queue", 
     "angkas_rider_id = {$rider_logged} AND DATE(queue_date) = CURRENT_DATE AND queue_status = 'I'"
 );
 
@@ -25,8 +21,8 @@ if (empty($check_queue_if_im_in) && empty($check_queue_if_im_in_transit)) {
     // Not in the queue, add to the queue
     $tbl = "angkas_rider_queue";
     $dta = ["angkas_rider_id" => $rider_logged];
-    insert_data(CONN, $tbl, $dta);
-    $current_queue = 0; // Assuming new entries start at zero
+    insert_data( $tbl, $dta);
+    $current_queue = 1; // Assuming new entries start at zero
     $status = "queued";
 }
 else if (!empty($check_queue_if_im_in_transit)) {
@@ -38,7 +34,7 @@ else {
     foreach ($check_queue_if_im_in as $q) {
         $que_id = $q['angkas_rider_queue_id'];
         $qarr = [$que_id];
-        $check_queue_num = query(CONN, "SELECT COUNT(*) AS queue_num 
+        $check_queue_num = query( "SELECT COUNT(*) AS queue_num 
                                           FROM angkas_rider_queue 
                                           WHERE DATE(queue_date) = CURRENT_DATE 
                                             AND angkas_rider_queue_id <= ?
@@ -54,10 +50,10 @@ else {
     $status = "Already Queued";
 }
 
-if ($current_queue == 1) {
+if ($current_queue) {
     // Get the list of bookings needed by the rider
     $list_of_need_rider =
-            query(CONN, "SELECT  ab.angkas_booking_id
+            query( "SELECT  ab.angkas_booking_id
                               ,  ab.angkas_booking_reference
                               ,  ab.user_id as customer_user_id
                               ,  ab.angkas_rider_user_id
@@ -86,10 +82,10 @@ if ($current_queue == 1) {
                              ON up.user_id = u.user_id
                           WHERE t_status = 'A'
                             AND t_user_type = 'C'
-                            AND t_rider_status is NULL
+                            AND ab.user_id NOT in (?)
                             AND ab.angkas_rider_user_id is NULL
-            ");
-//        select_data(CONN, "angkas_bookings", 
+            ", [$rider_logged]);
+//        select_data( "angkas_bookings", 
 //        "angkas_rider_user_id IS NULL AND DATE(date_booked) = CURRENT_DATE AND booking_status = 'P'", 
 //        "angkas_booking_id");
 

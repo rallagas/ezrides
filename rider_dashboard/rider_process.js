@@ -67,37 +67,77 @@ $(document).ready(function() {
     }
 
     // Function to create booking card
-    function ViewBookingCard(booking) {
-        return `
-            <div class="card col-lg-12 mb-3">
-                <div class="row g-0">
-                    <div class="col-md-3 d-none d-md-block position-relative">
-                        <img src="../icons/${booking.user_profile_image}" class="img-fluid rounded-start position-absolute top-50 start-50 translate-middle" alt="${booking.user_firstname} ${booking.user_lastname}" style="max-height:200px">
+function ViewBookingCard(booking) {
+    // Get the current date and time
+    const currentDate = new Date();
+    // Parse booking.date_booked as a Date object
+    const dateBooked = new Date(booking.date_booked);
+    // Calculate the difference in minutes
+    const elapsedTimeInMinutes = Math.floor((currentDate - dateBooked) / (1000 * 60));
+    
+    let colorText = "";
+    if (elapsedTimeInMinutes > 30) {
+        colorText = "text-danger";
+    }
+    else if (elapsedTimeInMinutes > 15) {
+         colorText = "text-warning";
+    }
+    else if (elapsedTimeInMinutes > 10) {
+         colorText = "text-info";
+    }
+    else if (elapsedTimeInMinutes <= 10) {
+         colorText = "text-success";
+    }
+    return `
+        <div class="card col-lg-12 mb-3">
+            <div class="row g-0">
+                <div class="col-md-3 d-none d-md-block position-relative">
+                    <img src="../icons/${booking.user_profile_image}" class="img-fluid rounded-start position-absolute top-50 start-50 translate-middle" alt="${booking.user_firstname} ${booking.user_lastname}" style="max-height:200px">
+                </div>
+                <div class="col-md-6 col-sm-8">
+                    <div class="card-header">
+                        <h5 class="card-title">${booking.angkas_booking_reference}</h5>
+                        <span class="fw-light ${colorText}">Booked ${elapsedTimeInMinutes} minutes ago</span>
                     </div>
-                    <div class="col-md-6 col-sm-8">
-                        <div class="card-header">
-                            <h5 class="card-title">${booking.angkas_booking_reference}</h5>
-                        </div>
-                        <div class="card-body">
-                            <p class="card-text"><strong>From:</strong> ${booking.form_from_dest_name}</p>
-                            <p class="card-text"><strong>To:</strong> ${booking.form_to_dest_name}</p>
-                            <p class="card-text"><strong>ETA Duration:</strong> ${booking.form_ETA_duration} mins <strong>Total Distance:</strong> ${booking.form_TotalDistance} km</p>
-                            <p class="card-text"><strong>Contact:</strong> ${booking.user_contact_no} (${booking.user_email_address})</p>
-                        </div>
-                    </div>
-                    <div class="col-md-3 col-sm-4 position-relative">
-
-                           
-                            <a href="_current_booking_map.php"
-                               class="show-map-btn m-1 p-5 btn btn-outline-success position-absolute top-50 start-50 translate-middle text-center align-middle">
-                             Show Location
-                            </a>
+                    <div class="card-body">
+                        <p class="card-text"><strong>From:</strong> ${booking.form_from_dest_name}</p>
+                        <p class="card-text"><strong>To:</strong> ${booking.form_to_dest_name}</p>
+                        <p class="card-text"><strong>ETA Duration:</strong> ${booking.form_ETA_duration} mins <strong>Total Distance:</strong> ${booking.form_TotalDistance} km</p>
+                        <p class="card-text"><strong>Contact:</strong> ${booking.user_contact_no} (${booking.user_email_address})</p>
                     </div>
                 </div>
+                <div class="col-md-3 col-sm-4 position-relative">
+                    <a href="_current_booking_map.php"
+                       class="show-map-btn m-1 p-5 btn btn-outline-success position-absolute top-50 start-50 translate-middle text-center align-middle">
+                       Show Location
+                    </a>
+                </div>
             </div>
-        `;
-    }
+        </div>
+    `;
+}
+
     function createBookingCard(booking) {
+         // Get the current date and time
+    const currentDate = new Date();
+    // Parse booking.date_booked as a Date object
+    const dateBooked = new Date(booking.date_booked);
+    // Calculate the difference in minutes
+    const elapsedTimeInMinutes = Math.floor((currentDate - dateBooked) / (1000 * 60));
+    
+    let colorText = "";
+    if (elapsedTimeInMinutes > 30) {
+        colorText = "text-danger";
+    }
+    else if (elapsedTimeInMinutes > 15) {
+         colorText = "text-warning";
+    }
+    else if (elapsedTimeInMinutes > 10) {
+         colorText = "text-info";
+    }
+    else if (elapsedTimeInMinutes <= 10) {
+         colorText = "text-success";
+    }
         return `
             <div class="card col-lg-12 mb-3">
                 <div class="row g-0">
@@ -107,6 +147,7 @@ $(document).ready(function() {
                     <div class="col-md-6 col-sm-8">
                         <div class="card-header">
                             <h5 class="card-title">${booking.angkas_booking_reference}</h5>
+                            <span class="fw-light ${colorText}">Booked ${elapsedTimeInMinutes} min ago</span>
                         </div>
                         <div class="card-body">
                             <p class="card-text"><strong>From:</strong> ${booking.form_from_dest_name}</p>

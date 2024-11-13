@@ -1,85 +1,89 @@
+
+// Function to load transaction history
+let currentPage = 1; // Start on page 1
+const pageSize = 5; // Number of transactions per page
+let transactions = []; // Store the full list of transactions
+
+// Function to load transaction history
+function loadTransactionHistory() {
+    $.ajax({
+        url: 'ajax_fetch_wallet_transactions.php', // Endpoint to fetch transaction history
+        type: 'GET',
+        dataType: 'json', // Expecting JSON response
+        success: function(response) {
+            transactions = response; // Store the transactions
+            renderTransactions(); // Render the current page of transactions
+            renderPagination(); // Render the pagination controls
+        },
+        error: function(xhr, status, error) {
+            console.error('Failed to load transaction history:', error);
+        }
+    });
+}
+
+// Function to render transactions for the current page
+function renderTransactions() {
+    const tbody = $('#transactionHistoryTable tbody');
+    tbody.empty(); // Clear any existing rows
+
+    // Get the transactions for the current page
+    const pageTransactions = transactions.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
+    // Loop through each transaction in the current page and create rows
+    pageTransactions.forEach(transaction => {
+        const row = `
+            <tr>
+                <td>$${transaction.amount}</td>
+                <td>${transaction.type}</td>
+                <td>${transaction.status}</td>
+                <td>${transaction.date}</td>
+            </tr>
+        `;
+        tbody.append(row);
+    });
+}
+
+
+// Function to render pagination controls
+function renderPagination() {
+    const totalPages = Math.ceil(transactions.length / pageSize); // Total number of pages
+    const paginationContainer = $('#pagination');
+
+    paginationContainer.empty(); // Clear any existing pagination buttons
+
+    // Add "Previous" button
+    if (currentPage > 1) {
+        paginationContainer.append(`<button class="btn btn-secondary" onclick="changePage(${currentPage - 1})">Previous</button>`);
+    }
+
+    // Add page number buttons
+    for (let i = 1; i <= totalPages; i++) {
+        const activeClass = (i === currentPage) ? 'active' : '';
+        paginationContainer.append(`<button class="btn btn-secondary ${activeClass}" onclick="changePage(${i})">${i}</button>`);
+    }
+
+    // Add "Next" button
+    if (currentPage < totalPages) {
+        paginationContainer.append(`<button class="btn btn-secondary" onclick="changePage(${currentPage + 1})">Next</button>`);
+    }
+}
+
+    
+    // Function to change the page and re-render the data
+function changePage(page) {
+    if (page >= 1 && page <= Math.ceil(transactions.length / pageSize)) {
+        currentPage = page;
+        renderTransactions();
+        renderPagination();
+    }
+}
+
+
 $(document).ready(function(){
 
- $('input#f_rent_from_date').on('change', function() {
-        var selectedDate = $('input#f_rent_from_date').val();
-        var minDate = new Date(selectedDate);
-        var maxDate = new Date(selectedDate);
-        minDate.setDate(minDate.getDate() + 2); // Add 2 days
-        maxDate.setDate(maxDate.getDate() + 30); // Add 30 days
-        $('input#f_rent_to_date').attr('max', maxDate.toISOString().slice(0, 10));
-        $('input#f_rent_to_date').attr('min', minDate.toISOString().slice(0, 10));
-    });
-  
-   
-   //load Regions 
-    $("select#RentSelectRegion").focus();
-    $("select#RentSelectRegion").html("<option>Select Region</option>");
-    $.ajax({
-    url: "ajax_get_location_info.php?get_region_list",
-    success: function(data) {
-
-        $("select#RentSelectRegion").append(data);
-            
-    }
-    });	
     
     
     
-    
-//Load Provinces once Region is selected
-$('#RentSelectRegion').change(function(e){
-    //clear municipality for every change of region
-    $("select#RentSelectMunicipality").html("");
-     $("select#RentSelectProvince").html("<option>Select Province</option>");
- 
-    
-  $.post("ajax_get_location_info.php",
-  {
-    get_province_list: $('#RentSelectRegion').val(),
-   
-  },
-  function(data){
-      //load province list in the selection
-       $("select#RentSelectProvince").append(data);
-       $("select#RentSelectProvince").focus();
-						
-  });
-
-	e.preventDefault();			
-}); 
-    
-    
-//Load Municipalities once Province is selected
-$('#RentSelectProvince').change(function(e){
-    
-    
-       $("select#RentSelectMunicipality").html("<option>Select City/Municipality</option>");
-    
-  $.post("ajax_get_location_info.php",
-  {
-    get_municipality_list: $('#RentSelectProvince').val(),
-   
-  },
-  function(data){
-       
-       $("select#RentSelectMunicipality").html(data);
-       $("select#RentSelectMunicipality").focus();
-						
-  });
-
-	e.preventDefault();			
-});   
-    
-    
-$("select#RentSelectMunicipality").change(function(e){
-    $("#f_rent_from_date").focus();
-    e.preventDefault();
-});
-$("select#f_rent_from_date").change(function(e){
-    $("#f_rent_to_date").focus();
-    e.preventDefault();
-});
-
 $('form#formRegistration').submit(function(e){
 
 				$.ajax({
@@ -121,22 +125,6 @@ $('#formCarRental').submit(function(e){
 });
     
     
-//find a car module in Rent
-$('#formFindCar').submit(function(e){
-
-				$.ajax({
-				type: "POST",
-				url: "ajax_process_find_car.php",
-				data: $("#formFindCar").serialize(),
-				success: function(data){	
-                                
-                           $("#queryresult").html(data);    
-						
-				        }
-				});		
-		e.preventDefault();
-});
-    
 $('#formFindAngkas').submit(function(e){
 
 				$.ajax({
@@ -156,6 +144,42 @@ $('#formFindAngkas').submit(function(e){
 		e.preventDefault();
 });
     
+    
+        // Check if the #transactionHistoryTable element exists on the page
+if ($('#transactionHistoryTable').length) {
+    // Call loadTransactionHistory() to fetch and display transaction history
+    loadTransactionHistory();
+}
+    
+
+    
+$('#topUpForm').on('submit', function(event) {
+    event.preventDefault(); // Prevent default form submission
+
+    // Gather form data
+    const formData = {
+        amount: $('#topUpAmount').val(),
+    };
+
+    // Send the data via AJAX
+    $.ajax({
+        url: 'ajax_top_up_wallet.php', // Target URL for top-up
+        type: 'POST',
+        data: formData,
+        dataType: 'json', // Expecting JSON response
+        success: function(response) {
+            if (response.success) {
+                $('#topUpModal').modal('hide'); // Close the modal
+                loadTransactionHistory(); // Refresh the transaction history
+            } else {
+                alert(response.error || 'Top-up failed. Please try again.');
+            }
+        },
+        error: function(xhr, status, error) {
+            alert('An error occurred. Please try again later.');
+        }
+    });
+});
 
     
 

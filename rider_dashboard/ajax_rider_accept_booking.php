@@ -13,11 +13,11 @@ $where = array(
     'angkas_booking_reference' => $booking_ref
 );
 
-$ab = update_data(CONN, 'angkas_bookings', $ud, $where);
+$ab = update_data( 'angkas_bookings', $ud, $where);
 
 if($ab){
     $ud = array(
-    'queue_status' => 'A'
+    'queue_status' => 'I'
     );
 
     $where = array(
@@ -26,7 +26,7 @@ if($ab){
     );
 
 
-    $aq = update_data(CONN, 'angkas_rider_queue', $ud, $where );
+    $aq = update_data( 'angkas_rider_queue', $ud, $where );
     if($aq){
         echo 0;
     }

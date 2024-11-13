@@ -129,10 +129,9 @@ function Commutes(configuration) {
   let destinations = configuration.destination || [];
   let markerIndex = 0;
   let lastActiveEl;
-
   const markerIconConfig = {
     path:
-        'M10 27c-.2 0-.2 0-.5-1-.3-.8-.7-2-1.6-3.5-1-1.5-2-2.7-3-3.8-2.2-2.8-3.9-5-3.9-8.8C1 4.9 5 1 10 1s9 4 9 8.9c0 3.9-1.8 6-4 8.8-1 1.2-1.9 2.4-2.8 3.8-1 1.5-1.4 2.7-1.6 3.5-.3 1-.4 1-.6 1Z',
+        'M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4m0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6',
     fillOpacity: 1,
     strokeWeight: 1,
     anchor: new google.maps.Point(15, 29),
@@ -168,7 +167,8 @@ function Commutes(configuration) {
     configuration.defaultTravelModeEnum =
         parseTravelModeEnum(configuration.defaultTravelMode);
     setTravelModeLayer(configuration.defaultTravelModeEnum);
-    createMarker(origin);
+   createMarker(origin,null);
+   
   }
 
   /**
@@ -194,6 +194,8 @@ function Commutes(configuration) {
                 destination.travelModeEnum || configuration.defaultTravelModeEnum;
             const destinationConfig =
                 createDestinationConfig(place, travelModeEnum, label);
+              
+              
             getDirections(destinationConfig).then((response) => {
               if (!response) return;
               destinations.push(destinationConfig);
@@ -388,9 +390,9 @@ destinationModalEl.addButton.addEventListener('click', () => {
         handleRouteClick(destinations[lastIndex], lastIndex);
         elToFocus = destinationPanelEl.getActiveDestination();
       } 
-//        else {
-//        elToFocus = commutesEl.initialStatePanel.querySelector('.add-button');
-//      }
+        else {
+        elToFocus = commutesEl.initialStatePanel.querySelector('.add-button');
+      }
       hideModal(elToFocus);
     });
 
@@ -588,23 +590,91 @@ destinationModalEl.addButton.addEventListener('click', () => {
   /**
    * Adds new destination to the list and get directions and commutes info.
    */
-  function addDestinationToList(destinationToAdd, travelModeEnum) {
-    const destinationConfig =
-        createDestinationConfig(destinationToAdd, travelModeEnum);
+//function addDestinationToList(destinationToAdd, travelModeEnum) {
+//    const destinationConfig = createDestinationConfig(destinationToAdd, travelModeEnum);
+//    const newDestinationIndex = destinations.length;
+//
+//    getDirections(destinationConfig)
+//        .then((response) => {
+//            if (!response) return;
+//
+//            destinations.push(destinationConfig);
+//            getCommutesInfo(response, destinationConfig);
+//
+//            // Assign map object listeners after confirming `content` exists
+//            if (destinationConfig.marker && destinationConfig.marker.content) {
+//                assignMapObjectListeners(destinationConfig, newDestinationIndex);
+//            } else {
+//                console.error("Marker content is not defined.");
+//            }
+//
+//            updateCommutesPanel(destinationConfig, newDestinationIndex, DestinationOperation.ADD);
+//            handleRouteClick(destinationConfig, newDestinationIndex);
+//            destinationPanelEl.addButton.focus();
+//        })
+//        .catch((e) => console.error('Adding destination failed due to ' + e));
+//}
+
+function addDestinationToList(destinationToAdd, travelModeEnum) {
+    const destinationConfig = createDestinationConfig(destinationToAdd, travelModeEnum);
     const newDestinationIndex = destinations.length;
+
     getDirections(destinationConfig)
         .then((response) => {
-          if (!response) return;
-          destinations.push(destinationConfig);
-          getCommutesInfo(response, destinationConfig);
-          assignMapObjectListeners(destinationConfig, newDestinationIndex);
-          updateCommutesPanel(
-              destinationConfig, newDestinationIndex, DestinationOperation.ADD);
-          handleRouteClick(destinationConfig, newDestinationIndex);
-          destinationPanelEl.addButton.focus();
+            if (!response) return;
+
+            destinations.push(destinationConfig);
+            getCommutesInfo(response, destinationConfig);
+
+            // Ensure marker content is initialized
+            if (!destinationConfig.marker.content) {
+                destinationConfig.marker.content = createMarkerIconSVG(destinationConfig.label);
+            }
+
+            // Add map object listeners if marker and content are initialized
+            if (destinationConfig.marker && destinationConfig.marker.content) {
+                assignMapObjectListeners(destinationConfig, newDestinationIndex);
+            } else {
+                console.error("Marker content is not defined.");
+            }
+
+            updateCommutesPanel(destinationConfig, newDestinationIndex, DestinationOperation.ADD);
+            handleRouteClick(destinationConfig, newDestinationIndex);
+
+            // Safely call focus on addButton if it exists
+//            if (destinationPanelEl.addButton) {
+//                destinationPanelEl.addButton.focus();
+//            } else {
+//                console.warn("addButton is not defined, focus skipped.");
+//            }
         })
         .catch((e) => console.error('Adding destination failed due to ' + e));
-  }
+}
+
+    
+    // Helper function to create SVG for marker icon with a label
+// Function to create a custom SVG marker icon with a specific label
+function createMarkerIconSVG(label) {
+    const svgIcon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svgIcon.setAttribute("width", "30");
+    svgIcon.setAttribute("height", "30");
+    svgIcon.setAttribute("fill", MARKER_ICON_COLORS.inactive.label);
+    svgIcon.setAttribute("class", "text-danger");
+    svgIcon.setAttribute("viewBox", "0 0 16 16");
+
+    // First path element for the main shape of the marker
+    const path1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    path1.setAttribute("d", "M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A32 32 0 0 1 8 14.58a32 32 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10");
+    svgIcon.appendChild(path1);
+
+    // Second path element for the circle marker center
+    const path2 = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    path2.setAttribute("d", "M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4m0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6");
+    svgIcon.appendChild(path2);
+
+    return svgIcon;
+}
+
 
   /**
    * Returns a new marker label on each call. Marker labels are the capital
@@ -621,15 +691,22 @@ destinationModalEl.addButton.addEventListener('click', () => {
    * Creates a destination config object from the given data. The label argument
    * is optional; a new label will be generated if not provided.
    */
-  function createDestinationConfig(destinationToAdd, travelModeEnum, label) {
-    return {
-      name: destinationToAdd.name,
-      place_id: destinationToAdd.place_id,
-      label: label || getNextMarkerLabel(),
-      travelModeEnum: travelModeEnum,
-      url: generateMapsUrl(destinationToAdd, travelModeEnum),
+function createDestinationConfig(destinationToAdd, travelModeEnum, label) {
+    const destinationConfig = {
+        name: destinationToAdd.name,
+        place_id: destinationToAdd.place_id,
+        label: label || getNextMarkerLabel(),
+        travelModeEnum: travelModeEnum,
+        url: generateMapsUrl(destinationToAdd, travelModeEnum),
+        marker: destinationToAdd.marker || {
+            content: createMarkerIconSVG(label || getNextMarkerLabel()), // Assign default SVG content
+            color: MARKER_ICON_COLORS.inactive.label, // Ensure color is initialized
+            position: null  // Placeholder for AdvancedMarker position if needed
+        }
     };
-  }
+    return destinationConfig;
+}
+
 
   /**
    * Gets directions to destination from origin, add route to map view, and
@@ -680,6 +757,8 @@ destinationModalEl.addButton.addEventListener('click', () => {
     });
 
     const marker = createMarker(destinationLocation, destination.label);
+          //  updateMarkerColor(marker, "red");  // Update the label color to red
+
 
     innerStroke.setMap(commutesMap);
     outerStroke.setMap(commutesMap);
@@ -738,101 +817,112 @@ destinationModalEl.addButton.addEventListener('click', () => {
     return googleMapsUrl;
   }
 
-  /**
-   * Handles changes to destination polyline and map icon stroke weight.
-   */
-  function changeMapObjectStrokeWeight(destination, mouseOver) {
-    const destinationMarkerIcon = destination.marker.icon;
-    if (mouseOver) {
-      destination.polylines.outerStroke.setOptions({strokeWeight: 8});
-      destinationMarkerIcon.strokeWeight = 2;
-      destination.marker.setIcon(destinationMarkerIcon);
+/**
+ * Handles changes to destination polyline and marker content style.
+ */
+function changeMapObjectStrokeWeight(destination, mouseOver) {
+    if (destination.marker && destination.marker.content) { // Check that content exists
+        if (mouseOver) {
+            destination.polylines.outerStroke.setOptions({ strokeWeight: 8 });
+            destination.marker.content.style.color = "#C5221F"; // Change text color on hover
+        } else {
+            destination.polylines.outerStroke.setOptions({ strokeWeight: 6 });
+            destination.marker.content.style.color = "#9AA0A6"; // Reset color
+        }
+    } else {
+        console.error("Marker content is not defined.");
     }
-    else {
-      destination.polylines.outerStroke.setOptions({strokeWeight: 6});
-      destinationMarkerIcon.strokeWeight = 1;
-      destination.marker.setIcon(destinationMarkerIcon);
-    }
-  }
+}
+
+
 
   /**
    * Handles route clicks. Originally active routes are set to inactive
    * states. Newly selected route's map polyline/marker objects and destination
    * template are assigned active class styling and coloring.
    */
-  function handleRouteClick(destination, destinationIdx) {
+function handleRouteClick(destination, destinationIdx) {
     if (activeDestinationIndex !== undefined) {
-      // Set currently active stroke to inactive
-      destinations[activeDestinationIndex].polylines.innerStroke.setOptions(
-          {strokeColor: STROKE_COLORS.inactive.innerStroke, zIndex: 2});
-      destinations[activeDestinationIndex].polylines.outerStroke.setOptions(
-          {strokeColor: STROKE_COLORS.inactive.outerStroke, zIndex: 1});
+        // Set currently active stroke to inactive
+        destinations[activeDestinationIndex].polylines.innerStroke.setOptions({
+            strokeColor: STROKE_COLORS.inactive.innerStroke,
+            zIndex: 2
+        });
+        destinations[activeDestinationIndex].polylines.outerStroke.setOptions({
+            strokeColor: STROKE_COLORS.inactive.outerStroke,
+            zIndex: 1
+        });
 
-      // Set current active marker to grey
-      destinations[activeDestinationIndex].marker.setIcon(
-          destinationMarkerIcon);
-      destinations[activeDestinationIndex].marker.label.color =
-          MARKER_ICON_COLORS.inactive.label;
+        // Ensure `marker` and `content` exist before updating color
+        const activeMarker = destinations[activeDestinationIndex].marker;
+        if (activeMarker && activeMarker.content) {
+            activeMarker.content.setAttribute("fill", MARKER_ICON_COLORS.inactive.label);
+        } else {
+            console.error("Active marker or its content is not defined.");
+        }
 
-      // Remove styling of current active destination.
-      const activeDestinationEl = destinationPanelEl.getActiveDestination();
-      if (activeDestinationEl) {
-        activeDestinationEl.classList.remove('active');
-      }
+        // Remove styling of the current active destination
+        const activeDestinationEl = destinationPanelEl.getActiveDestination();
+        if (activeDestinationEl) {
+            activeDestinationEl.classList.remove('active');
+        }
     }
-
+      // Set the new active destination
     activeDestinationIndex = destinationIdx;
 
     setTravelModeLayer(destination.travelModeEnum);
-    // Add active class
-    const newDestinationEl = destinationPanelEl.list.querySelectorAll(
-        '.destination')[destinationIdx];
+    // Add active class to the new destination element
+    const newDestinationEl = destinationPanelEl.list.querySelectorAll('.destination')[destinationIdx];
     newDestinationEl.classList.add('active');
-    // Scroll into view
-    newDestinationEl.scrollIntoView({behavior: 'smooth', block: 'center'});
+    newDestinationEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
-    // Make line active
-    destination.polylines.innerStroke.setOptions(
-        {strokeColor: STROKE_COLORS.active.innerStroke, zIndex: 101});
-    destination.polylines.outerStroke.setOptions(
-        {strokeColor: STROKE_COLORS.active.outerStroke, zIndex: 99});
+    // Make the new active route stroke color and marker color active
+    destination.polylines.innerStroke.setOptions({
+        strokeColor: STROKE_COLORS.active.innerStroke,
+        zIndex: 101
+    });
+    destination.polylines.outerStroke.setOptions({
+        strokeColor: STROKE_COLORS.active.outerStroke,
+        zIndex: 99
+    });
 
-    destination.marker.setIcon(originMarkerIcon);
-    destination.marker.label.color = '#ffffff';
+    // Update the marker color if it has content
+    if (destination.marker && destination.marker.content) {
+        destination.marker.content.setAttribute("fill", MARKER_ICON_COLORS.active.label);
+    } else {
+        console.error("Destination marker or its content is not defined.");
+    }
 
     commutesMap.fitBounds(destination.bounds);
-  }
+}
+/**
+ * Generates new marker based on location and label.
+ */
 
-  /**
-   * Generates new marker based on location and label.
-   */
-  function createMarker(location, label) {
-    const isOrigin = label === undefined ? true : false;
-    const markerIconConfig = isOrigin ? originMarkerIcon : destinationMarkerIcon;
-    const labelColor = isOrigin ? MARKER_ICON_COLORS.active.label :
-                                MARKER_ICON_COLORS.inactive.label;
+/**
+ * Creates a marker using google.maps.marker.AdvancedMarkerElement.
+ */
+// Adjust createMarker to handle undefined properties
+function createMarker(location, label) {
+    const isOrigin = label === undefined;
+    const labelColor = isOrigin ? MARKER_ICON_COLORS.active.label : MARKER_ICON_COLORS.inactive.label;
     const labelText = isOrigin ? '●' : label;
 
-    const mapOptions = {
-      position: location,
-      map: commutesMap,
-      label: {
-        text: labelText,
-        fontFamily: 'Arial, sans-serif',
-        color: labelColor,
-        fontSize: '16px',
-      },
-      icon: markerIconConfig
-    };
+    // Create SVG content for marker
+    const svgIcon = createMarkerIconSVG(labelText);
+    svgIcon.setAttribute("fill", labelColor);
 
-    if (isOrigin) {
-      mapOptions.label.className += ' origin-pin-label';
-      mapOptions.label.fontSize = '20px';
-    }
-    const marker = new google.maps.Marker(mapOptions);
+    const marker = new google.maps.marker.AdvancedMarkerElement({
+        position: location,
+        map: commutesMap,
+        content: svgIcon  // Set SVG as content
+    });
 
     return marker;
-  }
+}
+
+
+
 
   /**
   * Returns a TravelMode enum parsed from the input string, or null if no match is found.
@@ -1067,104 +1157,5 @@ function generateDestinationTemplate(destination) {
     </div>`;
 }
 
-//function generateDestinationTemplate(destination) {
-//    
-//    
-//  const travelModeIconTemplate = '<use href="#commutes-' +
-//      destination.travelModeEnum.toLowerCase() + '-icon"/>';
-//    
-//  // Function to convert distance to kilometers
-//  function convertToKilometers(distanceText) {
-//    const distanceValue = parseFloat(distanceText); // Extract numeric value
-//    if (distanceText.includes('mi')) {
-//      // Convert miles to kilometers
-//      return (distanceValue * 1.60934).toFixed(2) + ' km';
-//    }
-//    return distanceText; // Assume already in kilometers
-//  }
-//  // Function to compute distance 
-//
-//    
-//  function computeCostbyDistance(distanceText) {
-//    const distanceValue = parseFloat(distanceText); // Extract numeric value
-//    
-//
-//      const currentDate = new Date();
-//      const currentHour = currentDate.getHours();
-//    let flagDownRate = 0.00;
-// if (currentHour >= 18 || currentHour < 5) {
-//    flagDownRate = 100;
-//  } else {
-//    flagDownRate = 60; // Set another value if not within the time range (for example, 0)
-//  }
-//    const rateAfter3KMs = 10.00;
-//    const MIN_DISTANCE = 3.00;
-//    if (distanceText.includes('mi')) {
-//      // Convert miles to kilometers
-//      return ((((distanceValue * 1.60934) - MIN_DISTANCE ) * rateAfter3KMs) + flagDownRate).toFixed(2);
-//    }
-//    return distanceText; // Assume already in kilometers
-//  }
-//    
-//
-//  // Set the duration and converted distance in the input fields
-//  if (document.getElementById('form_ETA_duration')) {
-//    document.getElementById('form_ETA_duration').value = destination.duration;
-//  }
-//
-//  if (document.getElementById('form_TotalDistance')) {
-//    const distanceInKm = convertToKilometers(destination.distance);
-//    document.getElementById('form_TotalDistance').value = distanceInKm;
-//  }
-//
-//
-//  if (document.getElementById('form_Est_Cost')) {
-//    const EstCost = computeCostbyDistance(destination.distance);
-//    document.getElementById('form_Est_Cost').value = EstCost;
-//  }
-//    
-//    console.log(parseString(destination.name));
-//    document.getElementById('form_to_dest').value = destination.name;
-//    
-////  if(document.getElementById('form_to_dest')){
-////      const AddressName = destination.name;
-////    document.getElementById('form_to_dest').value = AddressName;
-////  }
-////    
-////console.log();
-//// 
-//  
-//  return `
-//    <div class="destination" tabindex="0" role="button">
-//      <div class="destination-content">
-//        <div class="metadata">
-//          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-//              ${travelModeIconTemplate}
-//          </svg>
-//          ${destination.distance}
-//          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-//            <use href="#commutes-arrow-icon"/>
-//          </svg>
-//          <span class="location-marker">${destination.label}</span>
-//        </div>
-//        <div class="address">To
-//          <abbr title="${destination.name}">${destination.name}</abbr>
-//        </div>
-//        <div class="destination-eta">${destination.duration}</div>
-//      </div>
-//    </div>
-//
-//    <div class="destination-controls">
-//      
-//      <button class="edit-button" aria-label="Edit Destination">
-//        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-//          <use href="#commutes-edit-icon"/>
-//        </svg>
-//        Edit
-//      </button>
-//    </div>`;
-//    
-//    
-//}
 
 

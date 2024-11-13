@@ -3,8 +3,6 @@ include_once "../_db.php";
 include_once "../_sql_utility.php";
 
 
-
-
 if(isset($_POST['rent_this_vehicle'])){
     $vehicle_id = $_POST['rent_this_vehicle']; 
     $book_start_dte = $_POST['bookStartDte'];
@@ -13,9 +11,9 @@ if(isset($_POST['rent_this_vehicle'])){
     $userLogged = $_SESSION['user_id'];
     $txn_cat= 1;
 
-    $chk_item_inv = select_data(CONN,"items_inventory","item_reference_id=$vehicle_id AND txn_category_id=1");
+    $chk_item_inv = select_data("items_inventory","item_reference_id=$vehicle_id AND txn_category_id=1");
     
-      $car_info = select_data(CONN, "vehicle", "vehicle_id=$vehicle_id and vehicle_txn_type=1");
+      $car_info = select_data( "vehicle", "vehicle_id=$vehicle_id and vehicle_txn_type=1");
         foreach($car_info as $ci){
             $item_description = "RENTAL:" . $ci['vehicle_id'] . ":" . $ci['vehicle_model'] . ":" . $ci['vehicle_price_rate_per_day'] . ":" . $ci['vehicle_plate_no'];
             $vehicle_model = $ci['vehicle_model'] ;
@@ -37,9 +35,9 @@ if(isset($_POST['rent_this_vehicle'])){
             'item_price' => $item_price
         );
 
-        insert_data(CONN,$inv_table,$inv_data);
+        insert_data($inv_table,$inv_data);
 
-        $items_inventory_id = getLastInsertedId(CONN, $inv_table);
+        $items_inventory_id = getLastInsertedId( $inv_table);
         $rate_per_day = $item_price;
     }
     else{
@@ -64,7 +62,7 @@ $data = array(
     'amount_to_pay' => $amount_to_pay
 );
 
-insert_data(CONN, $table, $data);
+insert_data( $table, $data);
 
 echo "Car Booked, Pending for confirmation.<br>";
 echo "Summary:<br>";

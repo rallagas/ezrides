@@ -1,7 +1,7 @@
 <?php
 if(isset($_GET['car_value'])){
     $car_id = $_GET['car_value'];
-    $car_info = select_data(CONN,"lu_cars","car_id=$car_id");
+    $car_info = select_data("lu_cars","car_id=$car_id");
     
     foreach($car_info as $ci){
         $carmodel = $ci['car_year_model'] . ' ' . $ci['car_brand'];

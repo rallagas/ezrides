@@ -1,40 +1,5 @@
 <?php
-
-// Database connection settings
-class Database {
-     private $pdo;
-
-    public function dbConnection() {
-        
-            $host = 'localhost';
-            $dbname = 'ezride';
-            $password = '';
-            $username='root';
-            
-         try {
-            $this->pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password);
-            $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        } catch (PDOException $e) {
-            die("Connection failed: " . $e->getMessage()); // Use die to stop execution on failure
-        }
-    }
-
-    public function getConnection() {
-        return $this->pdo;
-    }
-
-    // Example method to perform a query
-    public function select($query) {
-        if ($this->pdo === null) {
-            die("Database connection not established."); // Check for connection
-        }
-        
-        $stmt = $this->pdo->prepare($query);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-}
-
+include_once "../../../_db.php";
 class Merchant {
     private $id;
     private $name;
@@ -48,7 +13,6 @@ class Merchant {
         $this->address = $address;
     }
 
-    // Getters for Merchant properties
     public function getId() {
         return $this->id;
     }
@@ -65,23 +29,15 @@ class Merchant {
         return $this->address;
     }
 
-    // Static method to fetch all merchants' names
-    public static function getAllMerchantNames(Database $database) {
-        $query = "SELECT name FROM grocery_merchants";
-        $stmt = $database->getConnection()->prepare($query);
-        $stmt->execute();
-
-        return $stmt->fetchAll(PDO::FETCH_COLUMN);
+    public static function getAllMerchantNames() {
+        $data = select_data('shop_merchants', null, null, null);
+        return array_column($data, 'name');
     }
 
-    // Static method to fetch all merchants' details
-    public static function getAllMerchants(Database $database) {
-        $query = "SELECT * FROM grocery_merchants";
-        $stmt = $database->getConnection()->prepare($query);
-        $stmt->execute();
-        
+    public static function getAllMerchants() {
+        $results = select_data('shop_merchants');
         $merchants = [];
-        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
         foreach ($results as $row) {
             $merchants[] = new Merchant(
                 $row['merchant_id'],
@@ -95,23 +51,23 @@ class Merchant {
     }
 }
 
-
-// Class to represent a Product
 class Product {
     private $id;
     private $name;
     private $price;
     private $quantity;
     private $merchantId;
-    private $merchantName; // New property for merchant name
+    private $merchantName;
+    private $itemImg;
 
-    public function __construct($id, $name, $price, $quantity, $merchantId, $merchantName) {
+    public function __construct($id, $name, $price, $quantity, $merchantId, $merchantName, $itemImg = null) {
         $this->id = $id;
         $this->name = $name;
         $this->price = $price;
         $this->quantity = $quantity;
         $this->merchantId = $merchantId;
-        $this->merchantName = $merchantName; // Initialize merchant name
+        $this->merchantName = $merchantName;
+        $this->itemImg = $itemImg;
     }
 
     public function getId() {
@@ -127,26 +83,29 @@ class Product {
     }
 
     public function getQuantity() {
-        return $this->quantity; // Getter for quantity
+        return $this->quantity;
     }
 
     public function getMerchantId() {
-        return $this->merchantId; // Getter for merchant ID
+        return $this->merchantId;
     }
 
     public function getMerchantName() {
-        return $this->merchantName; // Getter for merchant name
+        return $this->merchantName;
     }
 
-    // Static method to fetch products along with merchant information from the database
-    public static function fetchAllProducts(Database $database) {
+    public function getItemImg() {
+        return $this->itemImg;
+    }
+
+    public static function fetchAllProducts() {
         $query = "
-            SELECT gi.item_id, gi.item_name, gi.price, gi.quantity, gi.merchant_id, gm.name AS merchant_name
-            FROM grocery_items gi
-            JOIN grocery_merchants gm 
+            SELECT gi.item_id, gi.item_name, gi.price, gi.quantity, gi.merchant_id, gm.name AS merchant_name, gi.item_img
+            FROM shop_items gi
+            JOIN shop_merchants gm 
               ON gi.merchant_id = gm.merchant_id
         ";
-        $results = $database->select($query);
+        $results = query($query);
         
         $products = [];
         foreach ($results as $row) {
@@ -156,20 +115,46 @@ class Product {
                 $row['price'], 
                 $row['quantity'], 
                 $row['merchant_id'], 
-                $row['merchant_name'] // Include merchant name
+                $row['merchant_name'], 
+                $row['item_img']
             );
         }
         return $products;
     }
+
+    public static function fetchById($itemId) {
+        $query = "
+            SELECT si.item_id, si.item_name, si.price, si.quantity, si.merchant_id, sm.name AS merchant_name, si.item_img
+            FROM shop_items si
+            JOIN shop_merchants sm ON si.merchant_id = sm.merchant_id
+            WHERE si.item_id = ?
+        ";
+        $results = query($query, [$itemId]);
+        
+        if ($results) {
+            $result = $results[0];
+            return new Product(
+                $result['item_id'], 
+                $result['item_name'], 
+                $result['price'], 
+                $result['quantity'], 
+                $result['merchant_id'], 
+                $result['merchant_name'], 
+                $result['item_img']
+            );
+        }
+        return null;
+    }
 }
 
-// Class to represent a Cart
 class Cart {
     private $items = [];
     private $database;
+    private $userId;
 
-    public function __construct(Database $database) {
+    public function __construct(Database $database, $userId) {
         $this->database = $database;
+        $this->userId = $userId;
     }
 
     public function addProduct(Product $product, $quantity) {
@@ -198,17 +183,27 @@ class Cart {
         echo "Total: $" . $this->getTotal() . "\n";
     }
 
-    // Method to place an order
     public function placeOrder() {
-        $query = "INSERT INTO orders (item_id, quantity) VALUES (:item_id, :quantity)";
-        $stmt = $this->database->conn->prepare($query);
+        $orderRefNum = uniqid("ORD-");
 
         foreach ($this->items as $item) {
-            $stmt->bindParam(':item_id', $item['product']->getId());
-            $stmt->bindParam(':quantity', $item['quantity']);
-            $stmt->execute();
+            $product = $item['product'];
+            $quantity = $item['quantity'];
+            $amountToPay = $product->getPrice() * $quantity;
+
+            $data = [
+                'shop_order_ref_num' => $orderRefNum,
+                'user_id' => $this->userId,
+                'item_id' => $product->getId(),
+                'quantity' => $quantity,
+                'amount_to_pay' => $amountToPay
+            ];
+
+            insert_data('shop_orders', $data);
         }
 
-        echo "Order placed successfully!\n";
+        echo "Order placed successfully! Reference Number: " . $orderRefNum . "\n";
     }
 }
+
+

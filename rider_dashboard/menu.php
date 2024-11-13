@@ -2,7 +2,7 @@
 include_once "button-functions.php";
 
 //get all transaction_category
-$txn_cat = select_data(CONN,"txn_category","txn_category_status='A'","txn_category_id",100);
+$txn_cat = select_data("txn_category","txn_category_status='A'","txn_category_id",100);
 
 
 if($_SESSION['t_user_type'] == 'C'){
@@ -18,7 +18,7 @@ if($_SESSION['t_user_type'] == 'C'){
 }
 
 if ($_SESSION['t_rider_status'] == 'R'){
-   $tcatR = select_data(CONN,"txn_category","txn_category_status='R'","txn_category_id",100); 
+   $tcatR = select_data("txn_category","txn_category_status='R'","txn_category_id",100); 
         foreach($tcatR as $r){
         appButton($r['icon_class']
                     , $r['txn_title']

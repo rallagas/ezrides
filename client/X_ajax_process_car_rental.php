@@ -16,11 +16,11 @@ $item_reference_id = $_POST['f_car_id'];
 
 
 //check if item is already logged into inventory
-$item_inv_data = select_data(CONN, "items_inventory","txn_category_id=$txn_cat AND item_reference_id=$item_reference_id");
+$item_inv_data = select_data( "items_inventory","txn_category_id=$txn_cat AND item_reference_id=$item_reference_id");
 
 if(empty($item_inv_data)){
     //insert a new record for the item
-    $car_info = select_data(CONN, "lu_cars", "car_id=$item_reference_id");
+    $car_info = select_data( "lu_cars", "car_id=$item_reference_id");
     foreach($car_info as $ci){
         $item_description = "RENTAL:" . $ci['car_id'] . ":" . $ci['car_brand'] . ":" . $ci['car_rent_price'] . ":" . $ci['car_plate_no'];
         $car_owner = $ci['car_owner_id'];
@@ -36,9 +36,9 @@ if(empty($item_inv_data)){
         'item_price' => $item_price
     );
     
-    insert_data(CONN,$inv_table,$inv_data);
+    insert_data($inv_table,$inv_data);
     
-    $items_inventory_id = getLastInsertedId(CONN, $inv_table);
+    $items_inventory_id = getLastInsertedId( $inv_table);
     
 }
 else{
@@ -63,7 +63,7 @@ $data = array(
     'book_item_inventory_id' => $items_inventory_id
 );
 
-insert_data(CONN, $table, $data);
+insert_data( $table, $data);
 
 echo "Car has been booked.";
 

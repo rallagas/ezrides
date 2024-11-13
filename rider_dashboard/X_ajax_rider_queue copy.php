@@ -4,7 +4,7 @@
        $rider_logged=$_SESSION['user_id'];
 
         $check_queue_if_im_in = select_data(
-        CONN, 
+         
         "angkas_rider_queue", 
         "angkas_rider_id = {$rider_logged} AND DATE(queue_date) = CURRENT_DATE AND queue_status = 'A'"
     );
@@ -12,13 +12,13 @@
     if (empty($check_queue_if_im_in)) {
         $tbl = "angkas_rider_queue";
         $dta = ["angkas_rider_id" => $rider_logged];
-        insert_data(CONN, $tbl, $dta);
+        insert_data( $tbl, $dta);
         echo 0;
     } else {
         foreach ($check_queue_if_im_in as $q) {
             $que_id = $q['angkas_rider_queue_id'];
             $qarr = [$que_id];
-            $check_queue_num = query(CONN, "SELECT COUNT(*) AS queue_num 
+            $check_queue_num = query( "SELECT COUNT(*) AS queue_num 
                                               FROM angkas_rider_queue 
                                               WHERE DATE(queue_date) = CURRENT_DATE 
                                                 AND angkas_rider_queue_id <= ?", 

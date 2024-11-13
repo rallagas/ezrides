@@ -51,9 +51,9 @@ function initMap() {
 
                 // Start tracking current location
            
-                     watchId = navigator.geolocation.watchPosition(
-                    updateCurrentLocation,
-                    handleLocationError,
+                    watchId = navigator.geolocation.watchPosition(
+                        updateCurrentLocation,
+                        handleLocationError,
                     { enableHighAccuracy: true }
                     );
                
@@ -71,6 +71,8 @@ function updateCurrentLocation(position) {
         lat: position.coords.latitude,
         lng: position.coords.longitude
     };
+    
+    let distance = 0;
 
     // Update current marker position
     currentMarker.setMap(null); // Remove the old marker
@@ -82,7 +84,10 @@ function updateCurrentLocation(position) {
     });
 
     // Check proximity to destination
-    checkProximityToDestination(newLocation);
+    distance = checkProximityToDestination(newLocation);
+    if (distance <= 10) {
+        document.getElementById("ConfirmArrivalButton").style.display = "block";
+    }
 
     // Update route
     const destinationCoords = document.getElementById("form_to_dest").value.split(",");
@@ -115,11 +120,12 @@ function checkProximityToDestination(currentLocation) {
         new google.maps.LatLng(currentLocation),
         new google.maps.LatLng(destinationLocation)
     );
-
+    
+    return distance;
     // Show the confirm arrival button if within 10 meters
-    if (distance <= 10) {
-        document.getElementById("ConfirmArrivalButton").style.display = "block";
-    }
+//    if (distance <= 10) {
+//        document.getElementById("ConfirmArrivalButton").style.display = "block";
+//    }
 }
 
 
@@ -152,28 +158,116 @@ function updateBookingStatus(status , booking_id) {
     });
 }
 
-document.getElementById("DropOffCustomer").addEventListener("click", () => {
-    
-    const bookingId = document.getElementById("angkas_booking_ref");
-    const AmountToPay = document.getElementById("AmountToPay").value;
-    // Confirm with the user if they want to proceed with dropping off the customer
-    const confirmDropOff = confirm("Are you sure you want to drop off the customer?");
-    const confirmPayment = confirm("Did the customer Pay? <br> Amount: " + AmountToPay);
-    if (confirmDropOff) {
-        // Update the booking status to 'C' for completed drop-off
-           updateBookingStatus('F' , bookingId.value);
-        
-        if(confirmPayment) {
-           updateBookingStatus('C', bookingId.value);
+// Function to post the updated booking status to the database
+function updatePaymentStatus(status , booking_id) {
+    // Prepare the data with booking status and booking ID
+    const data = {
+        payment_status: status,
+        booking_id: booking_id // Replace with the actual booking ID you want to update
+    };
 
-        
+    // Make the AJAX request using fetch
+    fetch('ajax_update_payment_status.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            console.log("Payment status updated successfully in the database.");
+        } else {
+            console.error("Failed to update booking status:", result.error);
+        }
+    })
+    .catch(error => {
+        console.error("Error in AJAX request:", error);
+    });
+}
+function checkPaymentStatus(bookingId) {
+    return new Promise((resolve, reject) => {
+        fetch("ajax_get_payment_status.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ booking_id: bookingId }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                resolve(data.payment_status);  // Resolve with the payment status
+            } else {
+                reject(data.error || "Failed to retrieve payment status");
+            }
+        })
+        .catch(error => {
+            console.error("Error checking payment status:", error);
+            reject(error);
+        });
+    });
+}
+
+
+
+
+document.getElementById("DropOffCustomer").addEventListener("click", () => {
+    const bookingId = document.getElementById("angkas_booking_ref").value;
+    const AmountToPay = document.getElementById("AmountToPay").value;
+
+    // Show the drop-off modal
+    const dropOffModal = new bootstrap.Modal(document.getElementById('dropOffModal'));
+    document.getElementById('dropOffMessage').textContent = "Are you sure you want to drop off the customer?";
+    document.getElementById("amountToPayText").textContent = AmountToPay;
+
+    // Hide payment confirmation section initially
+    //document.getElementById("paymentSection").style.display = "none";
+    document.getElementById("confirmPaymentBtn").style.display = "none";
+    document.getElementById("confirmDropOffBtn").style.display = "inline-block";
+
+    // Show the modal
+    dropOffModal.show();
+
+    // When "Confirm Drop-Off" is clicked
+    document.getElementById("confirmDropOffBtn").onclick = () => {
+        // Update the booking status to 'F' for drop-off
+        updateBookingStatus('F', bookingId);
+
+        // Check payment status
+        checkPaymentStatus(bookingId)
+            .then(paymentStatus => {
+                if (paymentStatus === 'C') {
+                    // If payment is already completed, skip payment confirmation
+                    console.log("Payment is already completed. Skipping payment confirmation.");
+                    deleteRiderFromQueue();
+                    window.location.href = "index.php";
+                } else {
+                    // Show payment confirmation section if payment is not completed
+                    document.getElementById("paymentSection").style.display = "block";
+                    document.getElementById("confirmDropOffBtn").style.display = "none";
+                    document.getElementById("confirmPaymentBtn").style.display = "inline-block";
+                }
+            })
+            .catch(error => {
+                console.error("Error checking payment status:", error);
+            });
+    };
+
+    // When "Confirm Payment" is clicked
+    document.getElementById("confirmPaymentBtn").onclick = () => {
+        updateBookingStatus('C', bookingId);
+        updatePaymentStatus('C', bookingId);
+
         // Call function to delete the rider from angkas_rider_queue table
         deleteRiderFromQueue();
-            
-        window.location.href = "index.php" ;
-        }
-     }
+        dropOffModal.hide();
+        window.location.href = "index.php";
+    };
 });
+
+
 
 // Function to delete rider from angkas_rider_queue
 function deleteRiderFromQueue() {
@@ -200,22 +294,67 @@ function deleteRiderFromQueue() {
 
 
 
+// Function to calculate distance between two coordinates using the Haversine formula
+function calculateDistance(lat1, lng1, lat2, lng2) {
+    const R = 6371e3; // Earth radius in meters
+    const φ1 = lat1 * Math.PI / 180;
+    const φ2 = lat2 * Math.PI / 180;
+    const Δφ = (lat2 - lat1) * Math.PI / 180;
+    const Δλ = (lng2 - lng1) * Math.PI / 180;
+
+    const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+              Math.cos(φ1) * Math.cos(φ2) *
+              Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return R * c; // Distance in meters
+}
+
+// Function to check if the car is at least 5 meters away from the pickup location
+function isCarAtLeastFiveMetersAway(currentLocation, pickupLocation) {
+    const distance = calculateDistance(
+        currentLocation.lat, currentLocation.lng,
+        pickupLocation.lat, pickupLocation.lng
+    );
+    return distance >= 5;
+}
+
+
+function getCurrentLocation() {
+    return new Promise((resolve, reject) => {
+        // Check if geolocation is available
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const currentLocation = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+                    resolve(currentLocation); // Return the location object
+                },
+                (error) => {
+                    reject(error); // Handle any errors that occur during geolocation
+                }
+            );
+        } else {
+            reject(new Error("Geolocation is not supported by this browser."));
+        }
+    });
+}
 // Event handler for ConfirmArrivalButton
 document.getElementById("ConfirmArrivalButton").addEventListener("click", () => {
     // Get new starting location from customer's pickup coordinates
-    
-    
     let form_to_dest = document.getElementById("form_to_dest");
-    
     let booking_id = document.getElementById("angkas_booking_ref");
-    
     let form_cust_to_dest = document.getElementById("form_customer_to_dest").value;
-    
+
     const pickupCoords = form_to_dest.value.split(",");
-    const newStartingLocation = {
+    const pickupLocation = {
         lat: parseFloat(pickupCoords[0]),
         lng: parseFloat(pickupCoords[1])
     };
+
+    updateBookingStatus('R', booking_id.value);
 
     // Remove the current marker from the map
     if (currentMarker) {
@@ -224,7 +363,7 @@ document.getElementById("ConfirmArrivalButton").addEventListener("click", () => 
 
     // Create a new marker for the customer's pickup location
     currentMarker = new google.maps.marker.AdvancedMarkerElement({
-        position: newStartingLocation,
+        position: pickupLocation,
         map: map,
         title: "Customer's Pickup Location",
         content: createMarkerContent("Customer's Pickup Location")
@@ -254,9 +393,20 @@ document.getElementById("ConfirmArrivalButton").addEventListener("click", () => 
     });
 
     // Calculate the new route based on the updated starting location
-    calculateAndDisplayRoute(newStartingLocation, intendedLocation);
-    updateBookingStatus('R',booking_id.value);
+    calculateAndDisplayRoute(pickupLocation, intendedLocation);
+
+    // Periodically check if the car is at least 5 meters away from the pickup location
+    const intervalId = setInterval(() => {
+        // Assume getCurrentLocation() fetches the car's current location (lat, lng)
+        const currentLocation = getCurrentLocation();
+
+        if (isCarAtLeastFiveMetersAway(currentLocation, pickupLocation)) {
+            updateBookingStatus('I', booking_id.value);
+            clearInterval(intervalId); // Stop checking after the condition is met
+        }
+    }, 3000); // Check every 3 seconds
 });
+
 
 
 

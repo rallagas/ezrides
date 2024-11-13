@@ -1,65 +1,96 @@
 <?php
 include_once "_db.php";
-if (isset($_POST['log_username'])) {
-    $log_username = $_POST['log_username'];
-    $log_password = $_POST['log_password'];
+include_once "_functions.php";
+header('Content-Type: application/json'); // Ensure JSON output for all responses
 
-    // Validate input
-    if (empty($log_username) || empty($log_password)) {
-        echo "Please fill in all required fields.";
-    } else {
-        // Check if user exists
-        $check_user_query = "SELECT * FROM users WHERE t_username = ?";
-        $stmt = $conn->prepare($check_user_query);
-        $stmt->bind_param("s", $log_username);
-        $stmt->execute();
-        $result = $stmt->get_result();
+// User class to handle authentication and session management
+class User {
+    private $username;
+    private $password;
 
-        if ($result->num_rows > 0) {
-            $row = $result->fetch_assoc();
-            $hashed_password = password_hash($row['t_password'],PASSWORD_DEFAULT);
+    public function __construct($username, $password) {
+        $this->username = $username;
+        $this->password = $password;
+    }
 
-            // Verify password
-            if (password_verify($log_password, $hashed_password)) {
-                // Check user status
-                if ($row['t_status'] == 'A') {
-                    // Set session variables
-                    $_SESSION['user_id'] = $row['user_id'];
-                    $_SESSION['t_username'] = $row['t_username'];
-                    $_SESSION['t_user_type'] = $row['t_user_type'];
-                    $_SESSION['t_rider_status'] = $row['t_rider_status'];
+    // Function to authenticate user
+    public function login() {
+        if (empty($this->username) || empty($this->password)) {
+            return $this->response("error", "Please fill in all required fields.");
+        }
 
-                    // Fetch user profile data
-                    $get_profile_query = "SELECT * FROM user_profile WHERE user_id = ?";
-                    $stmt = $conn->prepare($get_profile_query);
-                    $stmt->bind_param("i", $row['user_id']);
-                    $stmt->execute();
-                    $profile_result = $stmt->get_result();
+        // Check if user exists using select_data utility function
+        $user = select_data('users', "t_username = '{$this->username}'");
+        
+        if (count($user) > 0) {
+            $user = $user[0]; // Get first matching user record
+            if (password_verify($this->password, $user['t_password'])) {
+                if ($user['t_status'] === 'A') {
+                    $this->initializeSession($user);
+                    
+                    $profile = $this->getUserProfile($user['user_id']);
+                    if ($profile) {
+                        $_SESSION['user_firstname'] = $profile['user_firstname'];
+                        $_SESSION['user_lastname'] = $profile['user_lastname'];
+                        $_SESSION['user_mi'] = $profile['user_mi'];
+                        $_SESSION['user_contact_no'] = $profile['user_contact_no'];
+                        $_SESSION['user_email_address'] = $profile['user_email_address'];
 
-                    if ($profile_result->num_rows > 0) {
-                        $profile_row = $profile_result->fetch_assoc();
-                        $_SESSION['user_firstname'] = $profile_row['user_firstname'];
-                        $_SESSION['user_lastname'] = $profile_row['user_lastname'];
-                        $_SESSION['user_mi'] = $profile_row['user_mi'];
-                        $_SESSION['user_contact_no'] = $profile_row['user_contact_no'];
-                        $_SESSION['user_email_address'] = $profile_row['user_email_address'];
+                        // Set user online status using the updated utility function
+                        $setOnline = setOnlineStatus($user['user_id'], 1);
 
-                        // Redirect to the desired page after successful login
-                        echo 1; // Replace with your desired redirect URL
-                        exit();
+                        return $this->response("success", "Login successful.", [
+                            "redirect" => "client/index.php?page=home", // Replace with the desired redirect URL
+                            "onlinestatus" => $setOnline
+                        ]);
                     } else {
-                        echo "Error fetching user profile data.";
+                        return $this->response("error", "Error fetching user profile data.");
                     }
                 } else {
-                    echo "User account is inactive.";
+                    return $this->response("error", "User account is inactive.");
                 }
             } else {
-                echo "Incorrect password.";
+                return $this->response("error", "Incorrect password.");
             }
         } else {
-            echo "Username not found.";
-            header("location: index.php?err=usernotfound");
-            exit;
+            return $this->response("error", "Username not found.");
         }
     }
+
+    // Fetch user profile data using the select_data function
+    private function getUserProfile($user_id) {
+        $profile = select_data("user_profile", "user_id = $user_id");
+        return $profile ? $profile[0] : null;
+    }
+
+    // Initialize session variables
+    private function initializeSession($user) {
+        $_SESSION['user_id'] = $user['user_id'];
+        $_SESSION['t_username'] = $user['t_username'];
+        $_SESSION['t_user_type'] = $user['t_user_type'];
+        $_SESSION['t_rider_status'] = $user['t_rider_status'];
+    }
+
+    // Format response
+    private function response($status, $message, $additionalData = []) {
+        $response = [
+            "status" => $status,
+            "message" => $message
+        ];
+        return json_encode(array_merge($response, $additionalData));
+    }
 }
+
+// Handle the login request
+if (isset($_POST['log_username'])) {
+    $username = $_POST['log_username'];
+    $password = $_POST['log_password'];
+    $user = new User($username, $password);
+    echo $user->login();
+} else {
+    echo json_encode([
+        "status" => "error",
+        "message" => "Invalid request."
+    ]);
+}
+?>

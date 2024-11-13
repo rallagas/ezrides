@@ -7,14 +7,14 @@ if(isset($_GET['cancelBooking'])){
     $booking_ref = htmlentities($_GET['cancelBooking']);
     $data = array("angkas_rider_user_id" => NULL);
     $where = array("angkas_booking_reference" =>$booking_ref );
-    update_data(CONN, "angkas_bookings",$data, $where);
+    update_data( "angkas_bookings",$data, $where);
     ?>
     <div class="alert alert-danger">Booking Cancelled</div>
     <?php 
 }
 
  
-    $myBooking = query(CONN, "SELECT ab.angkas_booking_id
+    $myBooking = query( "SELECT ab.angkas_booking_id
                                   , ab.angkas_booking_reference
                                   , ab.user_id AS customer_user_id
                                   , ab.angkas_rider_user_id
@@ -161,7 +161,7 @@ else{
                         
                 <button class="btn btn-sm btn-outline-primary float-start me-3" id="ConfirmArrivalButton">Arrived</button>
                 <button class="btn btn-sm btn-outline-success me-3"  id="DropOffCustomer">Drop Off</button>
-                 <a href="?cancelBooking=<?php echo $angkas_book_ref;?>" class="btn btn-sm btn-outline-danger" onclick="confirm('Do you really want to cancel this booking?')" id="DropOffCustomer">Cancel</a>
+                 <a href="?cancelBooking=<?php echo $angkas_book_ref;?>" class="btn btn-sm btn-outline-danger" onclick="confirm('Do you really want to cancel this booking?')" id="CancelBooking">Cancel</a>
     
                     </div>
                 </div>
@@ -177,6 +177,29 @@ else{
                     </div>
                 </div>
            </div>
+           <!-- Drop-Off Confirmation Modal -->
+<div class="modal fade" id="dropOffModal" tabindex="-1" aria-labelledby="dropOffModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="dropOffModalLabel">Drop-Off Confirmation</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p id="dropOffMessage">Are you sure you want to drop off the customer?</p>
+        <div id="paymentSection" style="display: none;">
+          <p>Did the customer pay the amount: <span id="amountToPayText"></span>?</p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" id="confirmDropOffBtn" class="btn btn-primary">Confirm Drop-Off</button>
+        <button type="button" id="confirmPaymentBtn" class="btn btn-success" style="display: none;">Confirm Payment</button>
+      </div>
+    </div>
+  </div>
+</div>
+
            
          
         

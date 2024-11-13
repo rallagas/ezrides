@@ -3,21 +3,21 @@ include_once "../_db.php";
 include_once "../_sql_utility.php";
 
 if(isset($_POST['form_from_dest'])){
-    $from_loc_name=mysqli_real_escape_string(CONN, $_POST['form_from_dest']);
-    $from_loc_lat=mysqli_real_escape_string(CONN, $_POST['currentLoc_lat']);
-    $from_loc_long=mysqli_real_escape_string(CONN, $_POST['currentLoc_long']);
-    $to_loc_name=mysqli_real_escape_string(CONN, $_POST['form_to_dest']);
-    $to_loc_lat=mysqli_real_escape_string(CONN, $_POST['formToDest_long']);
-    $to_loc_long=mysqli_real_escape_string(CONN, $_POST['formToDest_lat']);
-    $eta_mins=mysqli_real_escape_string(CONN, $_POST['form_ETA_duration']);
-    $total_dis=mysqli_real_escape_string(CONN, $_POST['form_TotalDistance']);
-    $total_cost=mysqli_real_escape_string(CONN, $_POST['form_Est_Cost']);
+    $from_loc_name=mysqli_real_escape_string( CONN, $_POST['form_from_dest']);
+    $from_loc_lat=mysqli_real_escape_string( CONN, $_POST['currentLoc_lat']);
+    $from_loc_long=mysqli_real_escape_string( CONN, $_POST['currentLoc_long']);
+    $to_loc_name=mysqli_real_escape_string( CONN, $_POST['form_to_dest']);
+    $to_loc_lat=mysqli_real_escape_string( CONN, $_POST['formToDest_long']);
+    $to_loc_long=mysqli_real_escape_string( CONN, $_POST['formToDest_lat']);
+    $eta_mins=mysqli_real_escape_string( CONN, $_POST['form_ETA_duration']);
+    $total_dis=mysqli_real_escape_string( CONN, $_POST['form_TotalDistance']);
+    $total_cost=mysqli_real_escape_string( CONN, $_POST['form_Est_Cost']);
     $user_logged = $_SESSION['user_id'];
     $ref_num=gen_book_ref_num(8,"ANG");
     
     
     
-    $check_data=select_data(CONN, "angkas_bookings","user_id = {$user_logged} AND DATE(date_booked) = CURRENT_DATE AND booking_status = 'P'");
+    $check_data=select_data( "angkas_bookings", "user_id = {$user_logged} AND DATE(date_booked) = CURRENT_DATE AND booking_status = 'P'");
     
     if(!empty($check_data)){
         echo "There is still a pending booking. see details below:"; ?>
@@ -69,7 +69,7 @@ if(isset($_POST['form_from_dest'])){
                 , "form_Est_Cost" => $total_cost
                 );
         
-        insert_data(CONN, $table, $data);
+        insert_data( $table, $data);
         echo 0;
         //echo "Waiting for Rider.";
     }
