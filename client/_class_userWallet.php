@@ -62,7 +62,7 @@ public function topUp($amount) {
      * @return bool
      * @throws Exception if balance is insufficient.
      */
-    public function makePayment($amount) {
+    public function makePayment($amount, $wallet_action="null") {
     if ($amount <= 0 || $amount > 9999999999.99) {
         throw new InvalidArgumentException("Payment amount must be between 0.01 and 9999999999.99.");
     }
@@ -76,7 +76,7 @@ public function topUp($amount) {
         'user_id' => $this->userId,
         'wallet_txn_amt' => number_format(-$amount, 2, '.', ''),
         'txn_type_id' => $_SESSION['txn_cat_id'],
-        'wallet_action' => 'Made Payment',
+        'wallet_action' => "Made Payment $wallet_action",
         'wallet_txn_status' => 'C',
         'wallet_txn_start_ts' => date('Y-m-d H:i:s')
     ];

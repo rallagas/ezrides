@@ -15,7 +15,7 @@ query("UPDATE angkas_bookings SET booking_status='D' WHERE date_booked < (NOW() 
 <head>
     <title>Angkas</title>
     <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
     <link rel="stylesheet" href="_map.css">
 </head>
 
@@ -70,9 +70,50 @@ query("UPDATE angkas_bookings SET booking_status='D' WHERE date_booked < (NOW() 
 
     <div class="container-fluid">
         <div class="row p-0">
-            <nav class="navbar fixed-bottom bg-purple">
-                <div class="container">
 
+            <!-- Top-Up Modal -->
+            <div class="modal fade" id="topUpModal" tabindex="-1" aria-labelledby="topUpModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form id="topUpForm">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="topUpModalLabel">Top-Up Wallet</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label for="topUpAmount" class="form-label">Amount</label>
+                                    <input type="number" class="form-control" id="topUpAmount" name="amount" min="1" required>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary">Top-Up</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <!-- Top-Up Modal -->
+            <div class="modal fade" id="BookingHistory" tabindex="-1" aria-labelledby="BookingHistory" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-purple text-light">
+                            <h5 class="modal-title">Booking History</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body overflow-y-scroll" style="height:90vh" id="BookingHistoryContent">
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row p-0">
+            <nav class="navbar fixed-bottom bg-purple">
+                <div class="container py-3">
                     <button id="btnRideInfo" class="btn btn-outline-light my-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom" aria-controls="offcanvasBottom">
                         <span class="my-3">Ride Info</span>
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-caret-up-square mb-1 ms-2" viewBox="0 0 16 16">
@@ -82,24 +123,88 @@ query("UPDATE angkas_bookings SET booking_status='D' WHERE date_booked < (NOW() 
                     </button>
 
 
-                    <div class="offcanvas offcanvas-sm offcanvas-bottom h-50 bg-light p-2" tabindex="2" id="offcanvasBottom" aria-labelledby="offcanvasBottomLabel">
-                        <div class="offcanvas-head">
-                          <h3 class="fw-bold">Ride Information</h3>
+                    <div class="offcanvas offcanvas-sm offcanvas-bottom vh-25 bg-light" style="height: 60vh" tabindex="-1" id="offcanvasBottom" aria-labelledby="offcanvasBottomLabel">
+                        <div class="offcanvas-head clear-fix bg-purple p-2 text-center">
+                            <span class="input-group input-group-sm">
+                                <button id="LoadBookingHistory" class="btn btn-outline-light bg-purple btn-sm" data-bs-toggle="modal" data-bs-target="#BookingHistory">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-book-half" viewBox="0 0 16 16">
+                                        <path d="M8.5 2.687c.654-.689 1.782-.886 3.112-.752 1.234.124 2.503.523 3.388.893v9.923c-.918-.35-2.107-.692-3.287-.81-1.094-.111-2.278-.039-3.213.492zM8 1.783C7.015.936 5.587.81 4.287.94c-1.514.153-3.042.672-3.994 1.105A.5.5 0 0 0 0 2.5v11a.5.5 0 0 0 .707.455c.882-.4 2.303-.881 3.68-1.02 1.409-.142 2.59.087 3.223.877a.5.5 0 0 0 .78 0c.633-.79 1.814-1.019 3.222-.877 1.378.139 2.8.62 3.681 1.02A.5.5 0 0 0 16 13.5v-11a.5.5 0 0 0-.293-.455c-.952-.433-2.48-.952-3.994-1.105C10.413.809 8.985.936 8 1.783" />
+                                    </svg>
+                                </button>
+                                <span class="input-group-text small">Wallet</span>
+                                <span class="input-group-text small" class="WalletBalance"></span>
+                                <button class="btn btn-outline-light bg-purple btn-sm" data-bs-toggle="modal" data-bs-target="#topUpModal">Top-Up</button>
+                            </span>
+
                         </div>
                         <div class="offcanvas-body small">
-
-                         
-
                             <div class="container-fluid">
                                 <div class="row">
-                                    <div class="col-lg-4 col-sm-12 col-md-12" id="currentBookingInfo"></div>
-                                    <div class="col-lg-8"></div>
+                                    <div class="col-lg-4 col-sm-12 col-md-12" id="currentBookingInfo">
+
+                                        <table class="table table-bordered d-none" id="BookingInfoTable">
+                                            <tbody>
+                                                <tr>
+                                                    <th scope="row">Booking #</th>
+                                                    <td id="BookingReferenceNumber" class="text-success fw-bold"></td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">Booked</th>
+                                                    <td class="text-success fw-bold" id="BookedElaseTime">${elapsedTimeInMinutes} min ago.</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">Fare </th>
+                                                    <td class="text-secondary fw-bold">
+                                                        <span id="RideEstCost"></span>
+                                                        <span id="paymentStatus">( Checking... ) </span> <br>
+
+                                                        <button id="btnPayRider" data-payment-app="" class="btn-pay btn btn-outline-success d-none">Pay Now</button>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">Origin</th>
+                                                    <td class="fw-semibold" id="CustomerOrigin">{form_from_dest_name}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">Destination</th>
+                                                    <td class="fw-semibold" id="CustomerDestination">{form_to_dest_name}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">Booking Status</th>
+                                                    <td id="riderInfoBookingStatus" class="fw-semibold">{booking_status_text}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">Driver</th>
+                                                    <td class="fw-semibold" id="riderInfoPI">
+                                                        <div class="spinner-grow text-danger spinner-grow-sm" role="status"></div>
+                                                        <div class="spinner-grow text-danger spinner-grow-sm" role="status"></div>
+                                                        <div class="spinner-grow text-danger spinner-grow-sm" role="status"></div>
+                                                        {booking.rider_firstname}, {booking.rider_lastname}
+                                                    </td>
+                                                </tr>
+
+                                                <tr>
+                                                    <th scope="row">Rate</th>
+                                                    <td>
+                                                        <div class="d-flex align-items-center">
+                                                            <div id="myRatingCustomFeedbackStart" class="text-body-secondary me-3"></div>
+                                                            <div id="myRatingCustomFeedback"></div>
+                                                            <div id="myRatingCustomFeedbackEnd" class="badge text-bg-dark ms-3"></div>
+                                                        </div>
+
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+
+
+                                    </div>
                                 </div>
 
                             </div>
 
                             <form id="formFindAngkas" class="row g-2">
-                               
+
                                 <div id="infoAlert" class="col-12"></div>
                                 <div class="col-12">
                                     <button type="submit" id="findMeARiderBTN" class="btn d-flex btn-primary d-none">Find me a Rider</button>
@@ -137,25 +242,29 @@ query("UPDATE angkas_bookings SET booking_status='D' WHERE date_booked < (NOW() 
 
 
                             </form>
+
+
                         </div>
+
                     </div>
+
 
                 </div>
 
             </nav>
-            <div class="col-lg-12 col-sm-12 px-0">
-                <main class="commutes">
+            <div class="col-lg-12 col-sm-12 vh-100 p-0">
+                <main class="commutes clear-fix">
                     <div class="commutes-info">
                         <?php if(empty($current_booking)){ ?>
-                        <div class="commutes-initial-state">
+                        <div class="commutes-initial-state pb-3">
                             <svg aria-label="Directions Icon" width="53" height="53" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <use href="#commutes-initial-icon" />
                             </svg>
-                            <div class="description">
+                            <div class="description ms-3 mb-3">
                                 <h1 class="heading">Where to?</h1>
                                 <p>Tap "Add Destination".</p>
                             </div>
-                            <button class="add-button btn btn-primary m-3 text-light" autofocus>
+                            <button class="add-button btn btn-primary mb-3 text-light" autofocus>
                                 <svg aria-label="Add Icon" width="24px" height="24px" xmlns="http://www.w3.org/2000/svg">
                                     <use href="#commutes-add-icon" />
                                 </svg>
@@ -167,13 +276,13 @@ query("UPDATE angkas_bookings SET booking_status='D' WHERE date_booked < (NOW() 
                         <div class="commutes-destinations">
                             <div class="destinations-container">
                                 <div class="destination-list"></div>
-                                
-                            <button class="add-button">
-                              <svg aria-label="Add Icon" width="24px" height="24px" xmlns="http://www.w3.org/2000/svg">
-                                <use href="#commutes-add-icon"/>
-                              </svg>
-                              <div class="label">Add destination</div>
-                            </button>
+
+                                <button class="add-button">
+                                    <svg aria-label="Add Icon" width="24px" height="24px" xmlns="http://www.w3.org/2000/svg">
+                                        <use href="#commutes-add-icon" />
+                                    </svg>
+                                    <div class="label">Add destination</div>
+                                </button>
 
                             </div>
                             <button class="left-control hide" data-direction="-1" aria-label="Scroll left">
@@ -189,8 +298,8 @@ query("UPDATE angkas_bookings SET booking_status='D' WHERE date_booked < (NOW() 
                         </div>
                     </div>
 
-                    <div class="commutes-map h-100" aria-label="Map">
-                        <div class="map-view"></div>
+                    <div class="commutes-map vh-100 m-0 p-0" aria-label="Map">
+                        <div class="map-view vh-100"></div>
                     </div>
 
 
@@ -209,8 +318,8 @@ query("UPDATE angkas_bookings SET booking_status='D' WHERE date_booked < (NOW() 
                     <input type="text" id="destination-address-input" name="destination-address" placeholder="Enter a place or address" autocomplete="off" required>
                     <div class="error-message" role="alert"></div>
 
-                    <h6 class="heading">Choose your Angkas Vehicle</h6>
-                    <div class="travel-modes">
+                    <h6 class="collapse heading">Choose your Angkas Vehicle</h6>
+                    <div class="fade travel-modes">
                         <input type="radio" name="travel-mode" id="driving-mode" value="DRIVING" aria-label="Driving travel mode">
                         <label for="driving-mode" class="left-label" title="Driving travel mode">
                             <svg aria-label="Driving icon" mlns="http://www.w3.org/2000/svg">
@@ -244,14 +353,7 @@ query("UPDATE angkas_bookings SET booking_status='D' WHERE date_booked < (NOW() 
 
 
 
-    <script src="../js/jquery-3.5.1.min.js"></script>
-    <script src="_map_config.js"></script>
-    <script src="_map_func.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDB4tE_5d8sQVRR1x2KMTFbQbCpUYWXx8A&libraries=places,geometry,marker&callback=initMap&loading=async"></script>
-    <script src="_map_jquery.js"></script>
+
 </body>
 
 </html>
-
-

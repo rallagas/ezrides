@@ -1,26 +1,27 @@
 <?php
 
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+// Enable error reporting for development purposes
+ini_set( 'display_errors', 1 );
+ini_set( 'display_startup_errors', 1 );
+error_reporting( E_ALL );
 
-class Config
-{
+// Define the configuration class
+
+class Config {
     const HOST = 'localhost';
     const DBNAME = 'ezride';
     const USERNAME = 'root';
     const PASSWORD = '';
     const GOOGLE_MAPS_API_KEY = 'AIzaSyAvvMQkQyQYETGeVcSN3dWLaf2a7E64NxI';
 
-    public static function getBaseUrl()
-    {
-        $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
+    public static function getBaseUrl() {
+        $protocol = ( !empty( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443 )
+        ? "https://" : "http://";
         $domain = $_SERVER['HTTP_HOST'];
         return $protocol . $domain;
     }
 
-    public static function getIndexPaths()
-    {
+    public static function getIndexPaths() {
         return [
             'main' => '/ezrides/index.php',
             'client' => '/ezrides/clients/index.php',
@@ -30,108 +31,171 @@ class Config
     }
 }
 
-class Database
-{
+// Database connection class
+
+class Database {
     private $connection;
 
-    public function __construct()
-    {
-        $this->connection = mysqli_connect(Config::HOST, Config::USERNAME, Config::PASSWORD, Config::DBNAME);
+    public function __construct() {
+        $this->connection = mysqli_connect( Config::HOST, Config::USERNAME, Config::PASSWORD, Config::DBNAME );
 
-        if (!$this->connection) {
-            die("Connection failed: " . mysqli_connect_error());
+        if ( !$this->connection ) {
+            die( json_encode( [
+                'success' => false,
+                'message' => "Database connection failed: " . mysqli_connect_error(),
+            ] ) );
         }
     }
 
-    public function getConnection()
-    {
+    public function getConnection() {
         return $this->connection;
+    }
+
+    public function __destruct() {
+        if ( $this->connection ) {
+            mysqli_close( $this->connection );
+        }
     }
 }
 
-class SessionManager
-{
-    public function __construct()
-    {
-        if (session_status() == PHP_SESSION_NONE) {
+// Session management class
+
+class SessionManager {
+    public function __construct() {
+        if ( session_status() === PHP_SESSION_NONE ) {
             session_start();
         }
 
-        // Check if user is logged in and set the global constant
-        if ($this->isUserLoggedIn()) {
-            // Define the constant USER_LOGGED globally, based on the user_id from the session
-            if (!defined('USER_LOGGED')) {
-                define('USER_LOGGED', $_SESSION['user_id']);
+        if ( $this->isUserLoggedIn() ) {
+            if ( !defined( 'USER_LOGGED' ) ) {
+                define( 'USER_LOGGED', $_SESSION['user_id'] );
             }
         }
     }
 
-    public function isUserLoggedIn()
-    {
-        return isset($_SESSION['user_id']);
+    public function isUserLoggedIn() {
+        return isset( $_SESSION['user_id'] );
     }
 }
 
+// Redirection class
 
-class Redirect
-{
+class Redirect {
     private $sessionManager;
     private $baseUrl;
     private $indexPaths;
 
-    public function __construct(SessionManager $sessionManager)
-    {
+    public function __construct( SessionManager $sessionManager ) {
         $this->sessionManager = $sessionManager;
         $this->baseUrl = Config::getBaseUrl();
         $this->indexPaths = Config::getIndexPaths();
     }
 
-    public function checkAndRedirect()
-    {
-        $current_page = $_SERVER['REQUEST_URI'];
-        $main_index_url = $this->baseUrl . $this->indexPaths['main'];
+    public function checkAndRedirect() {
+        $currentPage = $_SERVER['REQUEST_URI'];
+        $mainIndexUrl = $this->baseUrl . $this->indexPaths['main'];
 
-        // Check if the current page is a special page (starts with an underscore)
-        if ($this->isSpecialPage($current_page)) {
-            return; // Don't redirect, just return
+        if ( $this->isSpecialPage( $currentPage ) ) {
+            return;
+            // Do not redirect special pages
         }
 
-        // Redirect only if the user is not logged in and the current page is not the main index URL
-        if (!$this->sessionManager->isUserLoggedIn() && $current_page !== $this->indexPaths['main'] && !in_array($current_page, $this->getFullIndexUrls())) {
-            header("Location: " . $main_index_url);
+        if ( !$this->sessionManager->isUserLoggedIn() && $currentPage !== $this->indexPaths['main'] && !in_array( $currentPage, $this->getFullIndexUrls() ) ) {
+            header( "Location: " . $mainIndexUrl );
             exit();
         }
     }
 
-    private function isSpecialPage($current_page)
-    {
-        // Check if the current page filename starts with an underscore
-        return strpos(basename($current_page), '_') === 0;
+    private function isSpecialPage( $currentPage ) {
+        return strpos( basename( $currentPage ), '_' ) === 0;
     }
 
-    private function getFullIndexUrls()
-    {
+    private function getFullIndexUrls() {
+        return array_map( fn( $path ) => $this->baseUrl . $path, $this->indexPaths );
+    }
+}
+
+// Function to get distance and ETA from Google Distance Matrix API
+
+function getDistanceAndETA( $fromLat, $fromLng, $toLat, $toLng, $APIKey = Config::GOOGLE_MAPS_API_KEY ) {
+    $apiKey = $APIKey;
+    $url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=metric"
+    . "&origins={$fromLat},{$fromLng}"
+    . "&destinations={$toLat},{$toLng}"
+    . "&key={$apiKey}";
+
+    try {
+        $context = stream_context_create( ['http' => ['timeout' => 10]] );
+        $response = @file_get_contents( $url, false, $context );
+
+        if ( $response === false ) {
+            throw new Exception( "Failed to fetch data from Google Distance Matrix API." );
+        }
+
+        $data = json_decode( $response, true );
+
+        if ( json_last_error() !== JSON_ERROR_NONE ) {
+            throw new Exception( "Invalid JSON response from API." );
+        }
+
+        if ( $data['status'] !== 'OK' ) {
+            throw new Exception( "API Error: " . ( $data['error_message'] ?? 'Unknown error' ) );
+        }
+
+        $element = $data['rows'][0]['elements'][0] ?? null;
+
+        if ( $element['status'] !== 'OK' ) {
+            throw new Exception( "Unable to calculate distance and ETA: " . ( $element['status'] ?? 'Unknown error' ) );
+        }
+
         return [
-            $this->baseUrl . $this->indexPaths['main'],
-            $this->baseUrl . $this->indexPaths['client'],
-            $this->baseUrl . $this->indexPaths['admin'],
-            $this->baseUrl . $this->indexPaths['rider']
+            'success' => true,
+            'distance_km' => $element['distance']['value'] / 1000, // Convert meters to km
+            'eta_minutes' => ceil( $element['duration']['value'] / 60 ), // Convert seconds to minutes
+        ];
+    } catch ( Exception $e ) {
+        error_log( "Error in getDistanceAndETA: " . $e->getMessage() );
+        return [
+            'success' => false,
+            'distance_km' => 3, // Default fallback
+            'eta_minutes' => 15, // Default fallback
+            'error' => true,
+            'message' => $e->getMessage(),
         ];
     }
 }
 
+// Cost computation function based on distance
 
+function computeCostByDistance( $distanceText ) {
+    if ( is_null( $distanceText ) || !is_numeric( $distanceText ) ) {
+        return number_format( ( $minDistance * $rateAfter3KMs ) + $flagDownRate, 2 );
+    }
+
+    $distanceValue = ( float ) $distanceText;
+    $currentHour = ( int ) date( 'G' );
+    $flagDownRate = ( $currentHour >= 18 || $currentHour < 5 ) ? 100.00 : 60.00;
+    $rateAfter3KMs = 10.00;
+    $minDistance = 3.00;
+
+    if ( $distanceValue > $minDistance ) {
+        return number_format( ( $distanceValue  * $rateAfter3KMs ) + $flagDownRate, 2 );
+    }
+
+    return number_format( ( $minDistance * $rateAfter3KMs ) + $flagDownRate, 2 );
+}
+
+function isCONN( $conn ) {
+    return $conn ? true : false;
+}
 
 // Initialize classes
 $db = new Database();
-define('CONN', $db->getConnection());
+define( 'CONN', $db->getConnection() );
 
 $sessionManager = new SessionManager();
-$redirect = new Redirect($sessionManager);
-
-// Perform redirection if needed
+$redirect = new Redirect( $sessionManager );
 $redirect->checkAndRedirect();
-
-
 include_once "_sql_utility.php";
+
 ?>

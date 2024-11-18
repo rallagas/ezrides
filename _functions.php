@@ -3,12 +3,25 @@
 //include_once "_sql_utility.php";
 
 // Check if the current page is the specified page
-function ifPageis($page, $include) {
-    if (isset($_GET['page']) && $_GET['page'] == $page) {
+function ifPageis($page, $include, $default="") {
+    if (isset($_GET['page']) && $_GET['page'] == $page && isset($_GET['txn_cat'])) {
+        
+         $_SESSION['txn_cat_id'] = $_GET['txn_cat'];
+                    
         include_once "$include";
         return true;
+        exit;
     }
-    return false;
+    else if($default != ""){
+        include_once $default;
+        return true;
+        exit;
+    }
+    else {
+        return false;
+        exit;
+    }
+    
 }
 
 // Check if the current action is the specified action

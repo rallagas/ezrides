@@ -10,7 +10,7 @@ const commutesEl = {
   modal: document.querySelector('.commutes-modal-container'),
 };
 
-/**
+/** 
  * Element selectors for commutes destination panel.
  */
 const destinationPanelEl = {

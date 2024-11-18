@@ -5,6 +5,9 @@ let directionsService;
 let directionsRenderer;
 let watchId;
 
+function clog(log){
+    console.log(log);
+}
 
 function initMap() {
     directionsService = new google.maps.DirectionsService();
@@ -212,10 +215,11 @@ function checkPaymentStatus(bookingId) {
 
 
 
-
 document.getElementById("DropOffCustomer").addEventListener("click", () => {
     const bookingId = document.getElementById("angkas_booking_ref").value;
     const AmountToPay = document.getElementById("AmountToPay").value;
+    clog("BookingId: " + bookingId );
+    clog("Amount To Pay: " + AmountToPay );
 
     // Show the drop-off modal
     const dropOffModal = new bootstrap.Modal(document.getElementById('dropOffModal'));
@@ -241,6 +245,7 @@ document.getElementById("DropOffCustomer").addEventListener("click", () => {
                 if (paymentStatus === 'C') {
                     // If payment is already completed, skip payment confirmation
                     console.log("Payment is already completed. Skipping payment confirmation.");
+                    updateBookingStatus('C', bookingId);
                     deleteRiderFromQueue();
                     window.location.href = "index.php";
                 } else {

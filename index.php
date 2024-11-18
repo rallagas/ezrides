@@ -10,7 +10,12 @@ include_once "_functions.php";
     <meta charset="UTF-8">
     <title>Document</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link rel="stylesheet" href="css/style.css">
+<!--    <link rel="stylesheet" href="css/style.css">-->
+<style>
+    .bg-purple{
+        background-color: mediumpurple;
+    }
+    </style>
 </head>
 
 <body>
@@ -24,7 +29,7 @@ include_once "_functions.php";
                 <a class="btn btn-lg btn-outline-secondary mt-3 d-flex p-3" role="button" data-bs-toggle="collapse" href="#collapseRegister" aria-expanded="false" aria-controls="collapseRegister">Join Us</a>
             </div>
             <div class="col-lg-2 col-md-4 col-sm-4">
-                <a class="btn btn-lg btn-outline-light bg-purple mt-3 d-flex p-3" role="button" data-bs-toggle="collapse" href="#collapseLogin" aria-expanded="false" aria-controls="collapseLogin">Sign In</a>
+                <a class="btn btn-lg btn-primary mt-3 d-flex p-3" role="button" data-bs-toggle="collapse" href="#collapseLogin" aria-expanded="false" aria-controls="collapseLogin">Sign In</a>
             </div>
         </div>
 
@@ -37,11 +42,11 @@ include_once "_functions.php";
               
             </div>
 
-            <div class="col-lg-4 col-md-6 offset-md-3 col-sm-12 offset-lg-2 mt-0 collapse px-0 " id="collapseLogin">
+            <div class="col-lg-4 col-md-6 offset-md-3 col-sm-12 offset-lg-2 mt-0 collapse px-0 pt-3" id="collapseLogin">
 
                 <form id="formUserLog">
                     <div class="card">
-                        <div class="card-header bg-purple text-white">
+                        <div class="card-header bg-secondary text-light">
                             <div id="logstatus"></div>
                             <h6 class="card-title fw-bold fs-5 mt-2">Sign In as Customer</h6>
 

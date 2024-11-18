@@ -1,12 +1,11 @@
-.bg-purple {
-    background-color: mediumpurple;
-}
+    .bg-purple, .text-bg-purple {
+        background-color: mediumpurple;
+    }
 
-.bg-pink {
-    background-color: hotpink;
-}
+    .bg-dark-purple {
+        background-color: rebeccapurple;
+    }
 
-.text-purple {
-    color: mediumpurple;
-}
-
+    .text-purple {
+        color: mediumpurple;
+    }
