@@ -241,13 +241,6 @@ $currentProducts = array_slice( $products, $startIndex, $itemsPerPage );
                                     <path d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0m7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0m-1.646-7.646-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L8 8.293l2.646-2.647a.5.5 0 0 1 .708.708" />
                                 </svg>
                             </button>
-
-
-                            <a class="btn btn-secondary bg-purple text-white position-relative float-end mx-2" href="../">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-house" viewBox="0 0 16 16">
-                                    <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293zM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5z" />
-                                </svg>
-                            </a>
                         </div>
 
                     </div>
@@ -260,22 +253,19 @@ $currentProducts = array_slice( $products, $startIndex, $itemsPerPage );
             <div class="col-12" id="totalAmount"></div>
 
             <div class="col-12">
-
-                <!-- Modal for Checkout Summary -->
-                <div id="checkoutModal" class="modal fade" tabindex="-1" aria-labelledby="checkoutModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-lg">
+                <div class="modal fade" id="checkoutModal" aria-hidden="true" aria-labelledby="exampleModalToggleLabel" tabindex="-1">
+                    <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="checkoutModalLabel">Order Summary</h5>
+                            <div class="modal-header bg-purple text-light">
+                                <h1 class="modal-title fs-5" id="exampleModalToggleLabel">Order Summary</h1>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <form id="formPlaceOrder">
-                                <div class="modal-body">
+                                <div class="modal-body overflow-y-scroll" style="height:70vh">
                                     <input type="text" readonly class="form-control text-secondary fw-bold border-0" name="shopReferenceNumber" id="shopReferenceNum" value="<?php echo gen_book_ref_num(8,"SHOP"); ?>">
                                     <input type="hidden" id="userLogged" value="<?php echo $_SESSION['user_id'];?>" class="form-control">
                                     <hr class="p-0 m-0">
                                     <table class="table table-sm" id="CheckOutItems"></table> <!-- Order Summary Items go here -->
-
                                     <!-- Shipping Details -->
                                     <div class="mt-3">
                                         <div class="card">
@@ -284,75 +274,110 @@ $currentProducts = array_slice( $products, $startIndex, $itemsPerPage );
                                                 <small class="small fw-bold" id="MerchantName"></small> <br>
                                                 <small class="small fw-light" id="MerchantAddress"></small>
                                                 <small class="small fw-light" id="ContactInfo"></small>
-                                                <input type="text" class="form-control fw-light" id="MerchantLocCoor"/>
-                                                
+                                                <input type="text" id="MerchantLocCoor" name="MerchantLocCoor" class="form-control fw-light" id="MerchantLocCoor" />
                                             </div>
                                         </div>
-                                        <h6>Shipping Details</h6>
-                                        <input type="text" id="shippingName" name="shipingName" class="form-control mb-2" placeholder="Full Name" value="<?php echo $u_fullname != NULL ? $u_fullname : NULL; ?>" required>
+                                        <h6>Delivery Details</h6>
+
+                                        <input type="text" id="shippingName" name="shipingName" class="form-control form-control-sm mb-2" placeholder="Full Name" value="<?php echo $u_fullname != NULL ? $u_fullname : NULL; ?>" required>
+                                        <input type="text" id="shippingPhone" class="form-control form-control-sm mb-2" value="<?php echo $u_contact;?>" placeholder="Phone Number" required>
                                         <div class="input-group input-group-sm mb-2">
-                                            <input type="text" id="shippingAddress" name="shippingAddress" class="form-control" placeholder="Address" required>
+                                            <input type="text" id="shippingAddress" name="shippingAddress" class="form-control form-control-sm" placeholder="Shipping Address" required>
                                             <button id="getCurrentLocation" type="button" data-bs-toggle="tooltip" data-bs-title="Current Location" class="btn btn-outline-secondary">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="10" fill="currentColor" class="bi bi-crosshair" viewBox="0 0 16 16">
                                                     <path d="M8.5.5a.5.5 0 0 0-1 0v.518A7 7 0 0 0 1.018 7.5H.5a.5.5 0 0 0 0 1h.518A7 7 0 0 0 7.5 14.982v.518a.5.5 0 0 0 1 0v-.518A7 7 0 0 0 14.982 8.5h.518a.5.5 0 0 0 0-1h-.518A7 7 0 0 0 8.5 1.018zm-6.48 7A6 6 0 0 1 7.5 2.02v.48a.5.5 0 0 0 1 0v-.48a6 6 0 0 1 5.48 5.48h-.48a.5.5 0 0 0 0 1h.48a6 6 0 0 1-5.48 5.48v-.48a.5.5 0 0 0-1 0v.48A6 6 0 0 1 2.02 8.5h.48a.5.5 0 0 0 0-1zM8 10a2 2 0 1 0 0-4 2 2 0 0 0 0 4" />
                                                 </svg>
                                             </button>
                                         </div>
-                                        <div id="pacContainer">
+                                        <div id="pacContainer"></div>
+                                        <input type="text" readonly class="form-control mb-2 form-control-sm text-secondary" id="AddressCoordinates">
+                                        <div class="input-group mb-2">
+                                            <span class="input-group-text">Distance</span>
+                                            <input type="text" class="form-control form-control-sm" id="formDistanceKM">
+                                            <span class="input-group-text">KM</span>
                                         </div>
-                                        <input type="hidden" readonly class="form-control mb-2 form-control-sm text-secondary" id="AddressCoordinates">
-                                        <input type="text" id="shippingPhone" class="form-control" value="<?php echo $u_contact;?>" placeholder="Phone Number" required>
+                                        <div class="input-group mb-2">
+                                            <span class="input-group-text small">Est. Time to Complete Route</span>
+                                            <input type="text" class="form-control form-control-sm" id="formETA">
+                                            <span class="input-group-text">Mins</span>
+                                        </div>
+                                        <div class="input-group mb-2">
+                                            <span class="input-group-text">Delivery Cost (Php)</span>
+                                            <Input type="text" class="form-control form-control-sm" id="formEstimatedCost"></Input>
+                                        </div>
 
                                     </div>
 
-                                    <!-- Payment Details -->
-                                    <div class="mt-3">
-                                        <h6 class="fw-bolder">Payment Details</h6>
-                                        <div id="PaymentDetails">
-                                            <table class="table table-responsive">
-                                                <tr>
-                                                    <th>Shipping Fee</th>
-                                                    <td id="ShippingFee">150.00</td>
-                                                </tr>
-                                                <tr>
-                                                    <th>Voucher</th>
-                                                    <td> <input id="VoucherCode" type="text" class="form-control form-control-sm" Placeholder="Voucher Code"></td>
-                                                </tr>
-                                                <tr>
-                                                    <td id="voucherInfo" colspan="2"></td>
-                                                </tr>
-                                                <tr>
-                                                    <th>Amount to Pay (Php)</th>
-                                                    <td id="FinalAmountToPay"></td>
-                                                </tr>
-                                            </table>
 
-                                        </div>
-
-                                        <div class="form-check form-switch">
-                                            <input class="form-check-input" type="checkbox" role="switch" id="checkWalletPaymentMode" checked>
-                                            <label class="form-check-label" for="checkWalletPaymentMode">
-
-                                                <span class="badge bg-purple">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-wallet2" viewBox="0 0 16 16">
-                                                        <path d="M12.136.326A1.5 1.5 0 0 1 14 1.78V3h.5A1.5 1.5 0 0 1 16 4.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 13.5v-9a1.5 1.5 0 0 1 1.432-1.499zM5.562 3H13V1.78a.5.5 0 0 0-.621-.484zM1.5 4a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5z" />
-                                                    </svg> Wallet Balance:
-                                                    <span class="WalletBalance"></span>
-                                                </span>
-                                            </label>
-                                        </div>
-
-
-
-                                    </div>
                                 </div>
                                 <div class="modal-footer">
-                                    <button id="placeOrderBtn" class="btn btn-outline-secondary fw-bold text-secondary bg-purple">Book <span class="text-purple fw-bolder">EZ</span>Pabili</button>
+                                    <!--                                    <button id="placeOrderBtn" class="btn btn-outline-secondary fw-bold text-secondary bg-purple">Book <span class="text-purple fw-bolder">EZ</span>Pabili</button>-->
+                                    <button id="placeOrderBtn" class="btn btn-primary" data-bs-target="#PaymentModal" data-bs-toggle="modal">Place Order</button>
                                 </div>
                             </form>
                         </div>
                     </div>
                 </div>
+
+
+
+                <div class="modal fade" id="PaymentModal" aria-hidden="true" aria-labelledby="exampleModalToggleLabel2" tabindex="-1">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header bg-purple text-light">
+                                <h1 class="modal-title fs-5" id="exampleModalToggleLabel2">Payment</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <!-- Payment Details -->
+                                <div class="mt-1">
+                                    <div class="order-status mb-1"></div>
+                                    <div class="order-details mb-1"></div>
+                                    <div id="PaymentDetails">
+                                        <table class="table table-responsive">
+                                            <tr>
+                                                <th>Voucher</th>
+                                                <td> <input id="VoucherCode" type="text" class="form-control form-control-sm" Placeholder="Voucher Code"></td>
+                                            </tr>
+                                            <tr>
+                                                <td id="voucherInfo" colspan="2"></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Amount to Pay (Php)</th>
+                                                <td id="FinalAmountToPay"></td>
+                                            </tr>
+                                        </table>
+
+                                    </div>
+
+
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" role="switch" id="checkWalletPaymentMode" checked>
+                                        <label class="form-check-label" for="checkWalletPaymentMode">
+
+                                            <span class="badge bg-purple">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-wallet2" viewBox="0 0 16 16">
+                                                    <path d="M12.136.326A1.5 1.5 0 0 1 14 1.78V3h.5A1.5 1.5 0 0 1 16 4.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 13.5v-9a1.5 1.5 0 0 1 1.432-1.499zM5.562 3H13V1.78a.5.5 0 0 0-.621-.484zM1.5 4a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5z" />
+                                                </svg> Wallet Balance:
+                                                <span class="walletbalance"></span>
+                                            </span>
+                                        </label>
+                                    </div>
+
+
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                               <button class="btn btn-outline-success">Pay Now</button>
+<!--                                <button class="btn btn-secondary" data-bs-target="#checkoutModal" data-bs-toggle="modal">Back</button>-->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal for Checkout Summary -->
+
+
             </div>
             <div class="col-12">
                 <form>
@@ -392,10 +417,10 @@ $currentProducts = array_slice( $products, $startIndex, $itemsPerPage );
         </div>
         <div class="row g-1" id="searchResults">
             <?php 
-                        foreach ( $currentProducts as $product ){
-                        
-                        $oosBtn = $product->getQuantity() == 0 ? "disabled" : "";
-                        ?>
+            foreach ( $currentProducts as $product ){
+            
+            $oosBtn = $product->getQuantity() == 0 ? "disabled" : "";
+            ?>
             <div class="col-xs-6 col-sm-6 col-md-3 col-lg-2 col-6 mb-3 mb-sm-1">
 
                 <div class="card">
@@ -427,14 +452,13 @@ $currentProducts = array_slice( $products, $startIndex, $itemsPerPage );
                                 </button>
                             </div>
                         </form>
-
                     </div>
                 </div>
 
 
 
             </div>
-            <?php } ?>
+        <?php } ?>
         </div>
 
     </div>

@@ -12,7 +12,7 @@ if (NULL === $userId) {
 
 // Fetch cart items for the user directly from the shop_orders table
 $query = "
-    SELECT ci.item_id, ci.quantity
+    SELECT ci.order_id ,ci.item_id, ci.quantity
     FROM shop_orders ci
     WHERE ci.user_id = ? AND ci.order_state_ind = 'C'
 ";
@@ -30,7 +30,8 @@ if ($stmt->execute()) {
         if ($product) {
             // Prepare the response data with product details and quantity
             $response["cartItems"][] = [
-                "item_id" => $product->getId(),
+                "order_id" => $row['order_id'],
+                "item_id" => $row['item_id'],
                 "item_name" => $product->getName(),
                 "price" => $product->getPrice(),
                 "quantity" => $row['quantity'],

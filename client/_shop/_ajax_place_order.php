@@ -1,153 +1,136 @@
 <?php
 include_once "../../_db.php";
-// Include database connection
 include_once "_class_grocery.php";
 include_once "../_class_Bookings.php";
 
+// Initialize the response array with default values
+$response = [
+    "CartPlaceOrder" => false,
+    "AngkasBookings" => false,
+    "order_items" => [],
+    "success" => false,
+    "message" => '',
+    "OrderRefNum" => '',
+    "totalAmountToPay" => 0,
+    "AngkasBookingInfo" => [],
+    "statusCode" => 500 // Default status code for error
+];
+
+// Check if the request method is POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
     try {
-        
-        
-        // Extract data from POST request
-        $userId = USER_LOGGED;
-        $orderItems = $_POST['order_items'];
-        $orderRefNum = $_POST['order_ref_num'];
-        $shippingName = $_POST['shipping_name'];
-        $shippingAddress = $_POST['shipping_address'];
-        $shippingPhone = $_POST['shipping_phone'];
-        $addressCoordinates = $_POST['address_coordinates'];
+        // Read raw POST data and decode it from JSON
+        $rawData = file_get_contents('php://input');
+        $data = json_decode($rawData, true); // Decode JSON into an associative array
 
-        // Debug: Check the structure of orderItems
-        error_log('Order items: ' . print_r($orderItems, true));
-
-        // Validate required fields
-        if (
-            empty($userId) ||
-            empty($orderItems) ||
-            empty($orderRefNum) ||
-            empty($shippingName) ||
-            empty($shippingAddress) ||
-            empty($shippingPhone)
-        ) {
-            throw new Exception("All fields are required.");
+        // Check if the data was decoded successfully
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            $response = ['success' => false, 'message' => 'Invalid JSON input', 'statusCode' => 400];
+            echo json_encode($response);
+            exit();
         }
-        $bookingSuccess = false;
-        $placeOrderStat = null;
-        $angkasData = [];
-        $orderedItemIds = [];
+
+        $userId = USER_LOGGED; // Assuming USER_LOGGED is predefined
+
+        // Extract the values from the decoded data
+        $orderItems = $data['order_items'] ?? [];
+        $orderRefNum = $data['order_ref_num'] ?? '';
+        $shippingName = $data['shipping_name'] ?? '';
+        $shipToAddress = $data['shipping_address'] ?? '';
+        $shippingPhone = $data['shipping_phone'] ?? '';
+        $shipToCoordinates = $data['shipping_coordinates'] ?? '';
+        $paymentMode = $data['payment_mode'] ?? '';
+        $shipFromAddress = $data['merchant_address'] ?? '';
+        $shipFromCoordinates = $data['merchant_loc_coor'] ?? '';
+        $estCost = floatval($data['estCost'] ?? 0);
+        $ETA = $data['etaTime'] ?? '';
+        $etaDistanceKm = floatval($data['etaDistanceKm'] ?? 0);
+
+        // Calculate total amount and collect item/order IDs
         $totalAmount = 0.00;
-        foreach ($orderItems as $items) {
-            $totalAmount += $items['amount'];
-            array_push($orderedItemIds ,$items['itemId']); // Get list of item IDs
+        $order_ids = [];
+
+        foreach ($orderItems as $item) {
+            $totalAmount += $item['amount'];
+            $order_ids[] = $item['orderId'];
         }
-        $ShopCost = $totalAmount; //Shop Cost
 
-        // Instantiate the Cart class, passing both userId and orderItems
+        // Instantiate the Cart class and place order
         $cart = new Cart($userId, $orderItems);
-
-        // Prepare shipping details array
         $shippingDetails = [
             'name' => $shippingName,
-            'address' => $shippingAddress,
+            'address' => $shipToAddress,
             'phone' => $shippingPhone,
-            'coordinates' => $addressCoordinates,
+            'coordinates' => $shipToCoordinates,
         ];
 
-        // Call the placeOrder method with the type and shipping details
-        $placeOrderStat = $cart->placeOrder($orderRefNum, $shippingDetails);
-        
-
-        if(!$placeOrderStat){
-            throw new Exception("Place Order Failed");
+        if (!$cart->placeOrder($orderRefNum, $shippingDetails, $order_ids)) {
+            $response['CartPlaceOrder'] = false;
+            throw new Exception("Failed to place the order.");
+        } else {
+            $response['CartPlaceOrder'] = true;
         }
-        else {
-            // Fetch merchant info
-            $merchant_info = Merchant::fetchCommonMerchantById($orderRefNum, $orderedItemIds);
-            if (!$merchant_info) {
-                throw new Exception("Merchant information could not be retrieved for: " . $orderRefNum . ":" . implode(',',$orderedItemIds));
-            }
-            // Build needed data for the AngkasBookings
-            $form_from_dest = $merchant_info->getAddress();
-            $merchant_loc_coor = $merchant_info->getMerchantLocCoor();
-            list($currentLoc_lat, $currentLoc_long) = explode(',', $merchant_loc_coor);
 
-            $form_to_dest = $shippingAddress;
-            list($formToDest_lat, $formToDest_long) = explode(',', $addressCoordinates);
+        // Split coordinates for Angkas booking
+        list($userLat, $userLong) = explode(',', $shipFromCoordinates);
+        list($destLat, $destLong) = explode(',', $shipToCoordinates);
 
-            // Get distance, ETA, and cost
-            $estimates = getDistanceAndETA($currentLoc_lat, $currentLoc_long, $formToDest_lat, $formToDest_long);
-            $estCost = 0.00;
-            $cost = computeCostByDistance($estimates['distance_km']);
-            $cost = floatval(str_replace(',', '', $cost)); // Ensure the value is a valid float
-            $estCost = $cost; //estimated cost in Angkas
-            
-            $totalAmountToPay = $ShopCost + $estCost ; //add the Booking Estimated Cost
-            $totalAmountToPay = floatval(str_replace(',', '', $totalAmountToPay)); 
-        
-            $txn_cat_id = $_SESSION['txn_cat_id'] ;
-            $prefix = TxnCategory::getTxnPrefix($txn_cat_id);
-            $ref_num = gen_book_ref_num(8, $prefix);
+        $angkasData = [
+            'angkas_booking_reference' => gen_book_ref_num(8, TxnCategory::getTxnPrefix($_SESSION['txn_cat_id'])),
+            'shop_order_reference_number' => $orderRefNum,
+            'shop_cost' => $totalAmount,
+            'user_id' => $userId,
+            'form_from_dest_name' => $shipFromAddress,
+            'user_currentLoc_lat' => (float) trim($userLat),
+            'user_currentLoc_long' => (float) trim($userLong),
+            'form_to_dest_name' => $shipToAddress,
+            'formToDest_lat' => (float) trim($destLat),
+            'formToDest_long' => (float) trim($destLong),
+            'form_ETA_duration' => $ETA,
+            'form_TotalDistance' => $etaDistanceKm,
+            'form_Est_Cost' => $estCost,
+            'booking_status' => 'P',
+            'payment_status' => 'P',
+            'transaction_category_id' => $_SESSION['txn_cat_id'],
+        ];
 
-
-            // Insert new Angkas booking
-            $angkasData = [
-                'angkas_booking_reference' => $ref_num, // Generate unique reference
-                'shop_order_reference_number' => $orderRefNum,
-                'user_id' => $userId,
-                'form_from_dest_name' => $form_from_dest,
-                'user_currentLoc_lat' => (float) trim($currentLoc_lat),
-                'user_currentLoc_long' => (float) trim($currentLoc_long),
-                'form_to_dest_name' => $form_to_dest,
-                'formToDest_long' => (float) trim($formToDest_long),
-                'formToDest_lat' => (float) trim($formToDest_lat),
-                'form_ETA_duration' => $estimates['eta_minutes'] ?? null,
-                'form_TotalDistance' => $estimates['distance_km'] ?? null,
-                'form_Est_Cost' => $estCost, //travel angkas Cost
-                'date_booked' => date('Y-m-d H:i:s'),
-                'booking_status' => 'P',
-                'payment_status' => 'P',
-                'transaction_category_id' => $_SESSION['txn_cat_id'] // Add relevant category ID if available
-            ];
-
-            $angkasBookings = new AngkasBookings();
-            $bookingSuccess = $angkasBookings->insertBooking($angkasData);
-
-//            if (!$bookingSuccess) {
-//                throw new Exception("Failed to create Angkas booking.");
-//            }
-            
-            // Respond with success
-            echo json_encode([
-                'OrderMsg' => "Order Sucessfully Placed.",
-                'success' => true,
-                'OrderInfo' => $orderItems,
-                'OrderRefNum' => $orderRefNum,
-                'MerchantInfo' => [
-                    'id' => $merchant_info->getId(),
-                    'name' => $merchant_info->getName(),
-                    'contact' => $merchant_info->getContactInfo(),
-                    'address' => $merchant_info->getAddress(),
-                    'merchantLocCoor' => $merchant_info->getMerchantLocCoor()
-                ],
-                'AngkasBookingInfo' => $angkasData,
-                'message' => 'Order and Angkas booking placed successfully!',
-                'totalAmountToPay' => $totalAmountToPay,
-                'bookingStatus' => $bookingSuccess
-            ]);
+        // Create Angkas booking
+        $angkasBookings = new AngkasBookings();
+        if (!$angkasBookings->insertBooking($angkasData)) {
+            $response['AngkasBookings'] = false;
+            throw new Exception("Failed to create Angkas booking.");
+        } else {
+            $response['AngkasBookings'] = true;
         }
-    } catch (Exception $e) {
-        // Handle errors
-        echo json_encode([
-            'success' => false,
+
+        // Respond with success
+        $response = [
+            'order_items' => $orderItems,
+            'success' => true,
+            'message' => 'Order and Angkas booking placed successfully!',
+            'OrderRefNum' => $orderRefNum,
+            'totalAmountToPay' => $totalAmount + $estCost,
             'AngkasBookingInfo' => $angkasData,
-            'message' => $e->getMessage(),
-            'bookingStatus' => $bookingSuccess
-        ]);
+            'statusCode' => 200
+        ];
+
+        echo json_encode($response);
+
+    } catch (Exception $e) {
+        // Error response
+        error_log($e->getMessage()); // Log the error for debugging
+        $response['success'] = false;
+        $response['message'] = $e->getMessage();
+        $response['statusCode'] = 500;
+        echo json_encode($response);
     }
+
 } else {
     // Invalid request method
-    echo json_encode([
-        'success' => false,
-        'message' => 'Invalid request method.',
-    ]);
+    $response['success'] = false;
+    $response['message'] = 'Invalid request method.';
+    $response['statusCode'] = 405;
+    echo json_encode($response);
 }
+?>

@@ -3,6 +3,7 @@ let currentPage = 1;
 const pageSize = 5;
 let transactions = [];
 
+
 function clog(logMsg) {
     console.log(logMsg);
 }
@@ -120,8 +121,7 @@ function makePayment(estimatedCost, action = null) {
                 console.log("Payment Successful.");
                 $('#TransactionStatus').addClass("alert alert-success").text("Paid Total of Php " + response.amount);
                 $('.btn-pay').prop('disabled', true);
-                //getWalletBalance();
-                fetchAndAssignWalletBalance(walletBalanceElement);
+                getWalletBalance();
             } else {
                 console.log('Payment failed. Please try again.');
             }
@@ -134,46 +134,39 @@ function makePayment(estimatedCost, action = null) {
 
 // Fetch wallet balance
 // Refactored function to fetch wallet balance
-function getWalletBalance() {
-    return new Promise((resolve, reject) => {
-        $.ajax({
-            url: 'ajax_get_balance.php',
-            type: 'GET',
-            dataType: 'json',  // Expect JSON response
-            contentType: 'application/json',
-            success: function(response) {
-                resolve(response);  // Resolve with the response data
+async function getWalletBalance() {
+    try {
+        const response = await fetch('ajax_get_balance.php', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
             },
-            error: function(xhr, status, error) {
-                console.error('Error fetching wallet balance:', error);
-                reject({
-                    error: 'An error occurred. Please try again.'
-                });
-            }
         });
-    });
-}
 
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching wallet balance:', error);
+        return { error: 'An error occurred. Please try again.' };
+    }
+}
 
 // Function to fetch the balance and assign it to elements
 async function fetchAndAssignWalletBalance(elements) {
-    try {
-        const data = await getWalletBalance(); // Get the data from getWalletBalance()
+    const data = await getWalletBalance();
 
-        // Check if the response contains the balance and assign it
-        if (data.balance) {
-            elements.html(`Php ${data.balance}`);
-        } else {
-            elements.text('Error fetching balance');
-        }
-        
-        return data; // Return the full response data for further usage if needed
-    } catch (error) {
-        console.error('Error:', error);
-        elements.text('Error fetching balance');
-        return { error: error.message }; // Return an error message in case of failure
+    if (data.error) {
+        elements.textContent = data.error;
+    } else if (data.balance) {
+        elements.textContent = `Php ${data.balance}`;
+    } else {
+        elements.textContent = 'Error fetching balance';
     }
 }
+
 
 function updatePaymentStatus(bookingReference, newStatus) {
     $.ajax({
@@ -407,11 +400,72 @@ async function handleCheckPendingBooking() {
                     bookingStatusText = 'Unknown Status';
                     break;
             }
-            
-            let payment_status = response.bookingDetails.payment_status;
-            let payment_status_text = "";
-            
-            switch (payment_status) {
+            let finalAmountToPay = response.bookingDetails.angkas_booking_estimated_cost;
+
+            if (response.bookingDetails.shop_order_reference_number != null) {
+                let $shopItemsReference = response.bookingDetails.shop_order_reference_number;
+                finalAmountToPay += response.bookingDetails.total_amount_to_pay; //shop amount
+            }
+           
+            // Construct the booking card view dynamically
+            var bookingCardView = `
+            <div class="card-header bg-warning clear-fix">
+                <span class="fw-bolder" id="BookingReferenceNum">${response.bookingDetails.angkas_booking_reference}</span>
+                <span class="badge ${textColor} fw-bold float-end" id="bookingStatus">${bookingStatusText}</span>
+            </div>
+            <div class="card-body" style="--bs-bg-opacity: .2;" id="bookingDetails">
+                <div class="container-fluid">
+                    <div class="row g-1">
+                    
+                        <div class="col-6">
+                            <span class="fw-bold">Total Amount to Pay</span>
+                        </div>
+                        <div class="col-6">
+                            <span class="fw-lighter" id="totalAmountToPay">Php ${response.bookingDetails.total_amount_to_pay}</span>
+                        </div>
+                    
+                        <div class="col-6">
+                            <span class="fw-bold">ETA Duration</span>
+                        </div>
+                        <div class="col-6">
+                            <span class="fw-lighter" id="etaDuration">${response.bookingDetails.angkas_booking_eta_duration} mins</span>
+                        </div>
+                        <div class="col-6">
+                            <span class="fw-bold">Estimated Cost</span>
+                        </div>
+                        <div class="col-6">
+                            <span class="fw-lighter" id="estimatedCost">Php ${response.bookingDetails.angkas_booking_estimated_cost}</span>
+                        </div>
+                   
+                        <div class="col-6">
+                            <span class="fw-bold">Payment Status</span>
+                        </div>
+                        <div class="col-6">
+                            <span class="fw-lighter" id="paymentStatus">${response.bookingDetails.payment_status}</span>
+                        </div>
+                    </div>
+                </div>
+               </div>
+            </div>
+            `;
+
+            // Ensure the element with id 'bookingDetails' exists in the DOM
+            $('#BookingDetails').html(bookingCardView); // Set the content to the container
+
+        } else {
+            console.log("No pending bookings.");
+        }
+    } catch (error) {
+        console.error("Error checking booking status:", error);
+    }
+}
+
+
+
+// Function to update the DOM element
+function updateBookingStatus(newStatus) {
+    const statusElement = $('#bookingStatus');
+     switch (newStatus) {
                 case 'P':
                     bookingStatusText = 'Waiting for Driver';
                     textColor = 'text-bg-danger';
@@ -436,95 +490,9 @@ async function handleCheckPendingBooking() {
                     bookingStatusText = 'Unknown Status';
                     break;
             }
-            
-            let finalAmountToPay = response.bookingDetails.angkas_booking_estimated_cost;
-            let $shopItemsReference = response.bookingDetails.shop_order_reference_number;
-            
-            if ($shopItemsReference != null) {
-                finalAmountToPay += response.bookingDetails.total_amount_to_pay; //shop amount
-            }
-            
-            
-
-            // Construct the booking card view dynamically
-            var bookingCardView = `
-            <div class="card-header bg-warning clear-fix">
-                <span class="fw-bolder" id="BookingReferenceNum">${response.bookingDetails.angkas_booking_reference}</span>
-                <span class="badge ${textColor} fw-bold float-end" id="bookingStatus">${bookingStatusText}</span>
-            </div>
-            <div class="card-body" style="--bs-bg-opacity: .2;" id="bookingDetails">
-                <div class="container-fluid">
-                    <div class="row g-1">
-                    
-                        <div class="col-6">
-                            <span class="fw-bold">Shop Cost</span>
-                        </div>
-                        <div class="col-6">
-                            <span class="fw-lighter" id="totalAmountToPay">Php ${response.bookingDetails.total_amount_to_pay}</span>
-                        </div>
-                        <div class="col-6">
-                            <span class="fw-bold">Estimated Cost</span>
-                        </div>
-                        <div class="col-6">
-                            <span class="fw-lighter" id="estimatedCost">Php ${response.bookingDetails.angkas_booking_estimated_cost}</span>
-                        </div>
-                   
-                        <div class="col-6">
-                            <span class="fw-bold">Payment Status</span>
-                        </div>
-                        <div class="col-6">
-                            <span class="fw-lighter" id="paymentStatus">${}</span>
-                        </div>
-                    </div>
-                </div>
-               </div>
-            </div>
-            `;
-
-            // Ensure the element with id 'bookingDetails' exists in the DOM
-            $('#BookingDetails').html(bookingCardView); // Set the content to the container
-
-        } else {
-            console.log("No pending bookings.");
-        }
-    } catch (error) {
-        console.error("Error checking booking status:", error);
-    }
-}
-
-
-
-// Function to update the DOM element
-function updateBookingStatus(newStatus) {
-    const statusElement = $('#bookingStatus');
-    switch (newStatus) {
-        case 'P':
-            bookingStatusText = 'Waiting for Driver';
-            textColor = 'text-bg-danger';
-            break;
-        case 'A':
-            bookingStatusText = 'Driver Found';
-            textColor = 'text-bg-success';
-            break;
-        case 'R':
-            bookingStatusText = 'Driver Arrived in Your Location';
-            textColor = 'text-bg-success';
-            break;
-        case 'I':
-            bookingStatusText = 'In Transit';
-            textColor = 'text-bg-info';
-            break;
-        case 'C':
-            bookingStatusText = 'Completed';
-            textColor = 'text-bg-success';
-            break;
-        default:
-            bookingStatusText = 'Unknown Status';
-            break;
-    }
     statusElement.text(bookingStatusText);
     statusElement.removeClass().addClass(textColor + " badge fw-bold float-end");
-    //  console.log("Booking status updated:", newStatus);
+  //  console.log("Booking status updated:", newStatus);
 }
 
 
@@ -639,76 +607,25 @@ function onError(errorMessage) {
 }
 
 
-async function GetCurrentLocation(addressText, AddressCoor) {
-    const addressTxt = $(addressText);
-    const addressCoor = $(AddressCoor);
-
-    // Check if the browser supports geolocation
-    if (!navigator.geolocation) {
-        throw new Error("Geolocation is not supported by this browser.");
-    }
-
-    return new Promise((resolve, reject) => {
-        // Use the geolocation API with high accuracy enabled
-        navigator.geolocation.getCurrentPosition(function (position) {
-            const latitude = position.coords.latitude;
-            const longitude = position.coords.longitude;
-
-            // Fill the hidden input with coordinates
-            addressCoor.val(latitude + "," + longitude);
-
-            // Initialize Google Maps Geocoder
-            const geocoder = new google.maps.Geocoder();
-
-            // Get the readable address using reverse geocoding
-            const latlng = new google.maps.LatLng(latitude, longitude);
-            geocoder.geocode({
-                'location': latlng
-            }, function (results, status) {
-                if (status === google.maps.GeocoderStatus.OK) {
-                    if (results[0]) {
-                        // Put the readable address into the shipping address field
-                        addressTxt.val(results[0].formatted_address);
-                        resolve(); // Successfully fetched location
-                    } else {
-                        reject(new Error("No address found."));
-                    }
-                } else {
-                    reject(new Error("Geocoder failed due to: " + status));
-                }
-            });
-        }, function (error) {
-            switch (error.code) {
-                case error.PERMISSION_DENIED:
-                    reject(new Error("User denied the request for Geolocation."));
-                    break;
-                case error.POSITION_UNAVAILABLE:
-                    reject(new Error("Location information is unavailable."));
-                    break;
-                case error.TIMEOUT:
-                    reject(new Error("The request to get user location timed out."));
-                    break;
-                case error.UNKNOWN_ERROR:
-                    reject(new Error("An unknown error occurred."));
-                    break;
-                default:
-                    reject(new Error("Geolocation error: " + error.message));
-            }
-        }, {
-            enableHighAccuracy: true, // Prefer accurate location
-            timeout: 5000, // 5 seconds timeout
-            maximumAge: 0 // No cached location
-        });
-    });
-}
 // Document ready event
 $(document).ready(function () {
-    const $walletBalanceElement = $(".walletbalance");
+ const walletBalanceElement = document.querySelector('.WalletBalance');
+
+    
+
+
     // Call the function
+      handleCheckPendingBooking();
+    //setInterval(fetchBookingDetails, 10000);
+
+    $(".appMenuBtn").on("click", handleCheckPendingBooking());
+
+
+    $("#LoadBookingHistory").on("click", () => {
+        loadBookingInfo();
+    });
     chkBooking();
-    fetchAndAssignWalletBalance($walletBalanceElement);
-
-
+    fetchAndAssignWalletBalance(walletBalanceElement);
 
     setInterval(() => {
         if (isElementLoaded('#BookingReferenceNumber')) {
@@ -786,11 +703,7 @@ $(document).ready(function () {
     } else {
         console.warn("Transaction history table is not found. Load operation skipped.");
     }
-    //Trigger Event Functions
-    $(".appMenuBtn").on("click", handleCheckPendingBooking());
-    $("#LoadBookingHistory").on("click", () => {
-        loadBookingInfo();
-    });
+
 
     $('#btnPayRider').click(function (event) {
         const dataPaymentApp = $(this).attr('data-payment-app');
@@ -809,48 +722,29 @@ $(document).ready(function () {
     });
 
 
+    if (isElementLoaded(".add-destination-button", "#btnRideInfo", '#findMeARiderBTN')) {
+        $(".add-destination-button").click(() => {
+            chkBooking();
+            $("#findMeARiderBTN").removeClass("d-none");
+            $("#btnRideInfo").click();
+        });
+    }
 
-    $(".add-destination-button").click(() => {
-        chkBooking();
-        $("#findMeARiderBTN").removeClass("d-none");
-        $("#btnRideInfo").click();
-    });
 
-
-   $('form#formRegistration').submit(function (e) {
-    e.preventDefault();
-    $.ajax({
-        type: "POST",
-        url: "_action_register_user.php",
-        data: $(this).serialize(),
-        success: function (data) {
-            if (data.status === "success") {
-                $("button.reset-button").click();
-                $("div#RegStatus")
-                    .removeClass("alert-danger")
-                    .addClass("alert-success")
-                    .html(data.message);
-            } else if (data.status === "error") {
-                let errorMessage = 'There were issues with your registration:<br>';
-                for (let field in data.errors) {
-                    if (data.errors.hasOwnProperty(field)) {
-                        errorMessage += `<strong>${data.errors[field]}</strong><br>`;
-                    }
+    $('form#formRegistration').submit(function (e) {
+        e.preventDefault();
+        $.ajax({
+            type: "POST",
+            url: "_action_register_user.php",
+            data: $(this).serialize(),
+            success: function (data) {
+                if (data) {
+                    $("button.reset-button").click();
+                    $("div.status").addClass("alert alert-success").html(data);
                 }
-                $("div#RegStatus")
-                    .removeClass("alert-success")
-                    .addClass("alert-danger")
-                    .html(errorMessage);
             }
-        },
-        error: function () {
-            $("div#RegStatus")
-                .removeClass("alert-success")
-                .addClass("alert-danger")
-                .html('An unexpected error occurred. Please try again later.');
-        }
+        });
     });
-});
 
 
     $('#formCarRental').submit(function (e) {
@@ -869,15 +763,55 @@ $(document).ready(function () {
     $('#formFindAngkas').submit(function (e) {
         e.preventDefault();
         var bookingStatusInterval = 0;
+
+
         let requestData = $(this).serialize();
+        //        {
+        //            form_from_dest: $("#form_from_dest").val().trim(),       // Pickup location
+        //            currentLoc_lat: $("#currentLoc_lat").val().trim(),       // Current latitude
+        //            currentLoc_long: $("#currentLoc_long").val().trim(),     // Current longitude
+        //            form_to_dest: $("#form_to_dest").val().trim(),           // Destination location
+        //            formToDest_lat: $("#formToDest_lat").val().trim(),       // Destination latitude
+        //            formToDest_long: $("#formToDest_long").val().trim(),     // Destination longitude
+        //            form_Est_Cost: $("#form_Est_Cost").val().trim(),         // Estimated cost
+        //            form_ETA_duration: $("#form_ETA_duration").val().trim(), // Estimated time of arrival in minutes
+        //            form_TotalDistance: $("#form_TotalDistance").val().trim() // Total distance in kilometers
+        //        };
+
+
         processAngkasBooking(requestData, onSuccess, onError);
 
+        //        $.ajax({
+        //            type: "POST",
+        //            url: "ajax_process_find_angkas.php",
+        //            data: $(this).serialize(),
+        //            dataType: "json", // Expect JSON response
+        //            success: function (response) {
+        //                if (response.hasPendingBooking) {
+        //                    // Handle pending bookings (if applicable)
+        //                    console.log("Pending booking exists:", response.pendingBookings);
+        //                    chkBooking(); // Updates the interface with current booking details
+        //                } else if (response.bookingReference) {
+        //                    // Use the booking reference from the JSON response
+        //                    var bookingNum = response.bookingReference;
+        //                    console.log("New booking created with reference:", bookingNum);
+        //                    chkBooking(); // Updates the interface with new booking details
+        //                    chkBookingStatus(bookingNum); // Pass booking reference to this function
+        //                } else if (response.error) {
+        //                    console.error("Error:", response.message);
+        //                } else {
+        //                    console.warn("Unexpected response format:", response);
+        //                }
+        //            },
+        //            error: function (xhr, status, error) {
+        //                console.error("AJAX Error:", status, error);
+        //            }
+        //        });
     });
 
 
 
     $('#topUpForm').on('submit', function (event) {
-        const walletbalance = $(".walletbalance");
         event.preventDefault();
         $.ajax({
             url: 'ajax_top_up_wallet.php',
@@ -890,7 +824,7 @@ $(document).ready(function () {
                 if (response.success) {
                     $('#topUpModal').modal('hide');
                     loadTransactionHistory();
-                    fetchAndAssignWalletBalance(walletbalance);
+                    getWalletBalance();
                 } else {
                     alert(response.error || 'Top-up failed. Please try again.');
                 }
@@ -900,9 +834,4 @@ $(document).ready(function () {
             }
         });
     });
-
-
-
 });
-
-

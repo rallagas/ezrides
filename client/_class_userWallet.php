@@ -82,5 +82,6 @@ public function topUp($amount) {
     ];
 
     return insert_data('user_wallet', $data);
-}
+        
+    }
 }

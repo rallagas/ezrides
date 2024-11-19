@@ -1,5 +1,4 @@
 <?php
-
 class Merchant {
     private $id;
     private $name;
@@ -68,38 +67,56 @@ class Merchant {
         return $merchants;
     }
 
-    public static function fetchMerchantInfoByItem( $itemIds = [] ) {
-        // Join item IDs into a string for the SQL query
-        $placeholders = implode( ',', array_fill( 0, count( $itemIds ), '?' ) );
+    public static function fetchMerchantInfoByItem($itemIds = []) {
+    // Check if itemIds is an array and not empty
+    if (empty($itemIds)) {
+        return null; // No items to query
+    }
 
-        $query = "
+    // Join item IDs into a string for the SQL query
+    $placeholders = implode(',', array_fill(0, count($itemIds), '?'));
+
+    // Prepare the SQL query
+    $query = "
         SELECT DISTINCT sm.*
         FROM shop_items si
         JOIN shop_merchants sm 
           ON si.merchant_id = sm.merchant_id
         WHERE si.item_id IN ($placeholders)
-        ";
+    ";
 
-        // Dynamically bind parameters
-        $stmt = CONN->prepare( $query );
-
-        $types = str_repeat( 'i', count( $itemIds ) );
-        $stmt->bind_param( $types, ...$itemIds );
-
-        $stmt->execute();
-        $result = $stmt->get_result();
-
-        if ( $row = $result->fetch_assoc() ) {
-            return new Merchant(
-                $row['merchant_id'],
-                $row['name'],
-                $row['merchant_loc_coor'],
-                $row['phone'] ?? null,
-                $row['address'] ?? null
-            );
-        }
-        return null;
+    // Prepare the statement
+    $stmt = CONN->prepare($query);
+    if ($stmt === false) {
+        return null; // SQL error, return null
     }
+
+    // Bind the parameters
+    $types = str_repeat('i', count($itemIds)); // 'i' for integers
+    $stmt->bind_param($types, ...$itemIds); // Dynamically bind parameters
+
+    // Execute the statement
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    // Check if any result exists and return the merchant info
+    $merchants = [];
+    while ($row = $result->fetch_assoc()) {
+        // Store merchants indexed by their merchant_id
+        $merchants[$row['merchant_id']] = new Merchant(
+            $row['merchant_id'],
+            $row['name'],
+            $row['merchant_loc_coor'],
+            $row['phone'] ?? null,
+            $row['address'] ?? null
+        );
+    }
+
+    // If merchants are found, return them, otherwise return null
+    return !empty($merchants) ? $merchants : null;
+}
+
+
     public static function fetchCommonMerchantById( $orderRefNum, $itemIds = [] ) {
         // Join item IDs into a string for the SQL query
         $placeholders = implode( ',', array_fill( 0, count( $itemIds ), '?' ) );
@@ -300,64 +317,58 @@ class Cart {
 
     // Place the order
 
-    public function placeOrder( $orderRefNum, $shippingDetails = [] ) {
-        // Validate inputs
-        if ( empty( $orderRefNum ) ) {
-            throw new Exception( "Order reference number is required." );
-        }
-        if ( empty( $shippingDetails['name'] ) || empty( $shippingDetails['address'] ) || empty( $shippingDetails['phone'] ) || empty( $shippingDetails['coordinates'] ) ) {
-            throw new Exception( "Shipping details are incomplete." );
-        }
-
-        $shippingName = $shippingDetails['name'];
-        $shippingAddress = $shippingDetails['address'];
-        $shippingPhone = $shippingDetails['phone'];
-        $addressCoordinates = $shippingDetails['coordinates'];
-
-        // Process each selected item from $this->items
-        foreach ( $this->items as $item ) {
-            $itemId = $item['itemId'];
-            $quantity = $item['quantity'];
-
-            // Update order status and reference number in shop_orders
-            $query = "
-                UPDATE shop_orders 
-                SET order_state_ind = 'O',
-                    shop_order_ref_num = ?,
-                    shipping_name = ?,
-                    shipping_address = ?,
-                    shipping_phone = ?,
-                    shipping_address_coor = ?
-                WHERE user_id = ? 
-                  AND item_id = ? 
-                  AND order_state_ind = 'C'
-            ";
-
-            $stmt = CONN->prepare( $query );
-            if ( !$stmt ) {
-                throw new Exception( "Failed to prepare query: " . CONN->error );
-                return false;
-            }
-
-            $stmt->bind_param(
-                "ssssssi",
-                $orderRefNum,
-                $shippingName,
-                $shippingAddress,
-                $shippingPhone,
-                $addressCoordinates,
-                $this->userId,
-                $itemId
-            );
-
-            if ( !$stmt->execute() ) {
-                throw new Exception( "Failed to update item $itemId: " . $stmt->error );
-                return false;
-            };
-        }
-        
-     return true;
+   public function placeOrder($orderRefNum, $shippingDetails = [], $Order_ids = []) {
+    // Validate inputs
+    if (empty($orderRefNum)) {
+        throw new Exception("Order reference number is required.");
     }
+    if (empty($shippingDetails['name']) || empty($shippingDetails['address']) || 
+        empty($shippingDetails['phone']) || empty($shippingDetails['coordinates'])) {
+        throw new Exception("Shipping details are incomplete.");
+    }
+    if (empty($Order_ids)) {
+        throw new Exception("No Order IDs found.");
+    }
+
+    // Sanitize and format order IDs
+    $orderIdsPlaceholder = implode(',', array_fill(0, count($Order_ids), '?'));
+
+    $shippingName = $shippingDetails['name'];
+    $shippingAddress = $shippingDetails['address'];
+    $shippingPhone = $shippingDetails['phone'];
+    $addressCoordinates = $shippingDetails['coordinates'];
+
+    // Prepare the query
+    $query = "
+        UPDATE shop_orders 
+        SET order_state_ind = 'O',
+            shop_order_ref_num = ?,
+            shipping_name = ?,
+            shipping_address = ?,
+            shipping_phone = ?,
+            shipping_address_coor = ?
+        WHERE order_id IN ($orderIdsPlaceholder)
+    ";
+
+    $stmt = CONN->prepare($query);
+    if (!$stmt) {
+        throw new Exception("Failed to prepare query: " . CONN->error);
+    }
+
+    // Bind parameters dynamically
+    $types = str_repeat('s', 5) . str_repeat('i', count($Order_ids)); // 5 strings + n integers
+    $params = array_merge([$orderRefNum, $shippingName, $shippingAddress, $shippingPhone, $addressCoordinates], $Order_ids);
+
+    $stmt->bind_param($types, ...$params);
+
+    // Execute the query
+    if (!$stmt->execute()) {
+        throw new Exception("Failed to update orders: " . $stmt->error);
+    }
+
+    return true;
+}
+
 
     // Update the cart in the database with the new or updated item
 
