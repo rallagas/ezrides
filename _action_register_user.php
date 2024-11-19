@@ -1,6 +1,5 @@
 <?php
 include_once "_db.php"; // Include database connection and utility functions
-//include_once "_sql_utility.php";
 include_once "_functions.php";
 
 header('Content-Type: application/json'); // Set header to return JSON
@@ -19,15 +18,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Email validation
     if (!filter_var($_POST['f_emailadd'], FILTER_VALIDATE_EMAIL)) {
-        $errors['f_emailadd'] = "Invalid email format.";
+        $errors['f_emailadd'] = "Please enter a valid email address.";
     }
 
     // Username validation (alphanumeric, 4-20 characters)
     if (!empty($_POST['f_username']) && !preg_match('/^[a-zA-Z0-9]{4,20}$/', $_POST['f_username'])) {
-        $errors['f_username'] = "Username should be 4-20 alphanumeric characters.";
+        $errors['f_username'] = "Your username should be between 4 and 20 alphanumeric characters.";
         
         if (usernameExists(CONN, $_POST['f_username'])) {
-            $errors['f_username'] = "Username already exists.";
+            $errors['f_username'] = "Sorry, this username is already taken.";
         }
     }
 
@@ -38,43 +37,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Password confirmation
     if ($_POST['f_password'] !== $_POST['f_cpassword']) {
-        $errors['f_cpassword'] = "Passwords do not match.";
+        $errors['f_cpassword'] = "Passwords do not match. Please re-enter your password.";
     }
 
     // Contact number validation (Philippines format: 09XXXXXXXXX)
     if (!empty($_POST['f_contact']) && !preg_match('/^09\d{9}$/', $_POST['f_contact'])) {
-        $errors['f_contact'] = "Invalid contact number. Use format 09XXXXXXXXX.";
+        $errors['f_contact'] = "Please enter a valid contact number (e.g., 09XXXXXXXXX).";
     }
 
     // Gender validation (optional field, only if value is provided)
     if (!empty($_POST['f_gender']) && !in_array($_POST['f_gender'], ['M', 'F', '1', '2', '3'])) {
-        $errors['f_gender'] = "Invalid gender selection.";
+        $errors['f_gender'] = "Please select a valid gender option.";
     }
 
     // Rider information validation (only if registering as a rider)
     $isRider = !empty($_POST['f_rider_status']);
     if ($isRider) {
         if (empty($_POST['f_r_car_brand'])) {
-            $errors['f_r_car_brand'] = "Car brand/model is required for riders.";
+            $errors['f_r_car_brand'] = "Please provide your car brand/model.";
         }
         if (!empty($_POST['f_r_plate_no']) && !preg_match('/^[A-Z]{3}-\d{4}$/', $_POST['f_r_plate_no'])) {
-            $errors['f_r_plate_no'] = "Plate number must be in the format XXX-XXXX.";
+            $errors['f_r_plate_no'] = "Plate number should be in the format XXX-XXXX.";
         }
-//        if (!empty($_POST['f_r_license_no']) ) {
-//            $errors['f_r_license_no'] = "License Invalid.";
-//        }
+        if (empty($_POST['f_r_license_no'])) {
+            $errors['f_r_license_no'] = "Please provide your license number.";
+        }
     }
 
     // Agreement checkbox validation
     if (empty($_POST['agreement_Checkbox'])) {
-        $errors['agreement_Checkbox'] = "You must accept the terms and conditions.";
+        $errors['agreement_Checkbox'] = "You must accept the terms and conditions to proceed.";
     }
 
     // If there are validation errors, return them in JSON format
     if (!empty($errors)) {
         echo json_encode([
             "status" => "error",
-            "message" => "Validation failed.",
+            "message" => "There were errors in your registration form.",
             "errors" => $errors // Provide detailed errors for each field
         ]);
         exit;
@@ -108,13 +107,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Return success response
     echo json_encode([
         "status" => "success",
-        "message" => "Registration completed successfully!"
+        "message" => "Registration completed successfully! You can now log in."
     ]);
 } else {
     // If request method is not POST, return an error
     echo json_encode([
         "status" => "error",
-        "message" => "Invalid request method."
+        "message" => "Invalid request method. Please submit the form properly."
     ]);
 }
 ?>

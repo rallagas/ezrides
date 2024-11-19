@@ -1,6 +1,13 @@
 <nav class="navbar navbar-dark bg-dark-purple sticky-bottom">
     <div class="container-fluid clear-fix">
-        <button class="navbar-brand btn btn-outline-light bg-purple mt-2 pb-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#appMenu" aria-controls="appMenu">
+
+
+        <a class="btn btn-secondary bg-purple border border-1 pb-2 text-white position-relative float-end mx-2" href="index.php">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-house" viewBox="0 0 16 16">
+                <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293zM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5z" />
+            </svg>
+        </a>
+        <button class="navbar-brand btn btn-outline-light bg-purple mt-1 pb-1" type="button" data-bs-toggle="offcanvas" data-bs-target="#appMenu" aria-controls="appMenu">
             <img src="../icons/ezrides.png" alt="EZ Rides" height="24">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-ui-radios-grid" viewBox="0 0 16 16">
                 <path d="M3.5 15a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5m9-9a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5m0 9a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5M16 3.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0m-9 9a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0m5.5 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m-9-11a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m0 2a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7" />
@@ -28,7 +35,7 @@
                         <a class="nav-link active" aria-current="page" href="#">Home</a>
                     </li>
                     <li class="nav-item">
-                       <span class="nav-text"> Wallet Balance : <span class="WalletBalance"></span> </span>
+                        <span class="nav-text"> Wallet Balance : <span class="walletbalance"></span> </span>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="../rider_dashboard/">

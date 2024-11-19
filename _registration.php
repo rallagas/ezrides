@@ -1,8 +1,6 @@
 <div class="row">
     <div class="col-12 pt-2">
         <h6 class="fw-bold display-6">Customer Registration</h6>
-        <hr>
-        <div class="status"></div>
         <form id="formRegistration">
             <div class="mb-2">
                 <input name="f_emailadd" id="f_emailadd" type="email" class="form-control" Placeholder="Email Address" required>

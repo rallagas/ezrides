@@ -1,27 +1,14 @@
-function getWalletBalance() {
-
-    $.ajax({
-        url: '_shop/ajax_get_balance.php',
-        method: 'GET',
-        dataType: 'json',
-        success: function (response) {
-            $('#WalletBalance').text(response.balance ? `Php ${response.balance}` : 'Error fetching balance');
-        },
-        error: function (xhr, status, error) {
-            console.error('Error fetching balance:', error);
-            $('#WalletBalance').text('An error occurred. Please try again.');
-        }
-    });
-}
+'use strict';
+const walletbalance = $(".walletbalance");
 
 
 function displaySuggestions(suggestions) {
-    let suggestionBox = $('div#merchantSuggestions');
+    var suggestionBox = $('div#merchantSuggestions');
     suggestionBox.empty(); // Clear previous suggestions
 
     if (suggestions.length > 0) {
         suggestions.forEach(function (merchant) {
-            let item = $('<a></a>')
+            var item = $('<a></a>')
                 .addClass('btn btn-sm mx-1 btn-outline-secondary')
                 .text(merchant.name) // Assumes response contains 'name'
                 .on('click', function () {
@@ -44,8 +31,8 @@ function loadCartItems() {
         url: "_shop/_action_fetch_cart.php", // URL to your script that fetches cart items
         dataType: "json",
         success: function (response) {
-            let cartContent = "";
-            let total = 0;
+            var cartContent = "";
+            var total = 0;
 
             if (response.success && response.cartItems.length > 0) {
                 $(".btn-checkout").removeClass("d-none");
@@ -58,7 +45,7 @@ function loadCartItems() {
                                 <span class="collapse">${item.item_id}</span>
                                 <div class="row gx-2 mb-1">
                                    <div class="col-1">
-                                        <input checked type="checkbox" class="cart-item-checkbox form-check-input mt-3" data-price="${item.price}" data-quantity="${item.quantity}" />
+                                        <input checked type="checkbox" class="cart-item-checkbox form-check-input mt-3" data-orderid="${item.order_id}" data-price="${item.price}" data-quantity="${item.quantity}" />
                                     </div>
                                     <div class="col-2">
                                         <img class="img-fluid" src="./_shop/item-img/${itemImg}" alt="${item.item_name}" />    
@@ -185,32 +172,28 @@ function fetchVoucherInfo(voucherCode) {
 // Function to display voucher info in table format
 function displayVoucherInfo(data) {
     $('#voucherInfo').html(`
-        <div class="table-responsive table-sm">
-            <table class="table table-bordered">
-                <tbody>
-                    <tr>
-                        <th>Code</th>
-                        <td>${data.voucher_code}</td>
-                    </tr>
-                    <tr>
-                        <th>Discount Amount</th>
-                        <td id="VoucherAmount">${data.voucher_amt}</td>
-                    </tr>
-                    <tr>
-                        <th>Description</th>
-                        <td>${data.voucher_desc}</td>
-                    </tr>
-                    <tr>
-                        <th>Valid Until</th>
-                        <td>${data.voucher_valid_until}</td>
-                    </tr>
-                    <tr>
-                        <th>Available Count</th>
-                        <td>${data.voucher_avail_count}</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+                
+<div class="card border-0 border-start border-warning shadow">
+                    <div class="card-header bg-danger p-1">
+                        <h5 class="fs-5 fw-bold text-warning">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-gift" viewBox="0 0 16 16">
+                                <path d="M3 2.5a2.5 2.5 0 0 1 5 0 2.5 2.5 0 0 1 5 0v.006c0 .07 0 .27-.038.494H15a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1v7.5a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 1 14.5V7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h2.038A3 3 0 0 1 3 2.506zm1.068.5H7v-.5a1.5 1.5 0 1 0-3 0c0 .085.002.274.045.43zM9 3h2.932l.023-.07c.043-.156.045-.345.045-.43a1.5 1.5 0 0 0-3 0zM1 4v2h6V4zm8 0v2h6V4zm5 3H9v8h4.5a.5.5 0 0 0 .5-.5zm-7 8V7H2v7.5a.5.5 0 0 0 .5.5z" />
+                            </svg>
+                            ${data.voucher_code}
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <h4 class="fw-bolder mb-4 fs-4">${data.voucher_desc}</h4>
+  <span class="small text-end">
+                        <figcaption class="blockquote-footer">
+                            Valid Until <cite title="${data.voucher_avail_count}">${data.voucher_valid_until}</cite>
+                        </figcaption>
+                        </span>
+                    </div>
+                    <div class="card-footer text-end">
+                        <button data-id="" class="btn btn-sm btn-danger shadow">Claim</button>
+                    </div>
+                </div>
     `);
 }
 
@@ -225,14 +208,59 @@ function clearVoucherInfo() {
     $('#voucherInfo').empty();
 }
 
+async function getDistanceAndETAProxy(fromLat, fromLng, toLat, toLng) {
+    const proxyUrl = 'proxy.php'; // Update this with the actual path to your PHP script
+    const apiKey = 'AIzaSyAvvMQkQyQYETGeVcSN3dWLaf2a7E64NxI';
+    const url = `${proxyUrl}?origins=${fromLat},${fromLng}&destinations=${toLat},${toLng}&key=${apiKey}`;
+
+    try {
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            throw new Error("Failed to fetch data from proxy.");
+        }
+
+        const data = await response.json();
+
+        if (!data || data.status !== 'OK') {
+            throw new Error(`API Error: ${data.error_message || 'Unknown error'}`);
+        }
+
+        const element = data.rows[0]?.elements[0];
+
+        if (!element || element.status !== 'OK') {
+            throw new Error("Unable to calculate distance and ETA.");
+        }
+
+        return JSON.stringify({
+            success: true,
+            distanceKm: parseFloat((element.distance.value / 1000).toFixed(2)), // Convert meters to km
+            etaMinutes: Math.round(element.duration.value / 60) // Convert seconds to minutes
+        });
+    } catch (error) {
+        console.error("Error in getDistanceAndETA: ", error.message);
+
+        return JSON.stringify({
+            success: false,
+            distanceKm: 3, // Default fallback
+            etaMinutes: 15, // Default fallback
+            error: true,
+            message: error.message
+        });
+    }
+}
+
+
 async function getDistanceAndETA(fromLat, fromLng, toLat, toLng, apiKey = 'AIzaSyAvvMQkQyQYETGeVcSN3dWLaf2a7E64NxI') {
     const url = `https://maps.googleapis.com/maps/api/distancematrix/json?units=metric` +
-                `&origins=${fromLat},${fromLng}` +
-                `&destinations=${toLat},${toLng}` +
-                `&key=${apiKey}`;
-    
+        `&origins=${fromLat},${fromLng}` +
+        `&destinations=${toLat},${toLng}` +
+        `&key=${apiKey}`;
+
     try {
-        const response = await fetch(url, { timeout: 10000 }); // Set a 10-second timeout
+        const response = await fetch(url, {
+            timeout: 10000
+        }); // Set a 10-second timeout
 
         if (!response.ok) {
             throw new Error("Failed to fetch data from Google Distance Matrix API.");
@@ -245,9 +273,9 @@ async function getDistanceAndETA(fromLat, fromLng, toLat, toLng, apiKey = 'AIzaS
         }
 
         const element = data.rows[0]?.elements[0];
-        
+
         if (!element || element.status !== 'OK') {
-            throw new Error("Unable to calculate distance and ETA: " + element );
+            throw new Error("Unable to calculate distance and ETA: " + element);
         }
 
         // Prepare the JSON encoded result with distance (float) and ETA (int)
@@ -319,134 +347,232 @@ function computeCostbyDistance(distanceText) {
     return (((distanceValue - MIN_DISTANCE) * rateAfter3KMs) + flagDownRate).toFixed(2);
 }
 
-
-function placeOrder(data, callback) {
-    if (!data || typeof data !== "object") {
-        console.error("Invalid data passed to placeOrder.");
-        return;
-    }
-
-    $.ajax({
-        url: '_shop/_ajax_place_order.php',
-        method: 'POST',
-        dataType: 'json',
-        data: data,
-        success: function (response) {
-            if (callback && typeof callback === "function") {
-                callback(null, response); // Pass the response to the callback
-            }
-        },
-        error: function (xhr) {
-            if (callback && typeof callback === "function") {
-                callback(xhr.responseText, null); // Pass the error to the callback
-            }
+function PlaceOrder(data) {
+    return new Promise((resolve, reject) => {
+        // Validate the data structure before making the request
+        if (!data || typeof data !== "object") {
+            reject(new Error("Invalid data passed to PlaceOrder. Ensure it is an object."));
+            return;
         }
+
+        // Log the data being sent for debugging
+        console.log("Sending data to server:", data);
+
+        // Perform the AJAX request
+        $.ajax({
+            url: '_shop/_ajax_place_order.php',
+            type: 'POST',
+            contentType: 'application/json', // Set the content type for JSON
+            data: JSON.stringify(data), // Convert the data to a JSON string
+            success: function (response) {
+                try {
+                    const result = JSON.parse(response); // Parse the JSON response
+                    console.log("Response from server:", result);
+                    resolve(result); // Resolve the promise with the parsed result
+                } catch (err) {
+                    reject(new Error("Failed to parse server response as JSON."));
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("Error in PlaceOrder:", error);
+                reject(new Error(`AJAX error: ${status} - ${error}`));
+            },
+        });
     });
 }
 
-function fetchMerchantInfo(itemId) {
-return $.ajax({
-        url: './_shop/_ajax_get_merchant_info.php', // Replace with the actual server-side script URL
-        method: 'POST',
-        dataType: 'json',
-        data: { item_id: itemId }
-    })
-    .then(response => {
+async function handleOrder(data) {
+    try {
+        const response = await PlaceOrder(data);
+        console.log("Order placed successfully:", response);
+
+        let ShopCost = parseFloat(response.AngkasBookingInfo.shop_cost, 2);
+        let RideCost = parseFloat(response.AngkasBookingInfo.form_Est_Cost, 2);
+        let FinalAmountToPay = ShopCost + RideCost;
+        $(".order-status").addClass("alert alert-success").text(response.message);
+        $(".order-details").addClass("card").html(`
+                  <div class="card-header">
+                    <h6 class="fw-bold">Summary</h6>
+                </div>
+                <div class="card-body p-1">
+                    <span class="fw-bolder">Order Reference Number: </span> <br>
+                    <span class="fw-light">${response.OrderRefNum}</span>
+                    <br>
+                    <span class="fw-bolder">Booking Reference:</span> <br>
+                    <span class="fw-light">${response.AngkasBookingInfo.angkas_booking_reference}</span>
+                    <br>
+                    <span class="fw-bolder">Shop Cost:</span> <br>
+                    <span class="fw-light">Php ${ShopCost.toFixed(2)}</span>
+                    <br>
+                    <span class="fw-bolder">Delivery Cost:</span> <br>
+                    <span class="fw-light">Php ${RideCost.toFixed(2)}</span>
+
+                </div>
+        `);
+        $('#FinalAmountToPay').text(FinalAmountToPay.toFixed(2));
+        // Handle success, maybe show a confirmation message to the user
+    } catch (error) {
+        console.error("Error placing order:", error.message);
+        // Handle error, show an error message to the user
+    }
+}
+
+
+async function fetchMerchantInfo(itemIds) {
+    console.log("Fetching merchant info for item IDs:", itemIds);
+
+    try {
+        const response = await $.ajax({
+            url: './_shop/_ajax_get_merchant_info.php',
+            method: 'POST',
+            dataType: 'json',
+            data: {
+                item_ids: itemIds
+            } // Sending item_ids as an array
+        });
+
         if (response.success) {
-            return response.merchant_info; // Return the merchant info on success
-            
+            console.log("Merchant info fetched successfully:", response.merchant_info);
+            return response; // Return the full response including merchant info
         } else {
+            console.error("Failed to fetch merchant info:", response.message);
             throw new Error(response.message || 'Failed to fetch merchant info.');
         }
-    })
-    .catch(error => {
-        console.error('Error fetching merchant info:', error);
+    } catch (error) {
+        console.error("Error during fetchMerchantInfo AJAX call:", error);
         throw error; // Re-throw the error for further handling
+    }
+}
+
+
+//async function UpdateOrderIds(OrderIds,) {
+//    console.log("Fetching merchant info for item IDs:", itemIds);
+//
+//    try {
+//        const response = await $.ajax({
+//            url: './_shop/_ajax_get_merchant_info.php',
+//            method: 'POST',
+//            dataType: 'json',
+//            data: {
+//                item_ids: itemIds
+//            } // Sending item_ids as an array
+//        });
+//
+//        if (response.success) {
+//            console.log("Merchant info fetched successfully:", response.merchant_info);
+//            return response; // Return the full response including merchant info
+//        } else {
+//            console.error("Failed to fetch merchant info:", response.message);
+//            throw new Error(response.message || 'Failed to fetch merchant info.');
+//        }
+//    } catch (error) {
+//        console.error("Error during fetchMerchantInfo AJAX call:", error);
+//        throw error; // Re-throw the error for further handling
+//    }
+//}
+// Fetch wallet balance
+// Refactored function to fetch wallet balance
+function getWalletBalance() {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: 'ajax_get_balance.php',
+            type: 'GET',
+            dataType: 'json',  // Expect JSON response
+            contentType: 'application/json',
+            success: function(response) {
+                resolve(response);  // Resolve with the response data
+            },
+            error: function(xhr, status, error) {
+                console.error('Error fetching wallet balance:', error);
+                reject({
+                    error: 'An error occurred. Please try again.'
+                });
+            }
+        });
     });
 }
 
 
-const LoadingIcon = `<div class="d-flex align-items-center">
-                          <strong role="status">Loading...</strong>
-                          <div class="spinner-border ms-auto" aria-hidden="true"></div>
-                        </div>`;
+// Function to fetch the balance and assign it to elements
+async function fetchAndAssignWalletBalance(elements) {
+    try {
+        const data = await getWalletBalance(); // Get the data from getWalletBalance()
+
+        // Check if the response contains the balance and assign it
+        if (data.balance) {
+            elements.html(`Php ${data.balance}`);
+        } else {
+            elements.text('Error fetching balance');
+        }
+        
+        return data; // Return the full response data for further usage if needed
+    } catch (error) {
+        console.error('Error:', error);
+        elements.text('Error fetching balance');
+        return { error: error.message }; // Return an error message in case of failure
+    }
+}
+
+
+const LoadingIcon = `<span class="spinner-border spinner-border-sm ms-auto" aria-hidden="true"></span>`;
+
 
 
 $(document).ready(function () {
 
 
-$('#VoucherCode').on('input', function () {
+    $('#VoucherCode').on('input', function () {
         const voucherCode = $(this).val();
         fetchVoucherInfo(voucherCode);
-    });    
-$('#getCurrentLocation').on('click', function () {
-    try {
-        // Check if the browser supports geolocation
-        if (!navigator.geolocation) {
-            throw new Error("Geolocation is not supported by this browser.");
+    });
+    $('#getCurrentLocation').on('click', async function () {
+        const originalContent = $(this).html(); // Save the original button content
+        const $button = $(this); // Cache the button for later use
+
+        $button.prop('disabled', true); // Disable the button to prevent spam clicks
+        $button.html(LoadingIcon); // Set loading icon while fetching location
+
+        try {
+            // Fetch the user's current location and update shipping address/coordinates
+            await GetCurrentLocation('#shippingAddress', '#AddressCoordinates');
+
+            // Retrieve the merchant's coordinates from the DOM
+            const merchantCoordinates = $('#MerchantLocCoor').val();
+            if (!merchantCoordinates) {
+                throw new Error("Merchant's location coordinates are not available.");
+            }
+            const [merchantLat, merchantLng] = merchantCoordinates.split(',').map(coord => parseFloat(coord.trim()));
+
+            // Retrieve the user's coordinates from the updated input
+            const userCoordinates = $('#AddressCoordinates').val();
+            const [userLat, userLng] = userCoordinates.split(',').map(coord => parseFloat(coord.trim()));
+
+            // Calculate the distance and ETA between the user and merchant
+            const resultJSON = await getDistanceAndETAProxy(userLat, userLng, merchantLat, merchantLng);
+            const result = JSON.parse(resultJSON);
+
+            if (!result.success) {
+                throw new Error(result.message || "Unable to calculate distance and ETA.");
+            }
+
+            // Update the input fields with distance, ETA, and estimated cost
+            $('#formDistanceKM').val(result.distanceKm);
+            console.log("DistanceKM:", result.distanceKm);
+            $('#formETA').val(result.etaMinutes);
+            console.log("DistanceKM:", result.distanceKm);
+
+            // Compute the cost based on distance
+            const estimatedCost = computeCostbyDistance(`${result.distanceKm} km`);
+            $('#formEstimatedCost').val(estimatedCost);
+        } catch (error) {
+            console.error("Error handling location and distance calculation:", error.message);
+            alert('Failed to retrieve location or calculate distance.');
+        } finally {
+            $button.prop('disabled', false); // Re-enable the button
+            $button.html(originalContent); // Restore the original button content
         }
+    });
 
-        // Use the geolocation API with high accuracy enabled
-        navigator.geolocation.getCurrentPosition(function (position) {
-            try {
-                var latitude = position.coords.latitude;
-                var longitude = position.coords.longitude;
-
-                // Fill the hidden input with coordinates
-                $('#AddressCoordinates').val(latitude + "," + longitude);
-
-                // Initialize Google Maps Geocoder
-                var geocoder = new google.maps.Geocoder();
-
-                // Get the readable address using reverse geocoding
-                var latlng = new google.maps.LatLng(latitude, longitude);
-                geocoder.geocode({
-                    'location': latlng
-                }, function (results, status) {
-                    try {
-                        if (status === google.maps.GeocoderStatus.OK) {
-                            if (results[0]) {
-                                // Put the readable address into the shipping address field
-                                $('#shippingAddress').val(results[0].formatted_address);
-                            } else {
-                                throw new Error("No address found.");
-                            }
-                        } else {
-                            throw new Error("Geocoder failed due to: " + status);
-                        }
-                    } catch (geocoderError) {
-                        console.error("Error in Geocoding: " + geocoderError.message);
-                    }
-                });
-            } catch (positionError) {
-                console.error("Error getting position: " + positionError.message);
-            }
-        }, function (error) {
-            switch (error.code) {
-                case error.PERMISSION_DENIED:
-                    alert("User denied the request for Geolocation.");
-                    break;
-                case error.POSITION_UNAVAILABLE:
-                    alert("Location information is unavailable.");
-                    break;
-                case error.TIMEOUT:
-                    alert("The request to get user location timed out.");
-                    break;
-                case error.UNKNOWN_ERROR:
-                    alert("An unknown error occurred.");
-                    break;
-                default:
-                    alert("Geolocation error: " + error.message);
-            }
-        }, {
-            enableHighAccuracy: true, // Prefer accurate location
-            timeout: 5000, // 5 seconds timeout
-            maximumAge: 0 // No cached location
-        });
-    } catch (browserError) {
-        throw new Error(browserError.message);
-    }
-});
 
     $(".CartItems").empty();
     loadCartItems();
@@ -474,7 +600,6 @@ $('#getCurrentLocation').on('click', function () {
             $('#searchResults').html(response);
         });
     });
-
     $('#inputMerchant').on('keydown', function () {
 
         let query = $(this).val().trim();
@@ -498,7 +623,6 @@ $('#getCurrentLocation').on('click', function () {
         }
 
     });
-    // Handle form submission to add item to cart
     $('form#formAddBasket').submit(function (e) {
         e.preventDefault();
 
@@ -522,153 +646,171 @@ $('#getCurrentLocation').on('click', function () {
         });
     });
 
-    $('.btn-checkout').click(function () {
+    $('.btn-checkout').click(async function () {
+        $('#checkoutModal').modal('show');
+        console.log("Checkout button clicked.");
+
+        fetchAndAssignWalletBalance(walletbalance);
+
         let checkedItems = [];
+        let itemIds = [];
         let subtotal = 0;
 
         // Get payment details
-        let shippingFee = parseFloat($("#ShippingFee").text().trim());
-        let voucherAmt = parseFloat($("#VoucherAmount").text().trim() || 0); // Default to 0 if no voucher amount is present
+        let shippingFee = parseFloat($("#ShippingFee").text().trim()) || 0;
+        let voucherAmt = parseFloat($("#VoucherAmount").text().trim()) || 0; // Default to 0 if invalid
         let voucherCode = $("#VoucherCode").val().trim();
+
+        console.log("Payment details fetched: ", {
+            shippingFee,
+            voucherAmt,
+            voucherCode,
+        });
 
         // Gather checked cart items
         $('.cart-item-checkbox:checked').each(function () {
-            let itemContainer = $(this).closest('.cart-item');
+            console.log("Processing a checked item...");
 
-            // Retrieve individual data from the HTML structure
+            let itemContainer = $(this).closest('.cart-item');
             let itemId = itemContainer.find('[cart-item-id]').attr('cart-item-id'); // Item ID
-            let merchantInfo = fetchMerchantInfo(itemId);
-            
-            
             let itemName = itemContainer.find('.item-name').text().trim(); // Item Name
-            let itemPrice = parseFloat($(this).data('price')); // Price from checkbox data-price
-            let itemQuantity = parseInt($(this).data('quantity')); // Quantity from checkbox data-quantity
+            let itemPrice = parseFloat($(this).data('price')) || 0; // Price from checkbox data-price
+            let itemQuantity = parseInt($(this).data('quantity')) || 0; // Quantity from checkbox data-quantity
+            let order_id = parseInt($(this).data('orderid')) || 0; // Quantity from checkbox data-quantity
+
+            console.log("Item details: ", {
+                itemId,
+                itemName,
+                itemPrice,
+                itemQuantity,
+                order_id
+            });
 
             // Calculate the amount for this item
             let amountToPay = itemPrice * itemQuantity;
 
             // Add to subtotal
             subtotal += amountToPay;
-            
-            
 
             // Add the item to the checked items array
             checkedItems.push({
+                order_id: order_id,
                 item_id: itemId,
                 name: itemName,
                 quantity: itemQuantity,
                 price: itemPrice,
                 amount: amountToPay,
-                merchantInfo : merchantInfo
             });
+            itemIds.push(itemId);
+        });
+        console.log("Subtotal calculated: ", subtotal);
+        console.log("Item IDs collected: ", itemIds);
+
+        // Fetch merchant info
+        let merchantInfo = await fetchMerchantInfo(itemIds).catch((error) => {
+            console.error("Error fetching merchant info: ", error);
         });
 
-        // Calculate the final amount
+        if (merchantInfo && merchantInfo.merchant_info) {
+            // Iterate over each merchant and populate the UI with their details
+            Object.values(merchantInfo.merchant_info).forEach((merchant) => {
+                $('#MerchantName').text(merchant.name || 'N/A');
+                $('#MerchantAddress').text(merchant.address || 'N/A');
+                $('#ContactInfo').text(merchant.contact_info || 'N/A');
+                $('#MerchantLocCoor').val(merchant.merchant_loc_coor || 'N/A');
+            });
+        } else {
+            console.log("No merchant info found.");
+        }
+
+        console.log("Merchant info fetched: ", merchantInfo);
+
+
+        // Calculate final amount
         let finalAmountToPay = calculateTotalAmount(subtotal, shippingFee, voucherAmt);
 
+        console.log("Final amount to pay: ", finalAmountToPay);
+
         // Update modal content
-        
-        $('#checkout-total').text(finalAmountToPay.toFixed(2));
+        $('#FinalAmountToPay').text(finalAmountToPay.toFixed(2));
         $('table#CheckOutItems').empty();
+
         checkedItems.forEach(function (item) {
-            console.log("Creating row for " + item.item_id);
-            $('table#CheckOutItems').append(`<tr class="check-out-item" checkout-item-id="${item.item_id}">
-                                            <td class="ps-3">
-                                                <i>${item.name}</i>
-                                            </td>
-                                            <td> x </td>
-                                            <td> ${item.quantity} pcs </td>
-                                            <td> Php ${item.amount.toFixed(2)} </td>
-                                        </tr> 
-                                       `);
+            console.log("Creating row for item: ", item);
+
+            let row = `<tr class="check-out-item" order-id="${item.order_id}" checkout-item-id="${item.item_id}">
+                <td><i>${item.name}</i></td>
+                <td> x </td>
+                <td> ${item.quantity} pcs </td>
+                <td> Php ${item.amount.toFixed(2)} </td>
+            </tr>`;
+
+            $('table#CheckOutItems').append(row);
         });
-        
-        
-        $('table#CheckOutItems').append(`<tr class="border-0 border-top">
-                                            <td colspan="3">Sub Total:</td> <td>Php ${subtotal.toFixed(2)}</td>
-                                         </tr>`);
 
-        // Update payment details in the modal
-        $("#PaymentDetails #ShippingFee").text(shippingFee.toFixed(2));
-        $("#PaymentDetails #VoucherAmount").text(voucherAmt.toFixed(2));
-        $("#PaymentDetails #FinalAmountToPay").text(finalAmountToPay.toFixed(2));
-
-        // Show the modal
-        $('#checkoutModal').modal('show');
+        console.log("Checkout modal updated with items.");
     });
 
-    
-    
 
-//    $('#placeOrderBtn').on('click', function (e) {
-//        $(this).html(LoadingIcon).prop("disabled");
-//        e.preventDefault(); // Prevent default form submission
-//        // Get user id from hidden input field
-//        const userId = $('#userLogged').val();
-//
-//        // Gather the checkout items
-//        const orderItems = [];
-//        $('#CheckOutItems .check-out-item').each(function () {
-//            const itemId = $(this).attr('checkout-item-id');
-//            const itemName = $(this).find('i').text();
-//            const quantity = parseInt($(this).find('td:nth-child(3)').text().split(' pcs')[0].trim());
-//            const amount = parseFloat($(this).find('td:nth-child(4)').text().replace('Php ', '').trim());
-//
-//            orderItems.push({
-//                itemId,
-//                itemName,
-//                quantity,
-//                amount
-//            });
-//        });
-//        // Submit the order via AJAX
-//        $.ajax({
-//            url: '_shop/_ajax_place_order.php', // PHP file to handle order placement
-//            method: 'POST',
-//            dataType: 'json',
-//            data: {
-//                user_id: userId,
-//                order_items: orderItems,
-//                order_ref_num: $("#shopReferenceNum").val(),
-//                shipping_name: $('#shippingName').val(),
-//                shipping_address: $('#shippingAddress').val(),
-//                shipping_phone: $('#shippingPhone').val(),
-//                address_coordinates: $('#AddressCoordinates').val(),
-//                payment_mode: $('#checkWalletPaymentMode').prop('checked') ? 'wallet' : 'other',
-//            },
-//            success: async function (response) {
-//
-//                if (response.success) {
-//                    console.log(response.OrderMsg);
-//
-//                    // If payment is using wallet
-//                    if ($('#checkWalletPaymentMode').prop('checked')) {
-//                        makePayment(response.totalAmountToPay, 'grocery');
-//                    } else {
-//                        console.log("Pending Payment: Php " + response.totalAmountToPay);
-//                    }
-//
-//                    // Reset the form and update UI
-//                    $('#formPlaceOrder')[0].reset();
-//                    $('#CheckOutItems').addClass('alert alert-success mx-2').html(response.message).append(LoadingIcon); // Clear the order summary
-//
-//                    loadCartItems();
-//                    updateCartCount();
-//
-//                    setTimeout(() => {
-//                        $(".modal").hide();
-//                        $(".modal-backdrop").hide();
-//                    }, 3000);
-//                } else {
-//                    console.error('Failed to place the order. Please try again.', response.message + ",Booking Info:" + response.AngkasBookingInfo.form_Est_Cost + ", Booking Status: " + response.bookingStatus);
-//                }
-//            },
-//
-//            error: function (xhr, status, error) {
-//                console.error('Order submission failed: ', error);
-//                alert('An error occurred while placing the order.');
-//            }
-//        });
-//    });
+
+
+
+    // Place Order button handler
+    $('#placeOrderBtn').on('click', async function (e) {
+        e.preventDefault(); // Prevent default form submission
+        const $button = $(this);
+        $button.html(LoadingIcon).prop("disabled", true); // Show loading state
+
+        try {
+            // Gather the user data and checkout items
+            const userId = $('#userLogged').val();
+
+            const orderItems = [];
+            $('#CheckOutItems .check-out-item').each(function () {
+                const itemId = $(this).attr('checkout-item-id');
+                const itemName = $(this).find('i').text();
+                const quantity = parseInt($(this).find('td:nth-child(3)').text().split(' pcs')[0].trim());
+                const amount = parseFloat($(this).find('td:nth-child(4)').text().replace('Php ', '').trim());
+                const orderId = $(this).attr('order-id');
+
+                orderItems.push({
+                    itemId: parseInt(itemId),
+                    itemName: itemName,
+                    quantity: quantity,
+                    amount: amount,
+                    orderId: parseInt(orderId),
+                });
+            });
+            console.log("order_items", orderItems);
+
+            const data = {
+                order_items: orderItems,
+                order_ref_num: $("#shopReferenceNum").val(),
+                shipping_name: $('#shippingName').val(),
+                shipping_address: $('#shippingAddress').val(),
+                shipping_phone: $('#shippingPhone').val(),
+                shipping_coordinates: $('#AddressCoordinates').val(),
+                payment_mode: $('#checkWalletPaymentMode').prop('checked') ? 'wallet' : 'other',
+                merchant_address: $("#MerchantAddress").text().trim(),
+                merchant_loc_coor: $("#MerchantLocCoor").val(),
+                estCost: $("#formEstimatedCost").val(),
+                etaTime: $("#formETA").val(),
+                etaDistanceKm: $("#formDistanceKM").val(),
+            };
+
+            // Call PlaceOrder and handle the response
+            handleOrder(data);
+            fetchAndAssignWalletBalance(walletbalance);
+
+
+
+        } catch (error) {
+            console.error("Error placing order:", error.message);
+            alert(`Error: ${error.message}`);
+        } finally {
+            $button.html('Place Order').prop("disabled", false); // Reset the button after completion
+        }
+    });
+
 
 });
