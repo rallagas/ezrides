@@ -8,14 +8,14 @@ require_once '_class_Bookings.php'; // Replace with the actual path to your clas
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['action'] === 'fetch_booking_status') {
     $bookingId = $_POST['bookingId'];
-    $columns = ['booking_status_text','payment_status_text'];
+    $columns = ['booking_status_text','payment_status_text','form_Est_Cost'];
     try {
         $angkasBookings = new AngkasBookings();
         $result = $angkasBookings->getColumnData($columns, USER_LOGGED, $bookingId);
 
         if (!empty($result)) {
             // Return the booking status as a JSON response
-            echo json_encode(['booking' => $result[0] , "Status" => $bookingId]);
+            echo json_encode(['booking' => $result[0] , "status" => $bookingId]);
         } else {
             echo json_encode(['error' => 'No booking found', 'status' => $bookingId]);
         }

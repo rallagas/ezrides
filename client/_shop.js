@@ -1,7 +1,3 @@
-'use strict';
-const walletbalance = $(".walletbalance");
-
-
 function displaySuggestions(suggestions) {
     var suggestionBox = $('div#merchantSuggestions');
     suggestionBox.empty(); // Clear previous suggestions
@@ -24,8 +20,9 @@ function displaySuggestions(suggestions) {
 }
 
 
+
 // Function to fetch and display cart items
-function loadCartItems() {
+async function loadCartItems() {
     $.ajax({
         type: "GET",
         url: "_shop/_action_fetch_cart.php", // URL to your script that fetches cart items
@@ -33,27 +30,30 @@ function loadCartItems() {
         success: function (response) {
             var cartContent = "";
             var total = 0;
-
             if (response.success && response.cartItems.length > 0) {
                 $(".btn-checkout").removeClass("d-none");
                 // Loop through each cart item and build HTML structure
                 response.cartItems.forEach(function (item) {
                     let itemImg = item.item_img == null ? "default-groc.png" : item.item_img;
                     cartContent += `
-                        <div class="col-lg-3 col-sm-6 col-md-6 cart-item">
+                        <div class="col-4 col-lg-2 col-sm-4 border border-0 col-md-6 cart-item position-relative">
                             <div class="container-fluid p-0" cart-item-id="${item.item_id}">
-                                <span class="collapse">${item.item_id}</span>
-                                <div class="row gx-2 mb-1">
-                                   <div class="col-1">
-                                        <input checked type="checkbox" class="cart-item-checkbox form-check-input mt-3" data-orderid="${item.order_id}" data-price="${item.price}" data-quantity="${item.quantity}" />
+                                <div class="row gx-2 mb-1 text-light">
+                                        <input checked type="checkbox" class="position-absolute top-25 start-50 translate-middle cart-item-checkbox form-check-input mt-3" data-orderid="${item.order_id}" data-price="${item.price}" data-quantity="${item.quantity}" />
+                                        <button data-orderid="${item.order_id}" class="deleteCartItem text-center p-0 z-3 btn btn-sm w-25 position-absolute bottom-0 start-0"> 
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                                                <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                                            </svg>
+                                        </button>
+                                    
+                                    <div class="col-sm-12">
+                                        <img class="img-fluid object-fit-cover shadow" style="height:15vh;width:100%" src="./_shop/item-img/${itemImg}" alt="${item.item_name}"/>    
                                     </div>
-                                    <div class="col-2">
-                                        <img class="img-fluid" src="./_shop/item-img/${itemImg}" alt="${item.item_name}" />    
-                                    </div>
-                                    <div class="col-9">
-                                        <span class="item-name">${item.item_name}</span> <br>
-                                        <span class="item-price">Price: Php ${item.price}</span>
-                                        <span class="item-qty">x ${item.quantity} pcs</span>
+                                    <div class="col-sm-12 text-center">
+                                        <span class="small item-name">${item.item_name}</span> 
+                                        <br class="m-0 p-0">
+                                        <span class="small item-price mt-0 pt-0">Php ${item.price}</span><br>
+                                        <span class="small item-qty float-end">${item.quantity} pcs</span>
                                     </div>
                                 </div>
                             </div>
@@ -62,23 +62,46 @@ function loadCartItems() {
                 });
 
                 // Insert cart items into #CartItems container
-                $(".CartItems").removeClass("alert alert-warning").html(cartContent);
+                $(".CartItems").html(cartContent);
             } else {
                 //hide checkout button
                 $(".btn-checkout").removeClass("d-none").addClass("d-none");
-
-                $(".CartItems").addClass("alert alert-warning mt-2").html("<span>No Cart Items.</span>");
-
             }
-
-            // Attach event handler to checkboxes to update total
-
         },
         error: function () {
-            $(".CartItems").html("<p>Error loading cart items.</p>");
+            console.error("Error loading Cart");
         }
     });
 }
+
+function deleteCartItems(orderIds) {
+    if (!Array.isArray(orderIds) || orderIds.length === 0) {
+        console.error("Invalid Order IDs provided.");
+        return;
+    }
+    $.ajax({
+        url: "ajax_delete_cart_item.php",
+        method: "POST",
+        data: { orderIds: orderIds },
+        dataType: "json",
+        success: function (response) {
+            if (response.success) {
+                // Remove the corresponding cart items from the display
+                orderIds.forEach(function (orderId) {
+                    $(`.cart-item button[data-Orderid='${orderId}']`).closest(".cart-item").remove();
+                });
+                console.log("Order Id to delete: ",orderId);
+            } else {
+                console.error("Failed to remove items from the cart: " + response.message);
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error("Error in AJAX request:", status, error);
+        }
+    });
+}
+
+
 
 
 // Function to calculate the total amount based on checked items
@@ -339,7 +362,8 @@ function computeCostbyDistance(distanceText) {
     if (distanceText.includes('mi')) {
         if (distanceValue * 1.60934 > 3) {
             return ((((distanceValue * 1.60934) - MIN_DISTANCE) * rateAfter3KMs) + flagDownRate).toFixed(2);
-        } else {
+        } 
+        else {
             return (((MIN_DISTANCE) * rateAfter3KMs) + flagDownRate).toFixed(2);
         }
     }
@@ -383,39 +407,66 @@ function PlaceOrder(data) {
 
 async function handleOrder(data) {
     try {
-        const response = await PlaceOrder(data);
+        const response = await PlaceOrder(data); // Place the order
+        const wallet = await getWalletBalance(); // Get wallet balance
         console.log("Order placed successfully:", response);
 
+        // Extract costs and calculate the final amount to pay
         let ShopCost = parseFloat(response.AngkasBookingInfo.shop_cost, 2);
         let RideCost = parseFloat(response.AngkasBookingInfo.form_Est_Cost, 2);
         let FinalAmountToPay = ShopCost + RideCost;
-        $(".order-status").addClass("alert alert-success").text(response.message);
-        $(".order-details").addClass("card").html(`
-                  <div class="card-header">
-                    <h6 class="fw-bold">Summary</h6>
-                </div>
-                <div class="card-body p-1">
-                    <span class="fw-bolder">Order Reference Number: </span> <br>
-                    <span class="fw-light">${response.OrderRefNum}</span>
-                    <br>
-                    <span class="fw-bolder">Booking Reference:</span> <br>
-                    <span class="fw-light">${response.AngkasBookingInfo.angkas_booking_reference}</span>
-                    <br>
-                    <span class="fw-bolder">Shop Cost:</span> <br>
-                    <span class="fw-light">Php ${ShopCost.toFixed(2)}</span>
-                    <br>
-                    <span class="fw-bolder">Delivery Cost:</span> <br>
-                    <span class="fw-light">Php ${RideCost.toFixed(2)}</span>
 
+        // Update the order status UI
+        $(".order-status").addClass("alert alert-success border-start-4 border-success p-3")
+            .html(`<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-square-fill me-3" viewBox="0 0 16 16">
+                    <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm10.03 4.97a.75.75 0 0 1 .011 1.05l-3.992 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.75.75 0 0 1 1.08-.022z"/>
+                </svg><small class='small ms-2'>${response.message}</small>`);
+
+        // Update the order details UI
+        $(".order-details").addClass("card").html(`
+                <div class="card-body p-2">
+                    <span class="small fw-bolder">Order Reference Number: </span>
+                    <span id="FinalOrderRefNum" class="small fw-light">${response.OrderRefNum}</span>
+                    <br>
+                    <span class="small fw-bolder">Booking Reference:</span> 
+                    <span class="small fw-light">${response.AngkasBookingInfo.angkas_booking_reference}</span>
+                    <br>
+                    <span class="small fw-bolder">Shop Cost: Php</span> 
+                    <span id="FinalShopCost" class="small fw-light"> ${ShopCost.toFixed(2)}</span>
+                    <br>
+                    <span class="small fw-bolder">Delivery Cost: Php</span> 
+                    <span  id="FinalDeliveryFee" class="small fw-bold">${RideCost.toFixed(2)}</span>
                 </div>
         `);
+
+        // Check if wallet balance is sufficient
+        const walletBalance = wallet.balance;
+        
+        if (walletBalance < FinalAmountToPay) {
+        console.log( "Compare : Wallet Balance" ,walletBalance, "Final Amount To Pay;", FinalAmountToPay );
+            // If insufficient, uncheck the wallet payment checkbox
+            $("#checkWalletPaymentMode").prop('checked', false);
+            $("#checkWalletPaymentMode").prop('disabled', true);
+            $("label[for=checkWalletPaymentMode]>span")
+                .removeClass("bg-purple")
+                .addClass("text-bg-danger")  
+                .text("Insufficient Balance. Top-Up and Pay Later.");
+            $("#PayNowBtn").prop('disabled',true);
+        } else {
+            // Otherwise, ensure it's checked if the balance is sufficient
+            $("#checkWalletPaymentMode").prop('checked', true);
+        }
+
+        // Update the Final Amount to Pay display
         $('#FinalAmountToPay').text(FinalAmountToPay.toFixed(2));
+
         // Handle success, maybe show a confirmation message to the user
     } catch (error) {
         console.error("Error placing order:", error.message);
         // Handle error, show an error message to the user
     }
 }
+
 
 
 async function fetchMerchantInfo(itemIds) {
@@ -512,14 +563,233 @@ async function fetchAndAssignWalletBalance(elements) {
         return { error: error.message }; // Return an error message in case of failure
     }
 }
+async function fetchShopList(view_type) {
+    try {
+        const response = await $.ajax({
+            url: "_shop_load_hist_content.php",
+            type: "POST",
+            data: { view_type },
+            dataType: "json"
+        });
+
+        if (response.success) {
+            return response.data; // Return the data array on success
+        } else {
+            throw new Error(response.error || "Unknown error occurred");
+        }
+    } catch (error) {
+        console.error("Error fetching shop list:", error.message);
+        throw error; // Re-throw the error for the caller to handle
+    }
+}
+
+async function renderShopList(shopList) {
+    const container = document.getElementById("shop-list-pane");
+    container.innerHTML = ""; // Clear existing content
+    
+    if (shopList.length === 0) {
+        container.innerHTML = `<div class="alert alert-info">No shop orders found.</div>`;
+        return;
+    }
+
+    for (const shop of shopList) {
+        // Create card structure
+        let card = `
+        <div class="card bg-light mb-1">
+            <div class="card-header">
+                <h5 class="card-title float-start">${shop.shop_order_reference_number}</h5>
+                <small class="small float-end">${shop.order_date} (${shop.elapsed_time})</small>
+            </div>
+            <div class="card-body">
+                <div class="container-fluid gx-0">
+                    <div class="row">
+                        <div class="col-6">
+                            <p class="card-text">
+                                <strong>Status:</strong> ${shop.shop_payment_status || "N/A"}<br>
+                                <strong>Total Amount:</strong> Php ${shop.shop_cost || "0.00"}<br>
+                                <strong>Booking Reference:</strong> ${shop.angkas_booking_reference || "Not yet Booked"}
+                            </p>
+                        </div>
+                        <div class="col-6 shop-items-content" id="${shop.shop_order_reference_number}"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <button data-shoporderref="${shop.shop_order_reference_number}" class="btn btn-danger">Remove</button>
+            </div>
+        </div>
+        `;
+
+        // Insert card into container
+        container.insertAdjacentHTML('beforeend', card);
+
+        // Fetch items for this shop order reference number and render the table
+        const itemData = await loadItemFromReference(shop.shop_order_reference_number);
+        if (itemData) {
+            const tableHTML = generateItemTable(itemData);
+            // Insert table into the corresponding shop order content
+            document.getElementById(shop.shop_order_reference_number).innerHTML = tableHTML;
+        }
+    }
+}
+
+// Generates a table of items for a given shop order reference
+function generateItemTable(items) {
+    let tableHTML = `
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Item Name</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    // Loop through each item and generate table rows
+    items.forEach(item => {
+        const amount = (item.price * item.quantity).toFixed(2); // Calculate amount
+        tableHTML += `
+            <tr>
+                <td>${item.item_name}</td>
+                <td>${item.price.toFixed(2)}</td>
+                <td>${item.quantity}</td>
+                <td>${amount}</td>
+            </tr>
+        `;
+    });
+
+    tableHTML += `</tbody></table>`;
+    return tableHTML;
+}
+
+// Refactor loadItemFromReference to return a promise
+async function loadItemFromReference(refNum) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: '_shop_load_item_from_reference.php',
+            type: 'POST',
+            data: { ref_num: refNum },
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    resolve(response.data); // Resolve the promise with the data
+                } else {
+                    reject('Error loading data: ' + response.error);
+                }
+            },
+            error: function(xhr, status, error) {
+                reject("Request failed: " + error);
+            }
+        });
+    });
+}
 
 
-const LoadingIcon = `<span class="spinner-border spinner-border-sm ms-auto" aria-hidden="true"></span>`;
+
+// async function shopItemsBaseFromReference(refNum) {
+//     // Ensure that data is an array
+//     const data = await loadItemFromReference(refNum);
+//     if (!Array.isArray(data) || data.length === 0) {
+//         alert('No items found.');
+//         return;
+//     }
+
+//     // Create table HTML structure
+//     let tableHTML = `
+//         <table class="table table-hover">
+//             <thead>
+//                 <tr>
+//                     <th>Item Name</th>
+//                     <th>Price</th>
+//                     <th>Quantity</th>
+//                     <th>Amount</th>
+//                 </tr>
+//             </thead>
+//             <tbody>
+//     `;
+
+//     // Loop through each item in the data array to populate the rows
+//     data.forEach(item => {
+//         // Calculate the amount (price * quantity)
+//         const amount = (item.price * item.quantity).toFixed(2);
+
+//         // Add row to the table
+//         tableHTML += `
+//             <tr>
+//                 <td>${item.item_name}</td>
+//                 <td>${item.price.toFixed(2)}</td>
+//                 <td>${item.quantity}</td>
+//                 <td>${amount}</td>
+//             </tr>
+//         `;
+//     });
+
+//     // Close the table body and table tags
+//     tableHTML += `</tbody></table>`;
+
+//     // Insert the table HTML into the DOM
+//     const tableContainer = document.getElementById('tableContainer'); // Assuming an element with id "tableContainer"
+//     // Update the DOM with the table
+// }
 
 
+//----------------
 
-$(document).ready(function () {
+$(document).on("click", "button#ShowCartItems", function () {
+   let data = null;
+   updateCartCount(); //refresh cartCount
+   loadCartItems(); // Refresh cart items
 
+});
+$(document).on("click", "button.deleteCartItem", function () {
+    const orderId = $(this).data("orderid"); // Get the order ID from the button's data attribute
+    deleteCartItems([orderId]); // Call the function with the order ID
+    updateCartCount();
+});
+
+$(document).ready(function() {
+
+
+        // Event listener for 'ShowOrderHistory' button
+        $(".ShowOrderHistory").on("click", async function (e) {
+            e.preventDefault(); // Prevent default action
+            
+            try {
+                const viewType = 1; // Example: Get all shop orders with no booking reference
+                const shopList = await fetchShopList(viewType);
+                console.log("Shop list fetched successfully:", shopList);
+    
+                // Call function to render shop list as Bootstrap cards
+                renderShopList(shopList);
+    
+                // Toggle visibility of buttons and views
+                $(this).addClass("d-none"); // Hide "ShowOrderHistory" button
+                $(".HideOrderHistory").removeClass("d-none"); // Show "HideOrderHistory" button
+                $("#MainShop").addClass("d-none"); // Hide "MainShop"
+                $("#shopHistory").removeClass("d-none"); // Show "shopHistory"
+            } catch (error) {
+                console.error("Failed to load shop list:", error.message);
+            }
+        });
+    
+        // Event listener for 'HideOrderHistory' button
+        $(".HideOrderHistory").on("click", function () {
+            $(this).addClass("d-none"); // Hide "HideOrderHistory" button
+            $(".ShowOrderHistory").removeClass("d-none"); // Show "ShowOrderHistory" button
+            $("#shopHistory").addClass("d-none"); // Hide "shopHistory"
+            $("#MainShop").removeClass("d-none"); // Show "MainShop"
+        });
+    
+    
+
+    // Usage example with async/await
+
+
+    const LoadingIcon = `<span class="spinner-border spinner-border-sm ms-auto" aria-hidden="true"></span>`;
+    const walletbalance = $(".walletbalance");
 
     $('#VoucherCode').on('input', function () {
         const voucherCode = $(this).val();
@@ -527,7 +797,12 @@ $(document).ready(function () {
     });
     $('#getCurrentLocation').on('click', async function () {
         const originalContent = $(this).html(); // Save the original button content
+        const checkIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">
+                          <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                          <path d="m10.97 4.97-.02.022-3.473 4.425-2.093-2.094a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05"/>
+                        </svg>`;
         const $button = $(this); // Cache the button for later use
+        const $shippingAddress = $("#shippingAddress");
 
         $button.prop('disabled', true); // Disable the button to prevent spam clicks
         $button.html(LoadingIcon); // Set loading icon while fetching location
@@ -559,7 +834,7 @@ $(document).ready(function () {
             $('#formDistanceKM').val(result.distanceKm);
             console.log("DistanceKM:", result.distanceKm);
             $('#formETA').val(result.etaMinutes);
-            console.log("DistanceKM:", result.distanceKm);
+            console.log("ETA:", result.etaMinutes);
 
             // Compute the cost based on distance
             const estimatedCost = computeCostbyDistance(`${result.distanceKm} km`);
@@ -568,16 +843,14 @@ $(document).ready(function () {
             console.error("Error handling location and distance calculation:", error.message);
             alert('Failed to retrieve location or calculate distance.');
         } finally {
-            $button.prop('disabled', false); // Re-enable the button
-            $button.html(originalContent); // Restore the original button content
+            //$button.prop('disabled', false); // Re-enable the button
+            $button.html(checkIcon).removeClass("border-warning btn-warning").addClass("border-success btn-success text-light"); // Restore the original button content
+            $shippingAddress.removeClass("border-warning").addClass("border-success");
         }
     });
 
 
-    $(".CartItems").empty();
-    loadCartItems();
     updateCartCount();
-
     calculateTotal();
     $(".cart-item-checkbox").on("change", () => {
         calculateTotal();
@@ -600,29 +873,29 @@ $(document).ready(function () {
             $('#searchResults').html(response);
         });
     });
-    $('#inputMerchant').on('keydown', function () {
+    // $('#inputMerchant').on('keydown', function () {
 
-        let query = $(this).val().trim();
-        if (query.length > 1) { // Start suggesting after 2 characters
-            $.ajax({
-                url: '_shop/_search_merchants.php', // Your backend endpoint
-                method: 'GET',
-                data: {
-                    query: query
-                },
-                success: function (data) {
-                    let suggestions = JSON.parse(data);
-                    displaySuggestions(suggestions);
-                },
-                error: function () {
-                    $('#merchantSuggestions').hide(); // Hide suggestions if there's an error
-                }
-            });
-        } else {
-            $('#merchantSuggestions').hide(); // Hide if input is too short
-        }
+    //     let query = $(this).val().trim();
+    //     if (query.length > 1) { // Start suggesting after 2 characters
+    //         $.ajax({
+    //             url: '_shop/_search_merchants.php', // Your backend endpoint
+    //             method: 'GET',
+    //             data: {
+    //                 query: query
+    //             },
+    //             success: function (data) {
+    //                 let suggestions = JSON.parse(data);
+    //                 displaySuggestions(suggestions);
+    //             },
+    //             error: function () {
+    //                 $('#merchantSuggestions').hide(); // Hide suggestions if there's an error
+    //             }
+    //         });
+    //     } else {
+    //         $('#merchantSuggestions').hide(); // Hide if input is too short
+    //     }
 
-    });
+    // });
     $('form#formAddBasket').submit(function (e) {
         e.preventDefault();
 
@@ -752,65 +1025,98 @@ $(document).ready(function () {
     });
 
 
-
-
-
     // Place Order button handler
     $('#placeOrderBtn').on('click', async function (e) {
         e.preventDefault(); // Prevent default form submission
         const $button = $(this);
         $button.html(LoadingIcon).prop("disabled", true); // Show loading state
-
-        try {
-            // Gather the user data and checkout items
-            const userId = $('#userLogged').val();
-
-            const orderItems = [];
-            $('#CheckOutItems .check-out-item').each(function () {
-                const itemId = $(this).attr('checkout-item-id');
-                const itemName = $(this).find('i').text();
-                const quantity = parseInt($(this).find('td:nth-child(3)').text().split(' pcs')[0].trim());
-                const amount = parseFloat($(this).find('td:nth-child(4)').text().replace('Php ', '').trim());
-                const orderId = $(this).attr('order-id');
-
-                orderItems.push({
-                    itemId: parseInt(itemId),
-                    itemName: itemName,
-                    quantity: quantity,
-                    amount: amount,
-                    orderId: parseInt(orderId),
-                });
-            });
-            console.log("order_items", orderItems);
-
-            const data = {
-                order_items: orderItems,
-                order_ref_num: $("#shopReferenceNum").val(),
-                shipping_name: $('#shippingName').val(),
-                shipping_address: $('#shippingAddress').val(),
-                shipping_phone: $('#shippingPhone').val(),
-                shipping_coordinates: $('#AddressCoordinates').val(),
-                payment_mode: $('#checkWalletPaymentMode').prop('checked') ? 'wallet' : 'other',
-                merchant_address: $("#MerchantAddress").text().trim(),
-                merchant_loc_coor: $("#MerchantLocCoor").val(),
-                estCost: $("#formEstimatedCost").val(),
-                etaTime: $("#formETA").val(),
-                etaDistanceKm: $("#formDistanceKM").val(),
-            };
-
-            // Call PlaceOrder and handle the response
-            handleOrder(data);
-            fetchAndAssignWalletBalance(walletbalance);
-
-
-
-        } catch (error) {
-            console.error("Error placing order:", error.message);
-            alert(`Error: ${error.message}`);
-        } finally {
-            $button.html('Place Order').prop("disabled", false); // Reset the button after completion
+        isAddressNull = ($('#shippingAddress').val() == "");
+        if(isAddressNull){
+            $('#getCurrentLocation').trigger('click');
         }
+        $("#PayNowBtn").prop("disabled",true).html(LoadingIcon + " Placing the Order.");
+        setTimeout(()=>{
+            try {
+                // Gather the user data and checkout items
+                const userId = $('#userLogged').val();
+                if (!userId) throw new Error("User is not logged in.");
+        
+                const orderItems = [];
+                $('#CheckOutItems .check-out-item').each(function () {
+                    const itemId = $(this).attr('checkout-item-id');
+                    const itemName = $(this).find('i').text();
+                    const quantity = parseInt($(this).find('td:nth-child(3)').text().split(' pcs')[0].trim());
+                    const amount = parseFloat($(this).find('td:nth-child(4)').text().replace('Php ', '').trim());
+                    const orderId = $(this).attr('order-id');
+        
+                    if (!itemId || !quantity || !amount || !orderId) {
+                        throw new Error("Some item details are missing.");
+                    }
+        
+                    orderItems.push({
+                        itemId: parseInt(itemId),
+                        itemName: itemName,
+                        quantity: quantity,
+                        amount: amount,
+                        orderId: parseInt(orderId),
+                    });
+                });
+        
+                if (orderItems.length === 0) throw new Error("No items in the order.");
+        
+                const data = {
+                    order_items: orderItems,
+                    order_ref_num: $("#shopReferenceNum").val(),
+                    shipping_name: $('#shippingName').val(),
+                    shipping_address: $('#shippingAddress').val(),
+                    shipping_phone: $('#shippingPhone').val(),
+                    shipping_coordinates: $('#AddressCoordinates').val(),
+                    payment_mode: $('#checkWalletPaymentMode').prop('checked') ? 'wallet' : 'other',
+                    merchant_address: $("#MerchantAddress").text().trim(),
+                    merchant_loc_coor: $("#MerchantLocCoor").val(),
+                    estCost: $("#formEstimatedCost").val(),
+                    etaTime: $("#formETA").val(),
+                    etaDistanceKm: $("#formDistanceKM").val(),
+                };
+        
+                // Validate all required fields in `data`
+                
+                    console.log("Validated data:", data);
+                      // Call PlaceOrder and handle the response
+                    updateCartCount();
+                    handleOrder(data);
+                    fetchAndAssignWalletBalance(walletbalance);
+                    $("#PayNowBtn").prop("disabled",false).html("Pay Now");
+                    
+            } catch (error) {
+                console.error("Error placing order:", error.message);
+                alert(`${error.message}`);
+            } finally {
+                $button.html('Place Order').prop("disabled", false); // Reset the button after completion
+            }
+        }
+        , (isAddressNull ? 4000 : 1000) );
+    
+        
     });
+    
 
+    $("#PayNowBtn").on("click", function(e){
+            e.preventDefault;
 
+            let FShopCost = $("#FinalShopCost").text().trim();
+            let FDeliveryFee = parseFloat($("#FinalDeliveryFee").text().trim());
+            let FOrderRefNum = $("#FinalOrderRefNum").text().trim();
+            //pay in advance 
+            makePayment(FShopCost,null,FOrderRefNum,FOrderRefNum,'S');
+            makePayment(FDeliveryFee,null,null,FOrderRefNum,'R');
+            //makePayment(estimatedCost, payFrom = null, payTo = null, referenceNum = null, paymentType = null, action = null) ;
+            //pay shop cost
+        $(this).prop("disabled",true);
+        setTimeout(()=>{
+            $(".btn-close").trigger("click");
+        },10000);
+       
+            //pay rider
+    });
 });

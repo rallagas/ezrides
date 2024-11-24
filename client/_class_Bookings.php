@@ -204,6 +204,8 @@ class AngkasBookings {
     
 
     public function getColumnData( $columns, $userId = null, $bookingReference = null, $numRows = 0 ) {
+        
+        $txn_cat = $_SESSION['txn_cat_id'] != 0  ?  $_SESSION['txn_cat_id'] : 2 ;
         // Ensure $columns is treated as an array if a single column is passed
         if ( is_string( $columns ) ) {
             $columns = [$columns];
@@ -231,7 +233,7 @@ class AngkasBookings {
     $selectedColumns = implode( ", ", $columns );
 
     // Base SQL query
-    $sql = "SELECT $selectedColumns FROM view_angkas_bookings";
+    $sql = "SELECT $selectedColumns FROM view_angkas_bookings WHERE transaction_category_id = '$txn_cat' ";
 
     // Parameters array for filters
     $params = [];
@@ -239,7 +241,7 @@ class AngkasBookings {
 
     // Add user ID filter if provided
     if ( $userId !== null ) {
-        $sql .= " WHERE customer_user_id = ?";
+        $sql .= " AND customer_user_id = ?";
         $params[] = $userId;
         $paramTypes .= "i";
         // assuming user_id is an integer
@@ -293,6 +295,112 @@ class AngkasBookings {
 
     return $data;
 }
+
+
+
+public function getBookingShopCombined($columns, $shopOrderUserId = null, $referenceNumbers = null, $numRows = 0) {
+    // Ensure $columns is treated as an array if a single column is passed
+    if (is_string($columns)) {
+        $columns = [$columns];
+    }
+
+    // List of allowed columns for validation
+    $allowedColumns = [
+        'shop_order_id', 'shop_order_reference_number', 'shop_order_voucher_code', 'shop_order_shipping_fee', 'shop_order_shipping_name',
+        'shop_order_shipping_address', 'shop_order_shipping_address_coordinates', 'shop_order_shipping_phone', 'shop_order_user_id',
+        'shop_order_rider_id', 'shop_order_item_id', 'shop_order_quantity', 'shop_order_amount_to_pay', 'shop_order_date', 
+        'shop_order_delivery_status', 'shop_order_payment_status', 'shop_order_state_indicator', 'shop_order_special_instructions', 
+        'angkas_booking_id', 'angkas_booking_reference', 'angkas_booking_transaction_category_id', 'angkas_booking_rider_user_id', 
+        'angkas_booking_from_destination_name', 'angkas_booking_user_current_location_latitude', 'angkas_booking_user_current_location_longitude', 
+        'angkas_booking_to_destination_name', 'angkas_booking_to_destination_longitude', 'angkas_booking_to_destination_latitude', 
+        'angkas_booking_eta_duration', 'angkas_booking_total_distance', 'angkas_booking_estimated_cost', 'angkas_booking_date_booked', 
+        'angkas_booking_status', 'angkas_booking_payment_status', 'angkas_booking_rating', 'user_profile_id', 'user_firstname', 
+        'user_lastname', 'user_middle_initial', 'user_contact_number', 'user_gender', 'user_email_address', 'user_profile_image', 
+        'user_rider_plate_number', 'user_rider_license_number'
+    ];
+
+    // Validate columns
+    foreach ($columns as $column) {
+        if (!in_array($column, $allowedColumns)) {
+            throw new InvalidArgumentException("Invalid column name: " . $column);
+        }
+    }
+
+    // Join columns for the SELECT statement
+    $selectedColumns = implode(", ", $columns);
+
+    // Base SQL query
+    $sql = "SELECT $selectedColumns FROM booking_shop_combined";
+
+    // Parameters array for filters
+    $params = [];
+    $paramTypes = "";
+
+    // Add user ID filter if provided
+    if ($shopOrderUserId !== null) {
+        $sql .= " WHERE shop_order_user_id = ?";
+        $params[] = $shopOrderUserId;
+        $paramTypes .= "i"; // assuming shop_order_user_id is an integer
+    }
+
+    // Add reference number filter if provided
+    if ($referenceNumbers !== null) {
+        if (is_array($referenceNumbers)) {
+            $placeholders = implode(", ", array_fill(0, count($referenceNumbers), "?"));
+            $sql .= ($shopOrderUserId !== null) ? " AND (" : " WHERE (";
+            $sql .= "shop_order_reference_number IN ($placeholders) OR angkas_booking_reference IN ($placeholders))";
+            $params = array_merge($params, $referenceNumbers, $referenceNumbers); // Merge both sets of references
+            $paramTypes .= str_repeat("s", count($referenceNumbers) * 2); // Assuming reference numbers are strings
+        } else {
+            $sql .= ($shopOrderUserId !== null) ? " AND (" : " WHERE (";
+            $sql .= "shop_order_reference_number = ? OR angkas_booking_reference = ?)";
+            $params[] = $referenceNumbers;
+            $params[] = $referenceNumbers;
+            $paramTypes .= "ss"; // assuming reference numbers are strings
+        }
+    }
+
+    // Add sorting
+    $sql .= " ORDER BY angkas_booking_id DESC";
+
+    // Apply limit if required
+    if ($numRows > 0) {
+        $sql .= " LIMIT $numRows";
+    }
+
+    // Prepare the statement
+    $stmt = $this->conn->prepare($sql);
+    if ($stmt === false) {
+        throw new Exception("Failed to prepare statement: " . $this->conn->error);
+    }
+
+    // Bind parameters dynamically
+    if (!empty($params)) {
+        $stmt->bind_param($paramTypes, ...$params);
+    }
+
+    // Execute the query
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    // Fetch all results into an array
+    $data = [];
+    while ($row = $result->fetch_assoc()) {
+        if (count($columns) === 1) {
+            // If a single column was requested, return just the column's value
+            $data[] = $row[$columns[0]];
+        } else {
+            // For multiple columns, return the full row
+            $data[] = $row;
+        }
+    }
+
+    // Close the statement
+    $stmt->close();
+
+    return $data;
+}
+
 
     
     

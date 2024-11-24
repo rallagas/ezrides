@@ -32,13 +32,9 @@ query("DELETE FROM angkas_bookings WHERE date_booked < (NOW() - INTERVAL 1 HOUR)
               <div class="col-12">
                   <?php include "nav_rider.php";?>
               </div>
-              <div class="col-12">
-                  <h6 class="display-6 fw-bold ms-4">Rider's Dashboard</h6>
-                  <h3 class="fs-6 fw-bold ms-5">Welcome  <?php echo $rider_logged; $arr= getUserInfo($rider_logged); foreach($arr as $a){ echo $a['user_firstname'] . ", " . $a['user_lastname'];}?></h3>
-                  <span id="queueStatus" class="ms-4 badge text-bg-info text-dark"></span>
-              </div>
       </div>
-       <div class="row px-5" id="availableBookings"></div>
+
+       <div class="row px-1" id="availableBookings"></div>
 
    </div>
     

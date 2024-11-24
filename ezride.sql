@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Nov 19, 2024 at 02:08 PM
+-- Generation Time: Nov 24, 2024 at 07:53 PM
 -- Server version: 10.4.21-MariaDB
 -- PHP Version: 8.1.6
 
@@ -25,9 +25,6 @@ SET time_zone = "+00:00";
 
 --
 -- Table structure for table `angkas_bookings`
---
--- Creation: Nov 19, 2024 at 06:24 AM
--- Last update: Nov 19, 2024 at 10:31 AM
 --
 
 CREATE TABLE IF NOT EXISTS `angkas_bookings` (
@@ -54,15 +51,12 @@ CREATE TABLE IF NOT EXISTS `angkas_bookings` (
   `rating` varchar(20) NOT NULL DEFAULT '3',
   PRIMARY KEY (`angkas_booking_id`),
   KEY `transaction_category_id` (`transaction_category_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=110 DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
 --
 -- Table structure for table `angkas_rider_queue`
---
--- Creation: Oct 21, 2024 at 09:46 AM
--- Last update: Nov 19, 2024 at 10:31 AM
 --
 
 CREATE TABLE IF NOT EXISTS `angkas_rider_queue` (
@@ -71,14 +65,12 @@ CREATE TABLE IF NOT EXISTS `angkas_rider_queue` (
   `queue_date` timestamp NOT NULL DEFAULT current_timestamp(),
   `queue_status` varchar(1) NOT NULL DEFAULT 'A' COMMENT 'A - available\r\nI - In Transit\r\nD - Done',
   PRIMARY KEY (`angkas_rider_queue_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=87 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=107 DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
 --
 -- Table structure for table `angkas_vehicle_model`
---
--- Creation: Nov 06, 2024 at 07:30 AM
 --
 
 CREATE TABLE IF NOT EXISTS `angkas_vehicle_model` (
@@ -139,8 +131,6 @@ INSERT INTO `angkas_vehicle_model` (`vehicle_model_id`, `vehicle_model`, `model_
 --
 -- Table structure for table `app_transactions`
 --
--- Creation: Oct 04, 2024 at 01:31 PM
---
 
 CREATE TABLE IF NOT EXISTS `app_transactions` (
   `app_txn_id` int(11) NOT NULL AUTO_INCREMENT,
@@ -184,9 +174,7 @@ CREATE TABLE IF NOT EXISTS `booking_shop_combined` (
 ,`shop_order_special_instructions` text
 ,`angkas_booking_id` int(11)
 ,`angkas_booking_reference` varchar(20)
-,`angkas_booking_shop_order_reference_number` varchar(25)
 ,`angkas_booking_transaction_category_id` int(2)
-,`angkas_booking_user_id` int(11)
 ,`angkas_booking_rider_user_id` int(11)
 ,`angkas_booking_from_destination_name` varchar(255)
 ,`angkas_booking_user_current_location_latitude` varchar(55)
@@ -201,14 +189,6 @@ CREATE TABLE IF NOT EXISTS `booking_shop_combined` (
 ,`angkas_booking_status` varchar(1)
 ,`angkas_booking_payment_status` char(1)
 ,`angkas_booking_rating` varchar(20)
-,`user_username` varchar(55)
-,`user_password` varchar(255)
-,`user_status` varchar(1)
-,`user_date_joined` timestamp
-,`user_type` varchar(1)
-,`user_rider_status` varchar(1)
-,`user_online_status` tinyint(1)
-,`user_last_online_timestamp` timestamp
 ,`user_profile_id` int(11)
 ,`user_firstname` varchar(55)
 ,`user_lastname` varchar(55)
@@ -250,8 +230,6 @@ CREATE TABLE IF NOT EXISTS `booking_shop_header_view` (
 
 --
 -- Table structure for table `items_inventory`
---
--- Creation: Oct 02, 2024 at 04:21 PM
 --
 
 CREATE TABLE IF NOT EXISTS `items_inventory` (
@@ -298,8 +276,6 @@ INSERT INTO `items_inventory` (`items_inventory_id`, `item_reference_id`, `item_
 --
 -- Table structure for table `lu_cars`
 --
--- Creation: Oct 02, 2024 at 04:07 PM
---
 
 CREATE TABLE IF NOT EXISTS `lu_cars` (
   `car_id` int(11) NOT NULL AUTO_INCREMENT,
@@ -320,9 +296,6 @@ CREATE TABLE IF NOT EXISTS `lu_cars` (
 --
 -- Table structure for table `payment`
 --
--- Creation: Nov 19, 2024 at 03:25 AM
--- Last update: Nov 19, 2024 at 03:25 AM
---
 
 CREATE TABLE IF NOT EXISTS `payment` (
   `payment_id` int(11) NOT NULL AUTO_INCREMENT,
@@ -341,9 +314,6 @@ CREATE TABLE IF NOT EXISTS `payment` (
 
 --
 -- Table structure for table `refcitymun`
---
--- Creation: Oct 02, 2024 at 04:31 PM
--- Last update: Oct 02, 2024 at 04:31 PM
 --
 
 CREATE TABLE IF NOT EXISTS `refcitymun` (
@@ -1267,7 +1237,8 @@ INSERT INTO `refcitymun` (`id`, `psgcCode`, `citymunDesc`, `regDesc`, `provCode`
 (904, '072246000', 'SIBONGA', '07', '0722', '072246'),
 (905, '072247000', 'SOGOD', '07', '0722', '072247'),
 (906, '072248000', 'TABOGON', '07', '0722', '072248'),
-(907, '072249000', 'TABUELAN', '07', '0722', '072249'),
+(907, '072249000', 'TABUELAN', '07', '0722', '072249');
+INSERT INTO `refcitymun` (`id`, `psgcCode`, `citymunDesc`, `regDesc`, `provCode`, `citymunCode`) VALUES
 (908, '072250000', 'CITY OF TALISAY', '07', '0722', '072250'),
 (909, '072251000', 'TOLEDO CITY', '07', '0722', '072251'),
 (910, '072252000', 'TUBURAN', '07', '0722', '072252'),
@@ -2014,9 +1985,6 @@ INSERT INTO `refcitymun` (`id`, `psgcCode`, `citymunDesc`, `regDesc`, `provCode`
 --
 -- Table structure for table `refprovince`
 --
--- Creation: Oct 02, 2024 at 04:32 PM
--- Last update: Oct 02, 2024 at 04:32 PM
---
 
 CREATE TABLE IF NOT EXISTS `refprovince` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -2126,10 +2094,6 @@ INSERT INTO `refprovince` (`id`, `psgcCode`, `provDesc`, `regCode`, `provCode`) 
 --
 -- Table structure for table `refregion`
 --
--- Creation: Oct 02, 2024 at 04:32 PM
--- Last update: Oct 02, 2024 at 04:32 PM
--- Last check: Oct 02, 2024 at 04:38 PM
---
 
 CREATE TABLE IF NOT EXISTS `refregion` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -2165,9 +2129,36 @@ INSERT INTO `refregion` (`id`, `psgcCode`, `regDesc`, `regCode`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `shop_category`
+-- Stand-in structure for view `shop_booking_header_view`
+-- (See below for the actual view)
 --
--- Creation: Nov 06, 2024 at 10:19 PM
+CREATE TABLE IF NOT EXISTS `shop_booking_header_view` (
+`shop_order_reference_number` varchar(20)
+,`angkas_booking_reference` varchar(20)
+,`customer_user_id` int(11)
+,`rider_user_id` int(11)
+,`rider_name` varchar(112)
+,`shop_cost` decimal(31,2)
+,`angkas_booking_eta_duration` decimal(6,2)
+,`angkas_booking_total_distance` decimal(6,2)
+,`angkas_booking_estimated_cost` decimal(12,2)
+,`angkas_booking_avg_rating` double
+,`customer_username` varchar(55)
+,`customer_user_type` varchar(1)
+,`customer_firstname` varchar(55)
+,`customer_lastname` varchar(55)
+,`booking_status` varchar(1)
+,`booking_payment_status` char(1)
+,`order_state_ind` char(1)
+,`order_date` varchar(21)
+,`shop_payment_status` varchar(1)
+,`elapsed_time` varchar(33)
+);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `shop_category`
 --
 
 CREATE TABLE IF NOT EXISTS `shop_category` (
@@ -2191,8 +2182,6 @@ INSERT INTO `shop_category` (`sc_id`, `shop_category_name`, `shop_category_statu
 --
 -- Table structure for table `shop_items`
 --
--- Creation: Nov 13, 2024 at 09:23 AM
---
 
 CREATE TABLE IF NOT EXISTS `shop_items` (
   `item_id` int(11) NOT NULL AUTO_INCREMENT,
@@ -2213,24 +2202,37 @@ CREATE TABLE IF NOT EXISTS `shop_items` (
 --
 
 INSERT INTO `shop_items` (`item_id`, `item_name`, `price`, `merchant_id`, `category`, `quantity`, `item_img`, `date_added`) VALUES
-(1, 'Whole Wheat Bread', '2.99', 1, 1, 0, NULL, '2024-11-04 21:19:49'),
-(2, 'Organic Milk', '3.49', 1, 1, 30, NULL, '2024-11-04 21:19:49'),
-(3, 'Fresh Spinach', '1.99', 1, 1, 100, NULL, '2024-11-04 21:19:49'),
-(4, 'Eggs (dozen)', '2.49', 1, 1, 40, NULL, '2024-11-04 21:19:49'),
-(5, 'Chicken Breast (lb)', '5.99', 1, 1, 25, NULL, '2024-11-04 21:19:49'),
-(6, 'Apples (per lb)', '1.79', 1, 1, 60, NULL, '2024-11-04 21:19:49'),
-(7, 'Almonds (16 oz)', '6.99', 1, 1, 15, NULL, '2024-11-04 21:19:49'),
-(8, 'Oatmeal (18 oz)', '3.29', 1, 1, 20, NULL, '2024-11-04 21:19:49'),
-(9, 'Greek Yogurt (32 oz)', '4.49', 1, 1, 25, NULL, '2024-11-04 21:19:49'),
-(10, 'Olive Oil (500 ml)', '8.99', 1, 1, 10, NULL, '2024-11-04 21:19:49');
+(1, 'Whole Wheat Bread', '2.99', 1, 1, 0, 'whole-wheat.jpg', '2024-11-04 21:19:49'),
+(2, 'Organic Milk', '3.49', 1, 1, 30, 'organic-milk.jpg', '2024-11-04 21:19:49'),
+(3, 'Fresh Spinach', '1.99', 1, 1, 100, 'fresh-spinach.jpeg', '2024-11-04 21:19:49'),
+(4, 'Eggs (dozen)', '2.49', 1, 1, 40, 'eggs.webp', '2024-11-04 21:19:49'),
+(5, 'Chicken Breast (lb)', '5.99', 1, 1, 25, 'chicken-breasts.jpg', '2024-11-04 21:19:49'),
+(6, 'Apples (per lb)', '1.79', 1, 1, 60, 'apple.jpg', '2024-11-04 21:19:49'),
+(7, 'Almonds (16 oz)', '6.99', 1, 1, 15, 'almonds.jpg', '2024-11-04 21:19:49'),
+(8, 'Oatmeal (18 oz)', '3.29', 1, 1, 20, 'classic-oats.png', '2024-11-04 21:19:49'),
+(9, 'Greek Yogurt (32 oz)', '4.49', 1, 1, 25, 'greek-style-vanilla.png', '2024-11-04 21:19:49'),
+(10, 'Olive Oil (500 ml)', '8.99', 1, 1, 10, 'olive-oil.jpg', '2024-11-04 21:19:49');
+
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `shop_item_merchant_view`
+-- (See below for the actual view)
+--
+CREATE TABLE IF NOT EXISTS `shop_item_merchant_view` (
+`shop_order_ref_num` varchar(20)
+,`item_name` varchar(255)
+,`quantity` int(11)
+,`price` decimal(10,2)
+,`merchant_name` varchar(255)
+,`merchant_address` varchar(255)
+,`customer_user_id` int(11)
+);
 
 -- --------------------------------------------------------
 
 --
 -- Table structure for table `shop_merchants`
---
--- Creation: Nov 17, 2024 at 05:58 AM
--- Last update: Nov 18, 2024 at 08:45 AM
 --
 
 CREATE TABLE IF NOT EXISTS `shop_merchants` (
@@ -2256,9 +2258,6 @@ INSERT INTO `shop_merchants` (`merchant_id`, `name`, `address`, `phone`, `email`
 --
 -- Table structure for table `shop_orders`
 --
--- Creation: Nov 17, 2024 at 10:10 AM
--- Last update: Nov 19, 2024 at 10:08 AM
---
 
 CREATE TABLE IF NOT EXISTS `shop_orders` (
   `order_id` int(11) NOT NULL AUTO_INCREMENT,
@@ -2276,19 +2275,17 @@ CREATE TABLE IF NOT EXISTS `shop_orders` (
   `amount_to_pay` decimal(9,2) DEFAULT NULL,
   `order_date` timestamp NULL DEFAULT current_timestamp(),
   `delivery_status` varchar(1) DEFAULT 'P',
-  `payment_status` varchar(1) DEFAULT 'P',
+  `payment_status` varchar(1) DEFAULT '',
   `order_state_ind` char(1) NOT NULL DEFAULT 'C' COMMENT 'C - Cart\r\nO - Checkout\r\nP - Payment\r\nD - Delivered\r\nX - Cancelled',
   `order_special_instructions` text DEFAULT NULL,
   PRIMARY KEY (`order_id`),
   UNIQUE KEY `unique_user_item` (`user_id`,`item_id`,`shop_order_ref_num`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=939 DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
 --
 -- Table structure for table `txn_category`
---
--- Creation: Nov 17, 2024 at 08:07 AM
 --
 
 CREATE TABLE IF NOT EXISTS `txn_category` (
@@ -2327,9 +2324,6 @@ INSERT INTO `txn_category` (`txn_category_id`, `page_action`, `txn_prefix`, `txn
 --
 -- Table structure for table `users`
 --
--- Creation: Nov 06, 2024 at 07:59 PM
--- Last update: Nov 19, 2024 at 12:52 PM
---
 
 CREATE TABLE IF NOT EXISTS `users` (
   `user_id` int(11) NOT NULL AUTO_INCREMENT,
@@ -2342,15 +2336,12 @@ CREATE TABLE IF NOT EXISTS `users` (
   `t_online_status` tinyint(1) NOT NULL DEFAULT 0 COMMENT 'Online / Offline',
   `t_last_online_ts` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
 --
 -- Table structure for table `user_profile`
---
--- Creation: Nov 08, 2024 at 04:40 PM
--- Last update: Nov 19, 2024 at 12:52 PM
 --
 
 CREATE TABLE IF NOT EXISTS `user_profile` (
@@ -2366,34 +2357,34 @@ CREATE TABLE IF NOT EXISTS `user_profile` (
   `rider_plate_no` varchar(10) DEFAULT NULL,
   `rider_license_no` varchar(55) DEFAULT NULL,
   PRIMARY KEY (`user_profile_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=44 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
 --
 -- Table structure for table `user_wallet`
 --
--- Creation: Nov 13, 2024 at 04:26 AM
--- Last update: Nov 18, 2024 at 09:16 AM
---
 
 CREATE TABLE IF NOT EXISTS `user_wallet` (
   `user_wallet_id` bigint(11) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) NOT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `payTo` int(11) DEFAULT NULL,
+  `payFrom` int(11) DEFAULT NULL,
   `wallet_txn_amt` decimal(12,2) NOT NULL DEFAULT 0.00,
   `txn_type_id` int(11) NOT NULL,
   `wallet_action` varchar(55) NOT NULL,
+  `payment_type` varchar(1) NOT NULL DEFAULT 'R' COMMENT 'R = Rider\r\n(has deduction of 70% to rider)\r\nS = Shop Cost (no deduction from rider , commission to Admin)\r\nA = Admin\r\nC = Cash Out\r\nT = Top Up\r\n',
+  `reference_number` varchar(32) DEFAULT NULL,
   `wallet_txn_status` varchar(1) NOT NULL DEFAULT 'P',
   `wallet_txn_start_ts` timestamp NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`user_wallet_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=79 DEFAULT CHARSET=utf8mb4;
+  PRIMARY KEY (`user_wallet_id`),
+  UNIQUE KEY `user_id` (`user_id`,`payment_type`,`txn_type_id`,`reference_number`,`wallet_txn_amt`)
+) ENGINE=InnoDB AUTO_INCREMENT=120 DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
 --
 -- Table structure for table `vehicle`
---
--- Creation: Oct 03, 2024 at 01:06 AM
 --
 
 CREATE TABLE IF NOT EXISTS `vehicle` (
@@ -2432,8 +2423,6 @@ INSERT INTO `vehicle` (`vehicle_id`, `vehicle_type`, `vehicle_plate_no`, `vehicl
 
 --
 -- Table structure for table `vendors`
---
--- Creation: Oct 03, 2024 at 02:18 PM
 --
 
 CREATE TABLE IF NOT EXISTS `vendors` (
@@ -2503,8 +2492,6 @@ CREATE TABLE IF NOT EXISTS `view_angkas_bookings` (
 --
 -- Table structure for table `vouchers`
 --
--- Creation: Nov 16, 2024 at 10:23 PM
---
 
 CREATE TABLE IF NOT EXISTS `vouchers` (
   `voucher_id` int(11) NOT NULL AUTO_INCREMENT,
@@ -2530,7 +2517,7 @@ INSERT INTO `vouchers` (`voucher_id`, `voucher_code`, `voucher_amt`, `voucher_de
 --
 DROP TABLE IF EXISTS `booking_shop_combined`;
 
-CREATE OR REPLACE ALGORITHM=UNDEFINED DEFINER=`` SQL SECURITY DEFINER VIEW `booking_shop_combined`  AS SELECT `so`.`order_id` AS `shop_order_id`, `so`.`shop_order_ref_num` AS `shop_order_reference_number`, `so`.`voucher_code` AS `shop_order_voucher_code`, `so`.`Shipping_fee` AS `shop_order_shipping_fee`, `so`.`shipping_name` AS `shop_order_shipping_name`, `so`.`shipping_address` AS `shop_order_shipping_address`, `so`.`shipping_address_coor` AS `shop_order_shipping_address_coordinates`, `so`.`shipping_phone` AS `shop_order_shipping_phone`, `so`.`user_id` AS `shop_order_user_id`, `so`.`rider_id` AS `shop_order_rider_id`, `so`.`item_id` AS `shop_order_item_id`, `so`.`quantity` AS `shop_order_quantity`, `so`.`amount_to_pay` AS `shop_order_amount_to_pay`, `so`.`order_date` AS `shop_order_date`, `so`.`delivery_status` AS `shop_order_delivery_status`, `so`.`payment_status` AS `shop_order_payment_status`, `so`.`order_state_ind` AS `shop_order_state_indicator`, `so`.`order_special_instructions` AS `shop_order_special_instructions`, `ab`.`angkas_booking_id` AS `angkas_booking_id`, `ab`.`angkas_booking_reference` AS `angkas_booking_reference`, `ab`.`shop_order_reference_number` AS `angkas_booking_shop_order_reference_number`, `ab`.`transaction_category_id` AS `angkas_booking_transaction_category_id`, `ab`.`user_id` AS `angkas_booking_user_id`, `ab`.`angkas_rider_user_id` AS `angkas_booking_rider_user_id`, `ab`.`form_from_dest_name` AS `angkas_booking_from_destination_name`, `ab`.`user_currentLoc_lat` AS `angkas_booking_user_current_location_latitude`, `ab`.`user_currentLoc_long` AS `angkas_booking_user_current_location_longitude`, `ab`.`form_to_dest_name` AS `angkas_booking_to_destination_name`, `ab`.`formToDest_long` AS `angkas_booking_to_destination_longitude`, `ab`.`formToDest_lat` AS `angkas_booking_to_destination_latitude`, `ab`.`form_ETA_duration` AS `angkas_booking_eta_duration`, `ab`.`form_TotalDistance` AS `angkas_booking_total_distance`, `ab`.`form_Est_Cost` AS `angkas_booking_estimated_cost`, `ab`.`date_booked` AS `angkas_booking_date_booked`, `ab`.`booking_status` AS `angkas_booking_status`, `ab`.`payment_status` AS `angkas_booking_payment_status`, `ab`.`rating` AS `angkas_booking_rating`, `u`.`t_username` AS `user_username`, `u`.`t_password` AS `user_password`, `u`.`t_status` AS `user_status`, `u`.`date_joined` AS `user_date_joined`, `u`.`t_user_type` AS `user_type`, `u`.`t_rider_status` AS `user_rider_status`, `u`.`t_online_status` AS `user_online_status`, `u`.`t_last_online_ts` AS `user_last_online_timestamp`, `up`.`user_profile_id` AS `user_profile_id`, `up`.`user_firstname` AS `user_firstname`, `up`.`user_lastname` AS `user_lastname`, `up`.`user_mi` AS `user_middle_initial`, `up`.`user_contact_no` AS `user_contact_number`, `up`.`user_gender` AS `user_gender`, `up`.`user_email_address` AS `user_email_address`, `up`.`user_profile_image` AS `user_profile_image`, `up`.`rider_plate_no` AS `user_rider_plate_number`, `up`.`rider_license_no` AS `user_rider_license_number` FROM ((((`shop_orders` `so` left join `angkas_bookings` `ab` on(`so`.`shop_order_ref_num` = `ab`.`shop_order_reference_number`)) left join `users` `u` on(`ab`.`user_id` = `u`.`user_id`)) left join `users` `ur` on(`ab`.`angkas_rider_user_id` = `ur`.`user_id` and `ur`.`t_rider_status` = 1)) left join `user_profile` `up` on(`u`.`user_id` = `up`.`user_id`))  ;
+CREATE OR REPLACE ALGORITHM=UNDEFINED DEFINER=`` SQL SECURITY DEFINER VIEW `booking_shop_combined`  AS SELECT `so`.`order_id` AS `shop_order_id`, `so`.`shop_order_ref_num` AS `shop_order_reference_number`, `so`.`voucher_code` AS `shop_order_voucher_code`, `so`.`Shipping_fee` AS `shop_order_shipping_fee`, `so`.`shipping_name` AS `shop_order_shipping_name`, `so`.`shipping_address` AS `shop_order_shipping_address`, `so`.`shipping_address_coor` AS `shop_order_shipping_address_coordinates`, `so`.`shipping_phone` AS `shop_order_shipping_phone`, `so`.`user_id` AS `shop_order_user_id`, `so`.`rider_id` AS `shop_order_rider_id`, `so`.`item_id` AS `shop_order_item_id`, `so`.`quantity` AS `shop_order_quantity`, `so`.`amount_to_pay` AS `shop_order_amount_to_pay`, `so`.`order_date` AS `shop_order_date`, `so`.`delivery_status` AS `shop_order_delivery_status`, `so`.`payment_status` AS `shop_order_payment_status`, `so`.`order_state_ind` AS `shop_order_state_indicator`, `so`.`order_special_instructions` AS `shop_order_special_instructions`, `ab`.`angkas_booking_id` AS `angkas_booking_id`, `ab`.`angkas_booking_reference` AS `angkas_booking_reference`, `ab`.`transaction_category_id` AS `angkas_booking_transaction_category_id`, `ab`.`angkas_rider_user_id` AS `angkas_booking_rider_user_id`, `ab`.`form_from_dest_name` AS `angkas_booking_from_destination_name`, `ab`.`user_currentLoc_lat` AS `angkas_booking_user_current_location_latitude`, `ab`.`user_currentLoc_long` AS `angkas_booking_user_current_location_longitude`, `ab`.`form_to_dest_name` AS `angkas_booking_to_destination_name`, `ab`.`formToDest_long` AS `angkas_booking_to_destination_longitude`, `ab`.`formToDest_lat` AS `angkas_booking_to_destination_latitude`, `ab`.`form_ETA_duration` AS `angkas_booking_eta_duration`, `ab`.`form_TotalDistance` AS `angkas_booking_total_distance`, `ab`.`form_Est_Cost` AS `angkas_booking_estimated_cost`, `ab`.`date_booked` AS `angkas_booking_date_booked`, `ab`.`booking_status` AS `angkas_booking_status`, `ab`.`payment_status` AS `angkas_booking_payment_status`, `ab`.`rating` AS `angkas_booking_rating`, `up`.`user_profile_id` AS `user_profile_id`, `up`.`user_firstname` AS `user_firstname`, `up`.`user_lastname` AS `user_lastname`, `up`.`user_mi` AS `user_middle_initial`, `up`.`user_contact_no` AS `user_contact_number`, `up`.`user_gender` AS `user_gender`, `up`.`user_email_address` AS `user_email_address`, `up`.`user_profile_image` AS `user_profile_image`, `up`.`rider_plate_no` AS `user_rider_plate_number`, `up`.`rider_license_no` AS `user_rider_license_number` FROM ((((`shop_orders` `so` left join `angkas_bookings` `ab` on(`so`.`shop_order_ref_num` = `ab`.`shop_order_reference_number`)) left join `users` `u` on(`ab`.`user_id` = `u`.`user_id`)) left join `users` `ur` on(`ab`.`angkas_rider_user_id` = `ur`.`user_id` and `ur`.`t_rider_status` = 1)) left join `user_profile` `up` on(`u`.`user_id` = `up`.`user_id`))  ;
 
 -- --------------------------------------------------------
 
@@ -2540,6 +2527,24 @@ CREATE OR REPLACE ALGORITHM=UNDEFINED DEFINER=`` SQL SECURITY DEFINER VIEW `book
 DROP TABLE IF EXISTS `booking_shop_header_view`;
 
 CREATE OR REPLACE ALGORITHM=UNDEFINED DEFINER=`` SQL SECURITY DEFINER VIEW `booking_shop_header_view`  AS SELECT `ab`.`angkas_booking_id` AS `angkas_booking_id`, `ab`.`angkas_booking_reference` AS `angkas_booking_reference`, `ab`.`shop_order_reference_number` AS `shop_order_reference_number`, `ab`.`user_id` AS `customer_user_id`, `ab`.`angkas_rider_user_id` AS `rider_user_id`, sum(`so`.`amount_to_pay`) AS `total_amount_to_pay`, max(`ab`.`form_ETA_duration`) AS `angkas_booking_eta_duration`, max(`ab`.`form_TotalDistance`) AS `angkas_booking_total_distance`, max(`ab`.`form_Est_Cost`) AS `angkas_booking_estimated_cost`, avg(`ab`.`rating`) AS `angkas_booking_avg_rating`, `u`.`t_username` AS `customer_username`, `u`.`t_user_type` AS `customer_user_type`, `up`.`user_firstname` AS `customer_firstname`, `up`.`user_lastname` AS `customer_lastname`, `ab`.`booking_status` AS `booking_status`, `ab`.`payment_status` AS `payment_status` FROM (((`angkas_bookings` `ab` join `shop_orders` `so` on(`ab`.`shop_order_reference_number` = `so`.`shop_order_ref_num`)) join `users` `u` on(`ab`.`user_id` = `u`.`user_id`)) join `user_profile` `up` on(`ab`.`user_id` = `up`.`user_id`)) GROUP BY `ab`.`angkas_booking_reference`, `ab`.`shop_order_reference_number`, `ab`.`user_id`, `ab`.`angkas_rider_user_id`, `u`.`t_username`, `u`.`t_user_type`, `up`.`user_firstname`, `up`.`user_lastname`, `ab`.`booking_status`, `ab`.`payment_status``payment_status`  ;
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `shop_booking_header_view`
+--
+DROP TABLE IF EXISTS `shop_booking_header_view`;
+
+CREATE OR REPLACE ALGORITHM=UNDEFINED DEFINER=`` SQL SECURITY DEFINER VIEW `shop_booking_header_view`  AS SELECT `so`.`shop_order_ref_num` AS `shop_order_reference_number`, `ab`.`angkas_booking_reference` AS `angkas_booking_reference`, `so`.`user_id` AS `customer_user_id`, `ab`.`angkas_rider_user_id` AS `rider_user_id`, concat(coalesce(`ri`.`user_lastname`,''),', ',coalesce(`ri`.`user_firstname`,'')) AS `rider_name`, sum(`so`.`amount_to_pay`) AS `shop_cost`, max(`ab`.`form_ETA_duration`) AS `angkas_booking_eta_duration`, max(`ab`.`form_TotalDistance`) AS `angkas_booking_total_distance`, max(`ab`.`form_Est_Cost`) AS `angkas_booking_estimated_cost`, avg(`ab`.`rating`) AS `angkas_booking_avg_rating`, `u`.`t_username` AS `customer_username`, `u`.`t_user_type` AS `customer_user_type`, `up`.`user_firstname` AS `customer_firstname`, `up`.`user_lastname` AS `customer_lastname`, `ab`.`booking_status` AS `booking_status`, `ab`.`payment_status` AS `booking_payment_status`, `so`.`order_state_ind` AS `order_state_ind`, max(date_format(`so`.`order_date`,'%m-%d-%Y %H:%i')) AS `order_date`, max(`so`.`payment_status`) AS `shop_payment_status`, CASE WHEN timestampdiff(SECOND,`so`.`order_date`,current_timestamp()) < 60 THEN concat(timestampdiff(SECOND,`so`.`order_date`,current_timestamp()),' second',case when timestampdiff(SECOND,`so`.`order_date`,current_timestamp()) > 1 then 's' else '' end,' ago') WHEN timestampdiff(MINUTE,`so`.`order_date`,current_timestamp()) < 60 THEN concat(timestampdiff(MINUTE,`so`.`order_date`,current_timestamp()),' minute',case when timestampdiff(MINUTE,`so`.`order_date`,current_timestamp()) > 1 then 's' else '' end,' ago') WHEN timestampdiff(HOUR,`so`.`order_date`,current_timestamp()) < 24 THEN concat(timestampdiff(HOUR,`so`.`order_date`,current_timestamp()),' hour',case when timestampdiff(HOUR,`so`.`order_date`,current_timestamp()) > 1 then 's' else '' end,' ago') WHEN timestampdiff(DAY,`so`.`order_date`,current_timestamp()) < 30 THEN concat(timestampdiff(DAY,`so`.`order_date`,current_timestamp()),' day',case when timestampdiff(DAY,`so`.`order_date`,current_timestamp()) > 1 then 's' else '' end,' ago') WHEN timestampdiff(MONTH,`so`.`order_date`,current_timestamp()) < 12 THEN concat(timestampdiff(MONTH,`so`.`order_date`,current_timestamp()),' month',case when timestampdiff(MONTH,`so`.`order_date`,current_timestamp()) > 1 then 's' else '' end,' ago') ELSE concat(timestampdiff(YEAR,`so`.`order_date`,current_timestamp()),' year',case when timestampdiff(YEAR,`so`.`order_date`,current_timestamp()) > 1 then 's' else '' end,' ago') END AS `elapsed_time` FROM ((((`shop_orders` `so` left join `angkas_bookings` `ab` on(`ab`.`shop_order_reference_number` = `so`.`shop_order_ref_num`)) left join `users` `u` on(`ab`.`user_id` = `u`.`user_id`)) left join `user_profile` `up` on(`ab`.`user_id` = `up`.`user_id`)) left join `user_profile` `ri` on(`ab`.`angkas_rider_user_id` = `ri`.`user_id`)) GROUP BY `so`.`shop_order_ref_num`, `so`.`order_state_ind`, `ab`.`angkas_booking_reference`, `so`.`user_id`, `ab`.`angkas_rider_user_id`, `u`.`t_username`, `u`.`t_user_type`, `up`.`user_firstname`, `up`.`user_lastname`, `ab`.`booking_status`, `ab`.`payment_status`, concat(coalesce(`ri`.`user_lastname`,''),', ',coalesce(`ri`.`user_firstname`,''))  ;
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `shop_item_merchant_view`
+--
+DROP TABLE IF EXISTS `shop_item_merchant_view`;
+
+CREATE OR REPLACE ALGORITHM=UNDEFINED DEFINER=`` SQL SECURITY DEFINER VIEW `shop_item_merchant_view`  AS SELECT `so`.`shop_order_ref_num` AS `shop_order_ref_num`, `si`.`item_name` AS `item_name`, `si`.`quantity` AS `quantity`, `si`.`price` AS `price`, `sm`.`name` AS `merchant_name`, `sm`.`address` AS `merchant_address`, `so`.`user_id` AS `customer_user_id` FROM ((`shop_orders` `so` join `shop_items` `si` on(`so`.`item_id` = `si`.`item_id`)) join `shop_merchants` `sm` on(`si`.`merchant_id` = `sm`.`merchant_id`)) WHERE `so`.`order_state_ind` <> 'C''C'  ;
 
 -- --------------------------------------------------------
 

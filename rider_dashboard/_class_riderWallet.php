@@ -85,7 +85,7 @@ public function topUp($amount) {
      * @return array
      * @throws Exception if balance is insufficient.
      */
-    public function makePaymentToRider($amount, $payFrom = null, $payTo = null, $refNumber = null, $paymentType = null, $wallet_action = "Made Payment") {
+    public function getPaymentToRider($amount, $payFrom = null, $payTo = null, $refNumber = null, $paymentType = null, $wallet_action = "Made Payment") {
         $response = ["success" => false, "message" => null];
         $refNum = $refNumber;
         $payType = $paymentType;

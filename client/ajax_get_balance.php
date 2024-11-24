@@ -4,6 +4,8 @@ include_once "_class_UserWallet.php";  // Include the UserWallet class
 
 header('Content-Type: application/json');
 
+$response = ['balance' => 0.00, 'error' => null];
+
 try {
     // Assume user ID is stored in session
     $userId = USER_LOGGED;
@@ -15,8 +17,12 @@ try {
     $balance = $userWallet->getBalance();
     
     // Return the balance as JSON
-    echo json_encode(['balance' => number_format($balance, 2)]);
+    $response['balance'] =  number_format($balance, 2);
+    
 } catch (Exception $e) {
     // Return an error message in case of failure
-    echo json_encode(['error' => $e->getMessage()]);
+    $response ['error'] = $e->getMessage();
+    
 }
+
+echo json_encode($response);
