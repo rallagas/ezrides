@@ -5,13 +5,17 @@ class Merchant {
     private $merchant_loc_coor;
     private $contactInfo;
     private $address;
+    private $merchantImg;
+    private $merchantType;
 
-    public function __construct( $id, $name, $merchant_loc_coor, $contactInfo = null, $address = null ) {
+    public function __construct( $id, $name, $merchant_loc_coor, $merchantImg = null, $contactInfo = null, $address = null, $merchantType = null ) {
         $this->id = $id;
         $this->name = $name;
         $this->merchant_loc_coor = $merchant_loc_coor;
         $this->contactInfo = $contactInfo;
         $this->address = $address;
+        $this->img = $merchantImg;
+        $this->type = $merchantType;
     }
 
     public function getId() {
@@ -34,6 +38,15 @@ class Merchant {
         return $this->merchant_loc_coor;
     }
 
+    public function getImg() {
+        return $this->img;
+    }
+
+    public function getType() {
+        return $this->type;
+    }
+
+
     public static function getAllMerchantNames() {
 
         $query = "SELECT name FROM shop_merchants";
@@ -47,10 +60,25 @@ class Merchant {
         }
         return $names;
     }
+    public static function getMerchantNamesById($merchantId) {
+
+        $query = "SELECT name FROM shop_merchants WHERE merchant_id = ?";
+        $stmt = CONN->prepare( $query );
+        $stmt->bind_param('i', $merchantId);
+        $stmt->execute();
+        
+        $result = $stmt->get_result();
+
+        $names = [];
+        while ( $row = $result->fetch_assoc() ) {
+            $names[] = $row['name'];
+        }
+        return $names;
+    }
 
     public static function getAllMerchants() {
 
-        $query = "SELECT * FROM shop_merchants";
+        $query = "SELECT DISTINCT * FROM shop_merchants";
         $stmt = CONN->prepare( $query );
         $stmt->execute();
         $result = $stmt->get_result();
@@ -60,8 +88,11 @@ class Merchant {
             $merchants[] = new Merchant(
                 $row['merchant_id'],
                 $row['name'],
+                $row['merchant_loc_coor'],
+                $row['merchant_img'] ?? null,
                 $row['contact_info'] ?? null,
-                $row['address'] ?? null
+                $row['address'] ?? null,
+                $row['merchant_type'] ?? null
             );
         }
         return $merchants;
@@ -106,8 +137,10 @@ public static function fetchMerchantInfoByItem($itemIds = [])
             $row['merchant_id'],
             $row['name'],
             $row['merchant_loc_coor'],
-            $row['phone'] ?? null,
-            $row['address'] ?? null
+            $row['merchant_img'] ?? null,
+            $row['contact_info'] ?? null,
+            $row['address'] ?? null,
+            $row['merchant_type'] ?? null
         );
     }
 
@@ -144,8 +177,10 @@ public static function fetchMerchantInfoByItem($itemIds = [])
                 $row['merchant_id'],
                 $row['name'],
                 $row['merchant_loc_coor'],
-                $row['phone'] ?? null,
-                $row['address'] ?? null
+                $row['merchant_img'] ?? null,
+                $row['contact_info'] ?? null,
+                $row['address'] ?? null,
+                $row['merchant_type'] ?? null
             );
         }
         return null;
@@ -202,8 +237,7 @@ class Product {
 
     public static function fetchAllProducts() {
 
-        $query = "
-            SELECT si.item_id, si.item_name, si.price, si.quantity, si.merchant_id, sm.name AS merchant_name, si.item_img
+        $query = "SELECT si.item_id, si.item_name, si.price, si.quantity, si.merchant_id, sm.name AS merchant_name, si.item_img
             FROM shop_items si
             JOIN shop_merchants sm ON si.merchant_id = sm.merchant_id
         ";
@@ -252,6 +286,32 @@ class Product {
         }
         return null;
     }
+    public static function fetchByMerchantId($merchantId) {
+        $query = "SELECT si.item_id, si.item_name, si.price, si.quantity, si.merchant_id, sm.name AS merchant_name, si.item_img, sm.merchant_loc_coor
+            FROM shop_items si
+            JOIN shop_merchants sm ON si.merchant_id = sm.merchant_id
+            WHERE si.merchant_id = ?";
+        $stmt = CONN->prepare($query);
+        $stmt->bind_param("i", $merchantId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+    
+        $products = []; // Initialize an array to store products
+        while ($row = $result->fetch_assoc()) {
+            $products[] = new Product(
+                $row['item_id'],
+                $row['item_name'],
+                $row['price'],
+                $row['quantity'],
+                $row['merchant_id'],
+                $row['merchant_name'],
+                $row['item_img']
+            );
+        }
+    
+        return $products; // Return the array of products
+    }
+    
 
 }
 
@@ -591,5 +651,34 @@ class ShopOrders extends Cart {
     
         return true;
     }
+
+    public function ValidateOrderRefNum($orderRefNum) {
+        // Validate the input
+        if (empty($orderRefNum)) {
+            throw new Exception("Order reference number is required.");
+        }
+    
+        // Query to check if the order reference number exists
+        $query = "SELECT 1 FROM shop_orders WHERE shop_order_ref_num = ? LIMIT 1";
+    
+        // Prepare the statement
+        $stmt = CONN->prepare($query);
+        if (!$stmt) {
+            throw new Exception("Failed to prepare query: " . CONN->error);
+        }
+    
+        // Bind the parameter
+        $stmt->bind_param("s", $orderRefNum);
+    
+        // Execute the query
+        $stmt->execute();
+    
+        // Get the result
+        $result = $stmt->get_result();
+    
+        // Return true if a record exists, false otherwise
+        return $result->num_rows > 0;
+    }
+    
     
 }

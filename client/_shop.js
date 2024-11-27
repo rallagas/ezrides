@@ -274,58 +274,58 @@ async function getDistanceAndETAProxy(fromLat, fromLng, toLat, toLng) {
 }
 
 
-async function getDistanceAndETA(fromLat, fromLng, toLat, toLng, apiKey = 'AIzaSyAvvMQkQyQYETGeVcSN3dWLaf2a7E64NxI') {
-    const url = `https://maps.googleapis.com/maps/api/distancematrix/json?units=metric` +
-        `&origins=${fromLat},${fromLng}` +
-        `&destinations=${toLat},${toLng}` +
-        `&key=${apiKey}`;
+// async function getDistanceAndETA(fromLat, fromLng, toLat, toLng, apiKey = 'AIzaSyAvvMQkQyQYETGeVcSN3dWLaf2a7E64NxI') {
+//     const url = `https://maps.googleapis.com/maps/api/distancematrix/json?units=metric` +
+//         `&origins=${fromLat},${fromLng}` +
+//         `&destinations=${toLat},${toLng}` +
+//         `&key=${apiKey}`;
 
-    try {
-        const response = await fetch(url, {
-            timeout: 10000
-        }); // Set a 10-second timeout
+//     try {
+//         const response = await fetch(url, {
+//             timeout: 10000
+//         }); // Set a 10-second timeout
 
-        if (!response.ok) {
-            throw new Error("Failed to fetch data from Google Distance Matrix API.");
-        }
+//         if (!response.ok) {
+//             throw new Error("Failed to fetch data from Google Distance Matrix API.");
+//         }
 
-        const data = await response.json();
+//         const data = await response.json();
 
-        if (!data || data.status !== 'OK') {
-            throw new Error(`API Error: ${data.error_message || 'Unknown error'}`);
-        }
+//         if (!data || data.status !== 'OK') {
+//             throw new Error(`API Error: ${data.error_message || 'Unknown error'}`);
+//         }
 
-        const element = data.rows[0]?.elements[0];
+//         const element = data.rows[0]?.elements[0];
 
-        if (!element || element.status !== 'OK') {
-            throw new Error("Unable to calculate distance and ETA: " + element);
-        }
+//         if (!element || element.status !== 'OK') {
+//             throw new Error("Unable to calculate distance and ETA: " + element);
+//         }
 
-        // Prepare the JSON encoded result with distance (float) and ETA (int)
-        const result = {
-            success: true,
-            distanceKm: parseFloat((element.distance.value / 1000).toFixed(2)), // Convert meters to km as float
-            etaMinutes: Math.round(element.duration.value / 60) // Convert seconds to minutes as int
-        };
+//         // Prepare the JSON encoded result with distance (float) and ETA (int)
+//         const result = {
+//             success: true,
+//             distanceKm: parseFloat((element.distance.value / 1000).toFixed(2)), // Convert meters to km as float
+//             etaMinutes: Math.round(element.duration.value / 60) // Convert seconds to minutes as int
+//         };
 
-        // Return the result as a JSON string
-        return JSON.stringify(result);
+//         // Return the result as a JSON string
+//         return JSON.stringify(result);
 
-    } catch (error) {
-        console.error("Error in getDistanceAndETA: ", error.message);
+//     } catch (error) {
+//         console.error("Error in getDistanceAndETA: ", error.message);
 
-        // Return the error result as a JSON string
-        const result = {
-            success: false,
-            distanceKm: 3, // Default fallback
-            etaMinutes: 15, // Default fallback
-            error: true,
-            message: error.message,
-        };
+//         // Return the error result as a JSON string
+//         const result = {
+//             success: false,
+//             distanceKm: 3, // Default fallback
+//             etaMinutes: 15, // Default fallback
+//             error: true,
+//             message: error.message,
+//         };
 
-        return JSON.stringify(result);
-    }
-}
+//         return JSON.stringify(result);
+//     }
+// }
 
 
 
@@ -407,14 +407,17 @@ function PlaceOrder(data) {
 
 async function handleOrder(data) {
     try {
-        const response = await PlaceOrder(data); // Place the order
+        const response = await PlaceOrder(data); // Place the orderor
         const wallet = await getWalletBalance(); // Get wallet balance
         console.log("Order placed successfully:", response);
 
         // Extract costs and calculate the final amount to pay
+        let OrderRefNum = response.OrderRefNum;
+        let BookingRefNum = response.AngkasBookingInfo.angkas_booking_reference;
         let ShopCost = parseFloat(response.AngkasBookingInfo.shop_cost, 2);
         let RideCost = parseFloat(response.AngkasBookingInfo.form_Est_Cost, 2);
         let FinalAmountToPay = ShopCost + RideCost;
+        
 
         // Update the order status UI
         $(".order-status").addClass("alert alert-success border-start-4 border-success p-3")
@@ -426,10 +429,10 @@ async function handleOrder(data) {
         $(".order-details").addClass("card").html(`
                 <div class="card-body p-2">
                     <span class="small fw-bolder">Order Reference Number: </span>
-                    <span id="FinalOrderRefNum" class="small fw-light">${response.OrderRefNum}</span>
+                    <span id="FinalOrderRefNum" class="small fw-light">${OrderRefNum}</span>
                     <br>
                     <span class="small fw-bolder">Booking Reference:</span> 
-                    <span class="small fw-light">${response.AngkasBookingInfo.angkas_booking_reference}</span>
+                    <span class="small fw-light">${BookingRefNum}</span>
                     <br>
                     <span class="small fw-bolder">Shop Cost: Php</span> 
                     <span id="FinalShopCost" class="small fw-light"> ${ShopCost.toFixed(2)}</span>
@@ -439,19 +442,23 @@ async function handleOrder(data) {
                 </div>
         `);
 
+        $(".PayNowBtn").attr("data-payshopcost",ShopCost);
+        $(".PayNowBtn").attr("data-paydeliveryfee",RideCost);
+        $(".PayNowBtn").attr("data-orderrefnum",OrderRefNum);
+        $(".PayNowBtn").attr("data-bookingrefnum",BookingRefNum);
+
         // Check if wallet balance is sufficient
         const walletBalance = wallet.balance;
         
         if (walletBalance < FinalAmountToPay) {
         console.log( "Compare : Wallet Balance" ,walletBalance, "Final Amount To Pay;", FinalAmountToPay );
             // If insufficient, uncheck the wallet payment checkbox
-            $("#checkWalletPaymentMode").prop('checked', false);
-            $("#checkWalletPaymentMode").prop('disabled', true);
+            $("#checkWalletPaymentMode").prop('checked', false).prop('disabled', true);
             $("label[for=checkWalletPaymentMode]>span")
                 .removeClass("bg-purple")
                 .addClass("text-bg-danger")  
                 .text("Insufficient Balance. Top-Up and Pay Later.");
-            $("#PayNowBtn").prop('disabled',true);
+            $(".PayNowBtn").prop('disabled',true);
         } else {
             // Otherwise, ensure it's checked if the balance is sufficient
             $("#checkWalletPaymentMode").prop('checked', true);
@@ -459,6 +466,7 @@ async function handleOrder(data) {
 
         // Update the Final Amount to Pay display
         $('#FinalAmountToPay').text(FinalAmountToPay.toFixed(2));
+        $('button.FinalAmountToPay').text("Pay ");
 
         // Handle success, maybe show a confirmation message to the user
     } catch (error) {
@@ -496,33 +504,6 @@ async function fetchMerchantInfo(itemIds) {
 }
 
 
-//async function UpdateOrderIds(OrderIds,) {
-//    console.log("Fetching merchant info for item IDs:", itemIds);
-//
-//    try {
-//        const response = await $.ajax({
-//            url: './_shop/_ajax_get_merchant_info.php',
-//            method: 'POST',
-//            dataType: 'json',
-//            data: {
-//                item_ids: itemIds
-//            } // Sending item_ids as an array
-//        });
-//
-//        if (response.success) {
-//            console.log("Merchant info fetched successfully:", response.merchant_info);
-//            return response; // Return the full response including merchant info
-//        } else {
-//            console.error("Failed to fetch merchant info:", response.message);
-//            throw new Error(response.message || 'Failed to fetch merchant info.');
-//        }
-//    } catch (error) {
-//        console.error("Error during fetchMerchantInfo AJAX call:", error);
-//        throw error; // Re-throw the error for further handling
-//    }
-//}
-// Fetch wallet balance
-// Refactored function to fetch wallet balance
 function getWalletBalance() {
     return new Promise((resolve, reject) => {
         $.ajax({
@@ -583,8 +564,8 @@ async function fetchShopList(view_type) {
     }
 }
 
-async function renderShopList(shopList) {
-    const container = document.getElementById("shop-list-pane");
+async function renderShopList(shopList, containerElement) {
+    const container = document.getElementById(containerElement);
     container.innerHTML = ""; // Clear existing content
     
     if (shopList.length === 0) {
@@ -594,30 +575,62 @@ async function renderShopList(shopList) {
 
     for (const shop of shopList) {
         // Create card structure
+        let payButton=`
+                <div class="card-footer">
+                    <a data-payshopcost="${shop.shop_cost}"
+                    data-paydeliveryfee="${shop.angkas_booking_estimated_cost}"
+                    data-orderrefnum="${shop.shop_order_reference_number}"
+                    data-bookingrefnum="${shop.angkas_booking_reference}"
+                   class="btn btn-danger PayNowBtn">pay</a>
+                </div>`;
+        
+        let RiderInfo = `
+                <div class="card-footer">
+                   <span class="badge text-bg-secondary">With Rider</span>
+                   <span class="badge text-bg-secondary">${shop.rider_name}</span>
+                </div>`;
+        let ControlFooter = "";
+        let ShopPaymentStatus = null;
+        switch(shop.shop_payment_status){
+            case 'C': ShopPaymentStatus = "Paid";
+               break;
+            case 'P': ShopPaymentStatus = "Pending Payment";
+            ControlFooter = payButton;
+               break;
+            case 'D': ShopPaymentStatus = "Declined";
+            ControlFooter = payButton;
+               break;
+            default: ShopPaymentStatus = "Pending Payment";
+            ControlFooter = payButton;
+        }
+
+        if(shop.rider_user_id !== null){
+            ControlFooter = RiderInfo;
+        }
+        
+
         let card = `
         <div class="card bg-light mb-1">
             <div class="card-header">
                 <h5 class="card-title float-start">${shop.shop_order_reference_number}</h5>
                 <small class="small float-end">${shop.order_date} (${shop.elapsed_time})</small>
             </div>
-            <div class="card-body">
-                <div class="container-fluid gx-0">
-                    <div class="row">
-                        <div class="col-6">
+             <div class="card-body">
+                <div class="container-fluid">
+                    <div class="row gx-0">
+                        <div class="col-12">
                             <p class="card-text">
-                                <strong>Status:</strong> ${shop.shop_payment_status || "N/A"}<br>
+                                <strong>Shop Payment Status:</strong> ${ShopPaymentStatus || "N/A"}<br>
                                 <strong>Total Amount:</strong> Php ${shop.shop_cost || "0.00"}<br>
                                 <strong>Booking Reference:</strong> ${shop.angkas_booking_reference || "Not yet Booked"}
                             </p>
                         </div>
-                        <div class="col-6 shop-items-content" id="${shop.shop_order_reference_number}"></div>
+                        <div class="col-12 shop-items-content" id="${shop.shop_order_reference_number}"></div>
                     </div>
                 </div>
-            </div>
-            <div class="card-footer">
-                <button data-shoporderref="${shop.shop_order_reference_number}" class="btn btn-danger">Remove</button>
-            </div>
-        </div>
+            </div>` +
+            ControlFooter +
+            `</div>
         `;
 
         // Insert card into container
@@ -636,7 +649,7 @@ async function renderShopList(shopList) {
 // Generates a table of items for a given shop order reference
 function generateItemTable(items) {
     let tableHTML = `
-        <table class="table table-hover">
+        <table class="table table-hover table-responsive">
             <thead>
                 <tr>
                     <th>Item Name</th>
@@ -650,11 +663,11 @@ function generateItemTable(items) {
 
     // Loop through each item and generate table rows
     items.forEach(item => {
-        const amount = (item.price * item.quantity).toFixed(2); // Calculate amount
+        const amount = (parseFloat(item.price) * parseInt(item.quantity)).toFixed(2); // Calculate amount
         tableHTML += `
             <tr>
                 <td>${item.item_name}</td>
-                <td>${item.price.toFixed(2)}</td>
+                <td>${parseFloat(item.price).toFixed(2)}</td>
                 <td>${item.quantity}</td>
                 <td>${amount}</td>
             </tr>
@@ -686,7 +699,31 @@ async function loadItemFromReference(refNum) {
         });
     });
 }
+async function validateRefNum(shopOrderRefNum) {
+    return new Promise((resolve, reject) => {
+        if (!shopOrderRefNum) {
+            reject("Shop Order Reference Number is required.");
+            return;
+        }
 
+        $.ajax({
+            url: "ajax_validate_ref.php", // Adjust PHP script path
+            type: "POST",
+            data: { shop_order_ref_num: shopOrderRefNum },
+            dataType: "json",
+            success: function (response) {
+                if (response.success) {
+                    resolve(response); // Response includes 'exist' and 'table'
+                } else {
+                    reject(response.error || "Validation failed.");
+                }
+            },
+            error: function (xhr, status, error) {
+                reject(`AJAX request failed: ${error}`);
+            }
+        });
+    });
+}
 
 
 // async function shopItemsBaseFromReference(refNum) {
@@ -738,6 +775,8 @@ async function loadItemFromReference(refNum) {
 
 //----------------
 
+
+
 $(document).on("click", "button#ShowCartItems", function () {
    let data = null;
    updateCartCount(); //refresh cartCount
@@ -758,12 +797,22 @@ $(document).ready(function() {
             e.preventDefault(); // Prevent default action
             
             try {
-                const viewType = 1; // Example: Get all shop orders with no booking reference
-                const shopList = await fetchShopList(viewType);
+                let viewType = 4; // Example: Get all shop orders with no booking reference
+                let shopList = await fetchShopList(viewType);
                 console.log("Shop list fetched successfully:", shopList);
-    
-                // Call function to render shop list as Bootstrap cards
-                renderShopList(shopList);
+                renderShopList(shopList,'shop-list-pane');
+
+
+                 viewType = 2; // Example: Get all shop orders with no booking reference
+                 shopList = await fetchShopList(viewType);
+                console.log("Shop list fetched successfully:", shopList);
+                renderShopList(shopList,'paid-no-driver-pane');
+
+
+                viewType = 3; // Example: Get all shop orders with no booking reference
+                shopList = await fetchShopList(viewType);
+               console.log("Shop list fetched successfully:", shopList);
+               renderShopList(shopList,'paid-with-driver-pane');
     
                 // Toggle visibility of buttons and views
                 $(this).addClass("d-none"); // Hide "ShowOrderHistory" button
@@ -791,10 +840,17 @@ $(document).ready(function() {
     const LoadingIcon = `<span class="spinner-border spinner-border-sm ms-auto" aria-hidden="true"></span>`;
     const walletbalance = $(".walletbalance");
 
+ 
+    updateCartCount();
+    calculateTotal();
+    $(".cart-item-checkbox").on("change", () => {
+        calculateTotal();
+    });
     $('#VoucherCode').on('input', function () {
         const voucherCode = $(this).val();
         fetchVoucherInfo(voucherCode);
     });
+
     $('#getCurrentLocation').on('click', async function () {
         const originalContent = $(this).html(); // Save the original button content
         const checkIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">
@@ -848,14 +904,6 @@ $(document).ready(function() {
             $shippingAddress.removeClass("border-warning").addClass("border-success");
         }
     });
-
-
-    updateCartCount();
-    calculateTotal();
-    $(".cart-item-checkbox").on("change", () => {
-        calculateTotal();
-    });
-
     // Event listener for the search input
     $('#SearhItems').on('input', function () {
         var query = $(this).val(); // Get the current value of the input
@@ -918,111 +966,128 @@ $(document).ready(function() {
             }
         });
     });
+// Function to generate a unique ShopOrderRefNum
+async function generateUniqueShopOrderRefNum() {
+    let shopOrderRefNum = null;
+    do {
+        shopOrderRefNum = genBookRefNum(8, "SHOP");
+        const validationResult = await validateRefNum(shopOrderRefNum);
+        if (!validationResult.exist) break;
+    } while (true);
+    return shopOrderRefNum;
+}
 
-    $('.btn-checkout').click(async function () {
-        $('#checkoutModal').modal('show');
-        console.log("Checkout button clicked.");
+async function reassignShopOrderNum () {
+    console.log("Checkout modal shown.");
+    // Generate and assign a unique ShopOrderRefNum
+    let shopOrderRefNum = await generateUniqueShopOrderRefNum();
+    $("#shopReferenceNum").val(shopOrderRefNum);
+    // Set the generated reference number in the modal input field
+}
+// Event listener for the checkout button
+$('.btn-checkout').click(async function () {
+    $('#checkoutModal').modal('show');
+    // Fetch and assign wallet balance
+    fetchAndAssignWalletBalance(walletbalance);
+    reassignShopOrderNum();
 
-        fetchAndAssignWalletBalance(walletbalance);
+    // Initialize variables
+    let checkedItems = [];
+    let itemIds = [];
+    let subtotal = 0;
 
-        let checkedItems = [];
-        let itemIds = [];
-        let subtotal = 0;
+    // Get payment details
+    let shippingFee = parseFloat($("#ShippingFee").text().trim()) || 0;
+    let voucherAmt = parseFloat($("#VoucherAmount").text().trim()) || 0;
+    let voucherCode = $("#VoucherCode").val().trim();
 
-        // Get payment details
-        let shippingFee = parseFloat($("#ShippingFee").text().trim()) || 0;
-        let voucherAmt = parseFloat($("#VoucherAmount").text().trim()) || 0; // Default to 0 if invalid
-        let voucherCode = $("#VoucherCode").val().trim();
-
-        console.log("Payment details fetched: ", {
-            shippingFee,
-            voucherAmt,
-            voucherCode,
-        });
-
-        // Gather checked cart items
-        $('.cart-item-checkbox:checked').each(function () {
-            console.log("Processing a checked item...");
-
-            let itemContainer = $(this).closest('.cart-item');
-            let itemId = itemContainer.find('[cart-item-id]').attr('cart-item-id'); // Item ID
-            let itemName = itemContainer.find('.item-name').text().trim(); // Item Name
-            let itemPrice = parseFloat($(this).data('price')) || 0; // Price from checkbox data-price
-            let itemQuantity = parseInt($(this).data('quantity')) || 0; // Quantity from checkbox data-quantity
-            let order_id = parseInt($(this).data('orderid')) || 0; // Quantity from checkbox data-quantity
-
-            console.log("Item details: ", {
-                itemId,
-                itemName,
-                itemPrice,
-                itemQuantity,
-                order_id
-            });
-
-            // Calculate the amount for this item
-            let amountToPay = itemPrice * itemQuantity;
-
-            // Add to subtotal
-            subtotal += amountToPay;
-
-            // Add the item to the checked items array
-            checkedItems.push({
-                order_id: order_id,
-                item_id: itemId,
-                name: itemName,
-                quantity: itemQuantity,
-                price: itemPrice,
-                amount: amountToPay,
-            });
-            itemIds.push(itemId);
-        });
-        console.log("Subtotal calculated: ", subtotal);
-        console.log("Item IDs collected: ", itemIds);
-
-        // Fetch merchant info
-        let merchantInfo = await fetchMerchantInfo(itemIds).catch((error) => {
-            console.error("Error fetching merchant info: ", error);
-        });
-
-        if (merchantInfo && merchantInfo.merchant_info) {
-            // Iterate over each merchant and populate the UI with their details
-            Object.values(merchantInfo.merchant_info).forEach((merchant) => {
-                $('#MerchantName').text(merchant.name || 'N/A');
-                $('#MerchantAddress').text(merchant.address || 'N/A');
-                $('#ContactInfo').text(merchant.contact_info || 'N/A');
-                $('#MerchantLocCoor').val(merchant.merchant_loc_coor || 'N/A');
-            });
-        } else {
-            console.log("No merchant info found.");
-        }
-
-        console.log("Merchant info fetched: ", merchantInfo);
-
-
-        // Calculate final amount
-        let finalAmountToPay = calculateTotalAmount(subtotal, shippingFee, voucherAmt);
-
-        console.log("Final amount to pay: ", finalAmountToPay);
-
-        // Update modal content
-        $('#FinalAmountToPay').text(finalAmountToPay.toFixed(2));
-        $('table#CheckOutItems').empty();
-
-        checkedItems.forEach(function (item) {
-            console.log("Creating row for item: ", item);
-
-            let row = `<tr class="check-out-item" order-id="${item.order_id}" checkout-item-id="${item.item_id}">
-                <td><i>${item.name}</i></td>
-                <td> x </td>
-                <td> ${item.quantity} pcs </td>
-                <td> Php ${item.amount.toFixed(2)} </td>
-            </tr>`;
-
-            $('table#CheckOutItems').append(row);
-        });
-
-        console.log("Checkout modal updated with items.");
+    console.log("Payment details fetched: ", {
+        shippingFee,
+        voucherAmt,
+        voucherCode,
     });
+
+    // Gather checked cart items
+    $('.cart-item-checkbox:checked').each(function () {
+        console.log("Processing a checked item...");
+
+        let itemContainer = $(this).closest('.cart-item');
+        let itemId = itemContainer.find('[cart-item-id]').attr('cart-item-id');
+        let itemName = itemContainer.find('.item-name').text().trim();
+        let itemPrice = parseFloat($(this).data('price')) || 0;
+        let itemQuantity = parseInt($(this).data('quantity')) || 0;
+        let order_id = parseInt($(this).data('orderid')) || 0;
+
+        console.log("Item details: ", {
+            itemId,
+            itemName,
+            itemPrice,
+            itemQuantity,
+            order_id,
+        });
+
+        // Calculate the amount for this item
+        let amountToPay = itemPrice * itemQuantity;
+
+        // Add to subtotal
+        subtotal += amountToPay;
+
+        // Add the item to the checked items array
+        checkedItems.push({
+            order_id: order_id,
+            item_id: itemId,
+            name: itemName,
+            quantity: itemQuantity,
+            price: itemPrice,
+            amount: amountToPay,
+        });
+        itemIds.push(itemId);
+    });
+    console.log("Subtotal calculated: ", subtotal);
+    console.log("Item IDs collected: ", itemIds);
+
+    // Fetch merchant info
+    let merchantInfo = await fetchMerchantInfo(itemIds).catch((error) => {
+        console.error("Error fetching merchant info: ", error);
+    });
+
+    if (merchantInfo && merchantInfo.merchant_info) {
+        Object.values(merchantInfo.merchant_info).forEach((merchant) => {
+            $('#MerchantName').text(merchant.name || 'N/A');
+            $('#MerchantAddress').text(merchant.address || 'N/A');
+            $('#ContactInfo').text(merchant.contact_info || 'N/A');
+            $('#MerchantLocCoor').val(merchant.merchant_loc_coor || 'N/A');
+        });
+    } else {
+        console.log("No merchant info found.");
+    }
+
+    console.log("Merchant info fetched: ", merchantInfo);
+
+    // Calculate final amount
+    let finalAmountToPay = calculateTotalAmount(subtotal, shippingFee, voucherAmt);
+    console.log("Final amount to pay: ", finalAmountToPay);
+
+    // Update modal content
+    $('#FinalAmountToPay').text(finalAmountToPay.toFixed(2));
+    $('table#CheckOutItems').empty();
+
+    checkedItems.forEach(function (item) {
+        console.log("Creating row for item: ", item);
+
+        let row = `<tr class="check-out-item" order-id="${item.order_id}" checkout-item-id="${item.item_id}">
+            <td><i>${item.name}</i></td>
+            <td> x </td>
+            <td> ${item.quantity} pcs </td>
+            <td> Php ${item.amount.toFixed(2)} </td>
+        </tr>`;
+
+        $('table#CheckOutItems').append(row);
+    });
+
+    console.log("Checkout modal updated with items.");
+});
+
 
 
     // Place Order button handler
@@ -1034,12 +1099,16 @@ $(document).ready(function() {
         if(isAddressNull){
             $('#getCurrentLocation').trigger('click');
         }
-        $("#PayNowBtn").prop("disabled",true).html(LoadingIcon + " Placing the Order.");
+        $(".PayNowBtn").prop("disabled",true).html(LoadingIcon + " Placing the Order.");
         setTimeout(()=>{
             try {
                 // Gather the user data and checkout items
                 const userId = $('#userLogged').val();
-                if (!userId) throw new Error("User is not logged in.");
+               
+                if (!userId) {
+                    $(this).text("User not logged in.").addClass("btn-danger");
+                    throw new Error("User is not logged in.");
+                }
         
                 const orderItems = [];
                 $('#CheckOutItems .check-out-item').each(function () {
@@ -1078,16 +1147,11 @@ $(document).ready(function() {
                     etaTime: $("#formETA").val(),
                     etaDistanceKm: $("#formDistanceKM").val(),
                 };
-        
-                // Validate all required fields in `data`
-                
-                    console.log("Validated data:", data);
                       // Call PlaceOrder and handle the response
-                    updateCartCount();
-                    handleOrder(data);
+                    handleOrder(data); //places the 
                     fetchAndAssignWalletBalance(walletbalance);
-                    $("#PayNowBtn").prop("disabled",false).html("Pay Now");
-                    
+                    updateCartCount();
+                    $(".PayNowBtn").prop("disabled",false).html("Pay Now");
             } catch (error) {
                 console.error("Error placing order:", error.message);
                 alert(`${error.message}`);
@@ -1096,27 +1160,50 @@ $(document).ready(function() {
             }
         }
         , (isAddressNull ? 4000 : 1000) );
+ 
+    });
     
+});
+
+
+$(document).on("click","#PayNowBtn, .PayNowBtn", function (e) {
+    e.preventDefault();
+    
+    // Get values from attributes or fallback to element text
+    let FShopCost = $(this).attr('data-payshopcost') || $("#FinalShopCost").text().trim();
+    let FDeliveryFee = $(this).attr('data-paydeliveryfee') || parseFloat($("#FinalDeliveryFee").text().trim());
+    let FOrderRefNum = $(this).attr('data-orderrefnum') || $("#FinalOrderRefNum").text().trim();
+    let FBookingRefNum = $(this).attr('data-bookingrefnum');
+
+    // Ensure numeric values for FShopCost and FDeliveryFee
+    FShopCost = parseFloat(FShopCost) || 0;
+    FDeliveryFee = parseFloat(FDeliveryFee) || 0;
+
+    // Perform payments
+    if(FShopCost !== null && FOrderRefNum !== null){
+        makePayment(FShopCost, null, FOrderRefNum, FOrderRefNum, 'S'); // Pay shop cost
+        updatePaymentStatus(FOrderRefNum, 'C','S');
+    }
+    
+    if(FDeliveryFee != null && FBookingRefNum !== null){
+        makePayment(FDeliveryFee, null, null, FBookingRefNum, 'R');      // Pay delivery fee
+        updatePaymentStatus(FBookingRefNum, 'C','A');
+    }
+    $(this).html(LoadingIcon);
+    setTimeout(()=>{
+        $(this).prop("disabled", true);
         
-    });
+        if("form".length > 0){
+            $("form").trigger("reset");
+        }
+    },1000);
+
     
+    $("button.btn-success").removeClass("btn-success").addClass("btn-warning").prop("disabled",false);
+    $("input.border-success").removeClass("border-success").addClass("border-warning");
 
-    $("#PayNowBtn").on("click", function(e){
-            e.preventDefault;
-
-            let FShopCost = $("#FinalShopCost").text().trim();
-            let FDeliveryFee = parseFloat($("#FinalDeliveryFee").text().trim());
-            let FOrderRefNum = $("#FinalOrderRefNum").text().trim();
-            //pay in advance 
-            makePayment(FShopCost,null,FOrderRefNum,FOrderRefNum,'S');
-            makePayment(FDeliveryFee,null,null,FOrderRefNum,'R');
-            //makePayment(estimatedCost, payFrom = null, payTo = null, referenceNum = null, paymentType = null, action = null) ;
-            //pay shop cost
-        $(this).prop("disabled",true);
-        setTimeout(()=>{
-            $(".btn-close").trigger("click");
-        },10000);
-       
-            //pay rider
-    });
+    // Close modal after 10 seconds
+    setTimeout(() => {
+        $(".btn-close").trigger("click");
+    }, 10000);
 });

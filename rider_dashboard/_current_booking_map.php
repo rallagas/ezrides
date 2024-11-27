@@ -190,6 +190,7 @@ if(!empty($myBooking)){
                        case 'A': ?>
                           <button class="btn btn-sm btn-outline-primary float-start me-3" id="ConfirmArrivalButton">Arrived</button>
                           <a href="?cancelBooking=<?php echo $angkas_book_ref;?>" class="btn btn-sm btn-outline-danger" onclick="confirm('Do you really want to cancel this booking?')" id="CancelBooking">Cancel</a>
+                          <button class="btn btn-sm btn-outline-success me-3 d-none"  id="DropOffCustomer">Drop Off</button>
                     <?php break;
                        case 'I': ?>
                       <button class="btn btn-sm btn-outline-success me-3"  id="DropOffCustomer">Drop Off</button>
@@ -199,6 +200,7 @@ if(!empty($myBooking)){
                     <?php break; 
                        default: ?> 
                        <a href="?cancelBooking=<?php echo $angkas_book_ref;?>" class="btn btn-sm btn-outline-danger" onclick="confirm('Do you really want to cancel this booking?')" id="CancelBooking">Cancel</a>  
+                       <button class="btn btn-sm btn-outline-success me-3"  id="DropOffCustomer">Drop Off</button>
               <?php } ?>
                 
                  

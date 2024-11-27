@@ -26,13 +26,14 @@ try {
             $append_sql = " AND `angkas_booking_reference` IS NULL";
             break;
         case 2:
-            $append_sql = " AND `angkas_booking_reference` IS NOT NULL";
+            $append_sql = " AND `angkas_booking_reference` IS NOT NULL and `shop_payment_status` = 'C' and `booking_payment_status` = 'C' AND `rider_user_id` IS NULL";
             break;
         case 3:
-            $append_sql = " AND `shop_payment_status` = 'C' AND `booking_payment_status` = 'P'";
+            $append_sql = " AND `shop_payment_status` = 'C' AND `booking_payment_status` = 'C' AND `rider_user_id` IS NOT NULL";
             break;
-        default:
-            $append_sql = " AND `shop_payment_status` = 'P' AND `booking_payment_status` = 'P'";
+        case 4:
+            $append_sql = " AND (`shop_payment_status` = 'P' or `shop_payment_status` IS NULL or `shop_payment_status` = '') AND (`booking_payment_status` = 'P' or `booking_payment_status` IS NULL)";
+            break;
     }
 
     $final_sql = $sql_shop_order_ref . $append_sql;

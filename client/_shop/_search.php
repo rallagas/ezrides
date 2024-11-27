@@ -23,9 +23,7 @@ if (isset($_POST['search'])) {
                gi.item_img
           FROM shop_items gi
           JOIN shop_merchants gm ON gi.merchant_id = gm.merchant_id
-          JOIN shop_category sc ON gi.category = sc.sc_id
          WHERE (gi.item_name LIKE ? OR gm.name LIKE ?)
-           AND sc.shop_category_name = 'grocery'
     ";
 
     // Fetch results using the `sql::query` utility function

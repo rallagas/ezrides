@@ -31,7 +31,7 @@ const elements = {
     userLogOut: $('#userLogOut'),
     pagination: $('#pagination'),
     transactionStatus: $('#TransactionStatus'),
-    appMenuBtn: $('.appMenuBtn'),
+    appMenuBtn: $('#appMenuBtn'),
     loadBookingHistory: $('#LoadBookingHistory'),
     bookingDetails: $('#BookingDetails'),
     bookedElapseTime: $('#BookedElaseTime'),
@@ -160,17 +160,9 @@ function makePayment(estimatedCost, payFrom = null, payTo = null, referenceNum =
         success: function (response) {
             if (response.success) {
                 console.log("Payment Successful.");
-                elements.orderStatus.text("Paid Total of Php " + response.amount);
+                elements.orderStatus.append("<br>Paid Php " + parseFloat(response.amount).toFixed(2) + " for " + referenceNum + "<br>");
                 triggerElement.prop('disabled', true); // Disable the triggering element
                 
-                // Update the payment status for the referenceNum
-
-                if(paymentType == 'S'){
-                    updateShopPaymentStatus(referenceNum, 'P');
-                }
-                
-
-                // Refresh wallet balance
                 fetchAndAssignWalletBalance(walletBalanceElement);
             } else {
                 elements.orderStatus
@@ -242,13 +234,14 @@ async function fetchAndAssignWalletBalance(elements) {
 
 
 
-function updatePaymentStatus(bookingReference, newStatus) { //for Rider Angkas Transactions
+function updatePaymentStatus(bookingReference, newStatus, txn_type) { //for Rider Angkas Transactions
     $.ajax({
         type: "POST",
         url: "ajax_update_payment_status.php", // Replace with the actual URL of your PHP endpoint
         data: {
             bookingReference: bookingReference,
-            newStatus: newStatus
+            newStatus: newStatus,
+            txnType: txn_type
         },
         success: function (response) {
             // Assuming the PHP endpoint returns a JSON object with success and message
@@ -494,28 +487,16 @@ async function handleCheckPendingBooking() { //in the app button
             let paymentStatusText = "";
 
             switch (payment_status) {
-                case 'P':
-                    paymentStatusText = 'Waiting for Driver';
-                    textColor = 'text-bg-danger';
-                    break;
-                case 'A':
+                case 'D':
                     paymentStatusText = 'Driver Found';
                     textColor = 'text-bg-success';
-                    break;
-                case 'R':
-                    paymentStatusText = 'Driver Arrived in Your Location';
-                    textColor = 'text-bg-success';
-                    break;
-                case 'I':
-                    paymentStatusText = 'In Transit';
-                    textColor = 'text-bg-info';
                     break;
                 case 'C':
                     paymentStatusText = 'Completed';
                     textColor = 'text-bg-success';
                     break;
                 default:
-                    paymentStatusText = 'Unknown Status';
+                    paymentStatusText = `<button id="PayNowBtn" data-payment-app="${response.bookingDetails.shop_order_reference_number}" class="btn btn-warning PayNowBtn" data-orderrefnum="${response.bookingDetails.shop_order_reference_number}" data-payshopcost="${response.bookingDetails.total_amount_to_pay}" data-paydeliveryfee="${response.bookingDetails.angkas_booking_estimated_cost}" >Pay Now</btn>`;
                     break;
             }
 
@@ -526,9 +507,8 @@ async function handleCheckPendingBooking() { //in the app button
                 finalAmountToPay += response.bookingDetails.total_amount_to_pay; //shop amount
             }
 
+           
 
-
-            // Construct the booking card view dynamically
             var bookingCardView = `
             <div class="card-header bg-warning clear-fix">
                 <span class="fw-bolder" id="BookingReferenceNum">${response.bookingDetails.angkas_booking_reference}</span>
@@ -558,13 +538,35 @@ async function handleCheckPendingBooking() { //in the app button
                             <span class="fw-lighter" id="paymentStatus">${paymentStatusText}</span>
                         </div>
                     </div>
+                    <div class="row">
+                        <div class="col-12">
+                      ${response.bookingDetails.shop_order_reference_number
+                    ? `<a data-bs-toggle="collapse" href="#${response.bookingDetails.shop_order_reference_number}" role="button" aria-expanded="false" aria-controls="${response.bookingDetails.shop_order_reference_number}" class="btn btn-sm btn-primary d-flex mx-2 my-1" id="${response.bookingDetails.shop_order_reference_number}">${response.bookingDetails.shop_order_reference_number}</a>` 
+                    : ''}
+                    </div>
+                         ${response.bookingDetails.shop_order_reference_number
+                        ? `<div class="col-12 shopDetails" id="${response.bookingDetails.shop_order_reference_number}"></div>`
+                         : '' }
+
+                        
+                    </div>
+
                 </div>
                </div>
             </div>
             `;
 
+            
+
             // Ensure the element with id 'bookingDetails' exists in the DOM
             $('#BookingDetails').html(bookingCardView); // Set the content to the container
+             // Construct the booking card view dynamically
+             const itemData = await loadItemFromReference(response.bookingDetails.shop_order_reference_number);
+             if (itemData) {
+                 const tableHTML = generateItemTable(itemData);
+                 // Insert table into the corresponding shop order content
+                 $("div#" + response.bookingDetails.shop_order_reference_number).html(tableHTML);
+             }
             return true;
         } else {
             console.log("No pending bookings.");
@@ -783,6 +785,20 @@ function handleLocationError(isGeolocationError) {
 }
 
 
+
+function genBookRefNum(len, prefix = "") {
+    const alphaNum = [..."ABCDEFGHIJKLMNOPQRSTUVWXYZ", ..."0123456789"];
+    let key = "";
+
+    for (let i = 0; i < len; i++) {
+        // Choose a random index from the appropriate subset of alphaNum
+        key += i % 2 === 0 
+            ? alphaNum[Math.floor(Math.random() * 26)] // Letters (A-Z)
+            : alphaNum[Math.floor(Math.random() * 10) + 26]; // Numbers (0-9)
+    }
+
+    return (prefix + key);
+}
 /****Triggers and Calling Functions****/
 
 $(document).on("click", elements.btnRideInfo, () => {
@@ -815,7 +831,9 @@ $(document).on("submit", "#formFindAngkas", async function (e) {
 });
 
 let AppPendingBookingInterval = -1;
-$(document).on('click',elements.appMenuBtn, ()=>{
+$(document).on('click','#appMenuBtn', (e)=>{
+    
+    e.preventDefault;
      if(handleCheckPendingBooking()){
          clearInterval(AppPendingBookingInterval);
      }
@@ -855,8 +873,9 @@ $(document).ready(function () {
         const estimatedCost = parseFloat(row.find('.text-secondary').text().replace('Php ', '').replace(',', '').trim());
         if (!isNaN(estimatedCost) && estimatedCost > 0 && walletBalance > estimatedCost ) {
             console.log("::Payment:", estimatedCost, dataPaymentApp, 'R', 'Ride Payment');
+            
             makePayment(estimatedCost, null, null, dataPaymentApp, 'R', 'Ride Payment')
-            updatePaymentStatus(dataPaymentApp, 'C'); //for booking
+            updatePaymentStatus(dataPaymentApp, 'C', 'A'); //for booking
         }
     });
   

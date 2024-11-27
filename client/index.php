@@ -2,7 +2,6 @@
 require_once "../_db.php";
 include_once "../_functions.php";
 include_once "../_sql_utility.php";
-$_SESSION['txn_cat_id'] = null;
 ?>
 <!DOCTYPE html>
 <html>
@@ -35,6 +34,9 @@ $_SESSION['txn_cat_id'] = null;
                         <div class="row g-1 mb-3 vh-50 border-1" id="BookingHistoryContent">
                             <div class="col-sm-12 col-lg-12 col-md-12">
                                 <div id="BookingDetails" class="card shadow"></div>
+                                <div class="collapse" id="shopOrderCollapse">
+                                    <div id="shopOrderDetails">Loading...</div>
+                                </div>
                             </div>
                         </div>
 
@@ -49,17 +51,21 @@ $_SESSION['txn_cat_id'] = null;
 
                 $txn_cat = select_data( "txn_category", NULL, "txn_category_id", 15 );
                 foreach ( $txn_cat as $cat ) { 
-                            if(isset($_GET['page'])){
-                                $page = htmlspecialchars($_GET['page']); ?>
-                                <?php $txnlink = $cat['txn_link'];
-                                if($cat['page_action'] == $page){ ?>          
+                            if(isset($_GET['page']) && isset($_GET['txn_cat'])){
+                                $page = $_GET['page']; 
+                                $categ = $_GET['txn_cat']; 
+                                ?>
+                                <?php 
+                                if($cat['page_action'] == $page && $cat['txn_category_id'] == $categ){ 
+                                   $txnlink = $cat['txn_link'];
+                                ?>          
                                 <div class="col-12 p-0" id=""></div>              
                                     <?php include_once $txnlink; 
-                                    $_SESSION['txn_cat_id'] = $cat['txn_category_id'];
+                                        $_SESSION['txn_cat_id'] = $_GET['txn_cat'];
                                     ?>
-
                                  </div>
-                                <?php }
+                                <?php 
+                                }
                             }
                         
                 } $cat=null;

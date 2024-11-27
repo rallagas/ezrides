@@ -130,77 +130,94 @@ class AngkasBookings {
     * @return array - An array of results or an empty array if no data is found.
     */
     // Public method to get data from the angkas_booking_header_view
-    public function getBookingHeaderDetails($userId = null, $op="<>" ,$bookingStatus = 'D', $limit = 1) {
+    public function getBookingHeaderDetails($userId = null, $op = "NOT IN", $bookingStatus = ['C','D'], $limit = 1) {
         try {
-            // Build the SQL query to fetch the required columns
-            $sql = "
-                SELECT 
-                    angkas_booking_reference, 
-                    shop_order_reference_number, 
-                    customer_user_id, 
-                    rider_user_id, 
-                    total_amount_to_pay, 
-                    angkas_booking_eta_duration, 
-                    angkas_booking_total_distance, 
-                    angkas_booking_estimated_cost, 
-                    angkas_booking_avg_rating, 
-                    customer_username, 
-                    customer_user_type, 
-                    customer_firstname, 
-                    customer_lastname, 
-                    booking_status, 
-                    payment_status
-                FROM `booking_shop_header_view`
-            ";
-
-            // If userId is provided, add a WHERE clause to filter by user_id
+            // Validate $op to ensure it is either 'IN' or 'NOT IN'
+            if (!in_array($op, ['IN', 'NOT IN'], true)) {
+                throw new Exception("Invalid operator for booking status: $op");
+            }
+    
+            // Start building the SQL query
+            $sql = "SELECT 
+                        angkas_booking_reference, 
+                        shop_order_reference_number, 
+                        customer_user_id, 
+                        rider_user_id, 
+                        total_amount_to_pay, 
+                        angkas_booking_eta_duration, 
+                        angkas_booking_total_distance, 
+                        angkas_booking_estimated_cost, 
+                        angkas_booking_avg_rating, 
+                        customer_username, 
+                        customer_user_type, 
+                        customer_firstname, 
+                        customer_lastname, 
+                        booking_status, 
+                        payment_status
+                    FROM `booking_shop_header_view`";
+    
+            // Add WHERE clause if userId and bookingStatus are provided
+            $params = [];
+            $types = '';
+    
             if ($userId !== null) {
-                $sql .= " WHERE customer_user_id = ? AND booking_status " . $op ." ? ";
+                $sql .= " WHERE customer_user_id = ? AND booking_status $op (" . str_repeat('?, ', count($bookingStatus) - 1) . "?)";
+                $params[] = $userId;
+                $types .= 'i';
+    
+                // Add booking statuses to the parameters
+                foreach ($bookingStatus as $status) {
+                    $params[] = $status;
+                    $types .= 's'; // Assuming booking_status is a string
+                }
             }
-            
+    
+            // Add ORDER BY clause
             $sql .= " ORDER BY `angkas_booking_id` DESC";
-            
-            if ($limit > 0){
-                $sql .= " LIMIT $limit ";
+    
+            // Add LIMIT clause if limit > 0
+            if ($limit > 0) {
+                $sql .= " LIMIT ?";
+                $params[] = $limit;
+                $types .= 'i';
             }
-            
-            
-
+    
             // Prepare the SQL statement
             $stmt = $this->conn->prepare($sql);
             if ($stmt === false) {
                 throw new Exception("Failed to prepare statement: " . $this->conn->error);
             }
-
-            // Bind the parameter if userId is provided
-            if ($userId !== null) {
-                $stmt->bind_param("is", $userId, $bookingStatus); // 'i' for integer
+    
+            // Bind parameters dynamically
+            if (!empty($params)) {
+                $stmt->bind_param($types, ...$params);
             }
-
+    
             // Execute the statement
             $stmt->execute();
-
+    
             // Get the result
             $result = $stmt->get_result();
-
+    
             // Fetch all results into an array
             $data = [];
             while ($row = $result->fetch_assoc()) {
                 $data[] = $row;
             }
-
+    
             // Close the statement
             $stmt->close();
-
+    
             // Return the result as an associative array
             return $data;
-
+    
         } catch (Exception $e) {
             // Handle any errors
             echo "Error: " . $e->getMessage();
-            return false;  // Return false in case of an error
+            return false; // Return false in case of an error
         }
     }
+    
     
 
     public function getColumnData( $columns, $userId = null, $bookingReference = null, $numRows = 0 ) {
@@ -404,8 +421,10 @@ public function getBookingShopCombined($columns, $shopOrderUserId = null, $refer
 
     
     
-public function updatePaymentStatus($bookingReference, $newStatus)
+public function updatePaymentStatus($reference, $newStatus, $txn_type = 'A')
     {
+        //txn_type = 'A' or 'S' = angkas or Shop
+
         // Validate that the new status is valid
         $allowedStatuses = ['P', 'D', 'C']; // 'P' = Pending, 'D' = Declined, 'C' = Completed
         if (!in_array($newStatus, $allowedStatuses)) {
@@ -413,7 +432,13 @@ public function updatePaymentStatus($bookingReference, $newStatus)
         }
 
         // SQL query to update the payment status
-        $sql = "UPDATE angkas_bookings SET payment_status = ? WHERE angkas_booking_reference = ?";
+        switch($txn_type){
+            CASE 'A': $sql = "UPDATE angkas_bookings SET payment_status = ? WHERE angkas_booking_reference = ?";
+            break;
+            CASE 'S': $sql = "UPDATE shop_orders SET payment_status = ? WHERE shop_order_ref_num = ?";
+            break;
+        }
+        
 
         // Prepare the statement
         $stmt = $this->conn->prepare($sql);
@@ -422,7 +447,7 @@ public function updatePaymentStatus($bookingReference, $newStatus)
         }
 
         // Bind parameters and execute the query
-        $stmt->bind_param("ss", $newStatus, $bookingReference);
+        $stmt->bind_param("ss", $newStatus, $reference);
         $success = $stmt->execute();
 
         // Close the statement

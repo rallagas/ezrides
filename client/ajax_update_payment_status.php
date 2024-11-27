@@ -8,12 +8,13 @@ header('Content-Type: application/json');
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $bookingReference = $_POST['bookingReference'] ?? null;
     $newStatus = $_POST['newStatus'] ?? null;
+    $txnType = $_POST['txnType'] ?? null;
 
     if ($bookingReference && $newStatus) {
         $angkasBookings = new AngkasBookings();
         
         try {
-            $success = $angkasBookings->updatePaymentStatus($bookingReference, $newStatus);
+            $success = $angkasBookings->updatePaymentStatus($bookingReference, $newStatus,$txnType);
             echo json_encode([
                 'success' => $success,
                 'message' => $success ? 'Payment status updated successfully.' : 'Failed to update payment status.'

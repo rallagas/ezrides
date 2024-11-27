@@ -376,6 +376,7 @@ document.getElementById("ConfirmArrivalButton").addEventListener("click", () => 
 
     // Hide confirm arrival button
     document.getElementById("ConfirmArrivalButton").style.display = "none";
+    document.getElementById("DropOffCustomer").style.display = "block";
 
     // Set intended destination (should come from another input field)
     const intendedCoords = form_cust_to_dest.split(",");
