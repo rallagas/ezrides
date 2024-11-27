@@ -5,8 +5,8 @@ class Merchant {
     private $merchant_loc_coor;
     private $contactInfo;
     private $address;
-    private $merchantImg;
-    private $merchantType;
+    private $merchantImg; // Renamed from $img to $merchantImg
+    private $merchantType; // Renamed from $type to $merchantType
 
     public function __construct( $id, $name, $merchant_loc_coor, $merchantImg = null, $contactInfo = null, $address = null, $merchantType = null ) {
         $this->id = $id;
@@ -14,10 +14,11 @@ class Merchant {
         $this->merchant_loc_coor = $merchant_loc_coor;
         $this->contactInfo = $contactInfo;
         $this->address = $address;
-        $this->img = $merchantImg;
-        $this->type = $merchantType;
+        $this->merchantImg = $merchantImg;  // Set to $merchantImg
+        $this->merchantType = $merchantType; // Set to $merchantType
     }
 
+    // Getter methods
     public function getId() {
         return $this->id;
     }
@@ -38,13 +39,14 @@ class Merchant {
         return $this->merchant_loc_coor;
     }
 
-    public function getImg() {
-        return $this->img;
+    public function getMerchantImg() {  // Renamed to match the property
+        return $this->merchantImg;
     }
 
-    public function getType() {
-        return $this->type;
+    public function getMerchantType() { // Renamed to match the property
+        return $this->merchantType;
     }
+
 
 
     public static function getAllMerchantNames() {
