@@ -149,7 +149,6 @@ function query($sql, $params = []) {
         }
         return $data;
     }
-    return true;
 }
 
 function getLastInsertedId($tableName) {

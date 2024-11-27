@@ -32,17 +32,11 @@ include_once "_functions.php";
                <div id="logstatus"></div>
            </div>
             <div class="col-lg-6 col-md-6 col-sm-12 pt-3">
-                <button class="text-center shadow btn btn-lg btn-outline-secondary my-1 d-flex w-100 p-3" type="button" data-bs-toggle="collapse" data-bs-target=".multi-collapse" aria-expanded="false" aria-controls="collapseLogin">Sign In</button>
-                <div class="multi-collapse collapse show" id="collapseLogin">
+                <button class="text-center btn btn-lg btn-outline-secondary mt-1 mb-0 d-flex w-100 p-3" type="button" data-bs-toggle="collapse" data-bs-target=".multi-collapse" aria-expanded="false" aria-controls="collapseLogin">Sign In</button>
+                <div class="multi-collapse collapse show mt-0" id="collapseLogin">
                     <form id="formUserLog">
                         <div class="card">
-                            <div class="card-header bg-secondary text-light">
-                                
-                                <h6 class="card-title fw-bold fs-5 mt-2">Sign In as Customer</h6>
-
-                            </div>
                             <div class="card-body">
-
                                 <div class="mb-3">
                                     <label for="log_username" class="form-label"> Username or Email </label>
                                     <input type="text" id="log_username" name="log_username" class="form-control w-100">
@@ -52,9 +46,7 @@ include_once "_functions.php";
                                     <input type="password" id="log_password" name="log_password" class="form-control">
 
                                 </div>
-
                                 <button id="loginButton" class="btn btn-outline-light bg-purple mb-0" type="submit">Login</button>
-
 
                             </div>
                         </div>
@@ -63,7 +55,7 @@ include_once "_functions.php";
             </div>
 
             <div class="col-lg-6 col-md-6 col-sm-12 pt-3">
-               <button class="text-center shadow bg-purple btn btn-lg btn-outline-secondary text-light my-1 d-flex w-100 p-3" type="button" data-bs-toggle="collapse" data-bs-target=".multi-collapse" aria-expanded="false" aria-controls="collapseLogin collapseRegister">
+               <button class="text-center bg-purple btn btn-lg btn-outline-secondary text-light my-1 d-flex w-100 p-3" type="button" data-bs-toggle="collapse" data-bs-target=".multi-collapse" aria-expanded="false" aria-controls="collapseLogin collapseRegister">
                 <span  data-bs-toggle="tooltip" data-bs-title="Create Account" data-bs-placement="bottom">Join Us</span>   
                 </button>
                 <div class="multi-collapse collapse" id="collapseRegister">

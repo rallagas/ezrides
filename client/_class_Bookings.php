@@ -130,80 +130,99 @@ class AngkasBookings {
     * @return array - An array of results or an empty array if no data is found.
     */
     // Public method to get data from the angkas_booking_header_view
-    public function getBookingHeaderDetails($userId = null, $op="<>" ,$bookingStatus = 'D', $limit = 1) {
+    public function getBookingHeaderDetails($userId = null, $op = "NOT IN", $bookingStatus = ['C','D'], $limit = 1) {
         try {
-            // Build the SQL query to fetch the required columns
-            $sql = "
-                SELECT 
-                    angkas_booking_reference, 
-                    shop_order_reference_number, 
-                    customer_user_id, 
-                    rider_user_id, 
-                    total_amount_to_pay, 
-                    angkas_booking_eta_duration, 
-                    angkas_booking_total_distance, 
-                    angkas_booking_estimated_cost, 
-                    angkas_booking_avg_rating, 
-                    customer_username, 
-                    customer_user_type, 
-                    customer_firstname, 
-                    customer_lastname, 
-                    booking_status, 
-                    payment_status
-                FROM `booking_shop_header_view`
-            ";
-
-            // If userId is provided, add a WHERE clause to filter by user_id
+            // Validate $op to ensure it is either 'IN' or 'NOT IN'
+            if (!in_array($op, ['IN', 'NOT IN'], true)) {
+                throw new Exception("Invalid operator for booking status: $op");
+            }
+    
+            // Start building the SQL query
+            $sql = "SELECT 
+                        angkas_booking_reference, 
+                        shop_order_reference_number, 
+                        customer_user_id, 
+                        rider_user_id, 
+                        total_amount_to_pay, 
+                        angkas_booking_eta_duration, 
+                        angkas_booking_total_distance, 
+                        angkas_booking_estimated_cost, 
+                        angkas_booking_avg_rating, 
+                        customer_username, 
+                        customer_user_type, 
+                        customer_firstname, 
+                        customer_lastname, 
+                        booking_status, 
+                        payment_status
+                    FROM `booking_shop_header_view`";
+    
+            // Add WHERE clause if userId and bookingStatus are provided
+            $params = [];
+            $types = '';
+    
             if ($userId !== null) {
-                $sql .= " WHERE customer_user_id = ? AND booking_status " . $op ." ? ";
+                $sql .= " WHERE customer_user_id = ? AND booking_status $op (" . str_repeat('?, ', count($bookingStatus) - 1) . "?)";
+                $params[] = $userId;
+                $types .= 'i';
+    
+                // Add booking statuses to the parameters
+                foreach ($bookingStatus as $status) {
+                    $params[] = $status;
+                    $types .= 's'; // Assuming booking_status is a string
+                }
             }
-            
+    
+            // Add ORDER BY clause
             $sql .= " ORDER BY `angkas_booking_id` DESC";
-            
-            if ($limit > 0){
-                $sql .= " LIMIT $limit ";
+    
+            // Add LIMIT clause if limit > 0
+            if ($limit > 0) {
+                $sql .= " LIMIT ?";
+                $params[] = $limit;
+                $types .= 'i';
             }
-            
-            
-
+    
             // Prepare the SQL statement
             $stmt = $this->conn->prepare($sql);
             if ($stmt === false) {
                 throw new Exception("Failed to prepare statement: " . $this->conn->error);
             }
-
-            // Bind the parameter if userId is provided
-            if ($userId !== null) {
-                $stmt->bind_param("is", $userId, $bookingStatus); // 'i' for integer
+    
+            // Bind parameters dynamically
+            if (!empty($params)) {
+                $stmt->bind_param($types, ...$params);
             }
-
+    
             // Execute the statement
             $stmt->execute();
-
+    
             // Get the result
             $result = $stmt->get_result();
-
+    
             // Fetch all results into an array
             $data = [];
             while ($row = $result->fetch_assoc()) {
                 $data[] = $row;
             }
-
+    
             // Close the statement
             $stmt->close();
-
+    
             // Return the result as an associative array
             return $data;
-
+    
         } catch (Exception $e) {
             // Handle any errors
             echo "Error: " . $e->getMessage();
-            return false;  // Return false in case of an error
+            return false; // Return false in case of an error
         }
     }
     
+    
 
     public function getColumnData( $columns, $userId = null, $bookingReference = null, $numRows = 0 ) {
+        
+        $txn_cat = $_SESSION['txn_cat_id'] != 0  ?  $_SESSION['txn_cat_id'] : 2 ;
         // Ensure $columns is treated as an array if a single column is passed
         if ( is_string( $columns ) ) {
             $columns = [$columns];
@@ -231,7 +250,7 @@ class AngkasBookings {
     $selectedColumns = implode( ", ", $columns );
 
     // Base SQL query
-    $sql = "SELECT $selectedColumns FROM view_angkas_bookings";
+    $sql = "SELECT $selectedColumns FROM view_angkas_bookings WHERE transaction_category_id = '$txn_cat' ";
 
     // Parameters array for filters
     $params = [];
@@ -239,7 +258,7 @@ class AngkasBookings {
 
     // Add user ID filter if provided
     if ( $userId !== null ) {
-        $sql .= " WHERE customer_user_id = ?";
+        $sql .= " AND customer_user_id = ?";
         $params[] = $userId;
         $paramTypes .= "i";
         // assuming user_id is an integer
@@ -294,10 +313,118 @@ class AngkasBookings {
     return $data;
 }
 
+
+
+public function getBookingShopCombined($columns, $shopOrderUserId = null, $referenceNumbers = null, $numRows = 0) {
+    // Ensure $columns is treated as an array if a single column is passed
+    if (is_string($columns)) {
+        $columns = [$columns];
+    }
+
+    // List of allowed columns for validation
+    $allowedColumns = [
+        'shop_order_id', 'shop_order_reference_number', 'shop_order_voucher_code', 'shop_order_shipping_fee', 'shop_order_shipping_name',
+        'shop_order_shipping_address', 'shop_order_shipping_address_coordinates', 'shop_order_shipping_phone', 'shop_order_user_id',
+        'shop_order_rider_id', 'shop_order_item_id', 'shop_order_quantity', 'shop_order_amount_to_pay', 'shop_order_date', 
+        'shop_order_delivery_status', 'shop_order_payment_status', 'shop_order_state_indicator', 'shop_order_special_instructions', 
+        'angkas_booking_id', 'angkas_booking_reference', 'angkas_booking_transaction_category_id', 'angkas_booking_rider_user_id', 
+        'angkas_booking_from_destination_name', 'angkas_booking_user_current_location_latitude', 'angkas_booking_user_current_location_longitude', 
+        'angkas_booking_to_destination_name', 'angkas_booking_to_destination_longitude', 'angkas_booking_to_destination_latitude', 
+        'angkas_booking_eta_duration', 'angkas_booking_total_distance', 'angkas_booking_estimated_cost', 'angkas_booking_date_booked', 
+        'angkas_booking_status', 'angkas_booking_payment_status', 'angkas_booking_rating', 'user_profile_id', 'user_firstname', 
+        'user_lastname', 'user_middle_initial', 'user_contact_number', 'user_gender', 'user_email_address', 'user_profile_image', 
+        'user_rider_plate_number', 'user_rider_license_number'
+    ];
+
+    // Validate columns
+    foreach ($columns as $column) {
+        if (!in_array($column, $allowedColumns)) {
+            throw new InvalidArgumentException("Invalid column name: " . $column);
+        }
+    }
+
+    // Join columns for the SELECT statement
+    $selectedColumns = implode(", ", $columns);
+
+    // Base SQL query
+    $sql = "SELECT $selectedColumns FROM booking_shop_combined";
+
+    // Parameters array for filters
+    $params = [];
+    $paramTypes = "";
+
+    // Add user ID filter if provided
+    if ($shopOrderUserId !== null) {
+        $sql .= " WHERE shop_order_user_id = ?";
+        $params[] = $shopOrderUserId;
+        $paramTypes .= "i"; // assuming shop_order_user_id is an integer
+    }
+
+    // Add reference number filter if provided
+    if ($referenceNumbers !== null) {
+        if (is_array($referenceNumbers)) {
+            $placeholders = implode(", ", array_fill(0, count($referenceNumbers), "?"));
+            $sql .= ($shopOrderUserId !== null) ? " AND (" : " WHERE (";
+            $sql .= "shop_order_reference_number IN ($placeholders) OR angkas_booking_reference IN ($placeholders))";
+            $params = array_merge($params, $referenceNumbers, $referenceNumbers); // Merge both sets of references
+            $paramTypes .= str_repeat("s", count($referenceNumbers) * 2); // Assuming reference numbers are strings
+        } else {
+            $sql .= ($shopOrderUserId !== null) ? " AND (" : " WHERE (";
+            $sql .= "shop_order_reference_number = ? OR angkas_booking_reference = ?)";
+            $params[] = $referenceNumbers;
+            $params[] = $referenceNumbers;
+            $paramTypes .= "ss"; // assuming reference numbers are strings
+        }
+    }
+
+    // Add sorting
+    $sql .= " ORDER BY angkas_booking_id DESC";
+
+    // Apply limit if required
+    if ($numRows > 0) {
+        $sql .= " LIMIT $numRows";
+    }
+
+    // Prepare the statement
+    $stmt = $this->conn->prepare($sql);
+    if ($stmt === false) {
+        throw new Exception("Failed to prepare statement: " . $this->conn->error);
+    }
+
+    // Bind parameters dynamically
+    if (!empty($params)) {
+        $stmt->bind_param($paramTypes, ...$params);
+    }
+
+    // Execute the query
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    // Fetch all results into an array
+    $data = [];
+    while ($row = $result->fetch_assoc()) {
+        if (count($columns) === 1) {
+            // If a single column was requested, return just the column's value
+            $data[] = $row[$columns[0]];
+        } else {
+            // For multiple columns, return the full row
+            $data[] = $row;
+        }
+    }
+
+    // Close the statement
+    $stmt->close();
+
+    return $data;
+}
+
+
     
     
-public function updatePaymentStatus($bookingReference, $newStatus)
+public function updatePaymentStatus($reference, $newStatus, $txn_type = 'A')
     {
+        //txn_type = 'A' or 'S' = angkas or Shop
+
         // Validate that the new status is valid
         $allowedStatuses = ['P', 'D', 'C']; // 'P' = Pending, 'D' = Declined, 'C' = Completed
         if (!in_array($newStatus, $allowedStatuses)) {
@@ -305,7 +432,13 @@ public function updatePaymentStatus($bookingReference, $newStatus)
         }
 
         // SQL query to update the payment status
-        $sql = "UPDATE angkas_bookings SET payment_status = ? WHERE angkas_booking_reference = ?";
+        switch($txn_type){
+            CASE 'A': $sql = "UPDATE angkas_bookings SET payment_status = ? WHERE angkas_booking_reference = ?";
+            break;
+            CASE 'S': $sql = "UPDATE shop_orders SET payment_status = ? WHERE shop_order_ref_num = ?";
+            break;
+        }
+        
 
         // Prepare the statement
         $stmt = $this->conn->prepare($sql);
@@ -314,7 +447,7 @@ public function updatePaymentStatus($bookingReference, $newStatus)
         }
 
         // Bind parameters and execute the query
-        $stmt->bind_param("ss", $newStatus, $bookingReference);
+        $stmt->bind_param("ss", $newStatus, $reference);
         $success = $stmt->execute();
 
         // Close the statement

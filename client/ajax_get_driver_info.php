@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['action'] === 'fetch_driver_
 
     try {
         $angkasBookings = new AngkasBookings();
-        $columns = ['rider_firstname', 'rider_lastname']
+        $columns = ['rider_firstname', 'rider_lastname'];
         $result = $angkasBookings->getColumnData('rider_firstname', USER_LOGGED, $bookingId);
 
         if (!empty($result)) {

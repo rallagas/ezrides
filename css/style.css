@@ -9,3 +9,38 @@
     .text-purple {
         color: mediumpurple;
     }
+
+    #merchantSuggestions {
+        width: 100%;
+        max-height: 200px;
+        overflow-y: auto;
+        z-index: 1000;
+    }
+
+    .modal {
+        overflow-y: visible !important;
+    }
+
+    .autocomplete-container {
+        max-height: 200px;
+        overflow-y: auto;
+        border: 1px solid #ccc;
+        background-color: white;
+        position: absolute;
+        width: 100%;
+        z-index: 1051;
+        /* Ensure it's above other elements */
+    }
+
+    .autocomplete-item {
+        padding: 8px;
+        cursor: pointer;
+    }
+
+    .autocomplete-item:hover {
+        background-color: #f0f0f0;
+    }
+
+    .card-title:hover{
+        overflow: visible;
+    }
