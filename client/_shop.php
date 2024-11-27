@@ -209,7 +209,7 @@ if (!empty($_SESSION['user_profile'])) {
 
                 <div class="card shadow" style="height:40vh">
                     <div class="card-header p-0">
-                        <img src="../images/<?php echo  $merchant->getImg();?>" alt=""
+                        <img src="../images/<?php echo  $merchant->getMerchantImg();?>" alt=""
                             class="card-img-top object-fit-cover" style="height:20vh;">
                     </div>
                     <div class="card-body">
@@ -227,7 +227,7 @@ if (!empty($_SESSION['user_profile'])) {
                         </a>
                     </div>
                     <div class="card-footer badge text-bg-warning p-1 pb-2">
-                        <span class="w-100"><?php echo $merchant->getType();?></span>
+                        <span class="w-100"><?php echo $merchant->getMerchantType();?></span>
                     </div>
                 </div>
 
