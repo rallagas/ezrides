@@ -19,6 +19,8 @@ public function topUp($amount) {
     if ($amount <= 0 || $amount > 9999999999.99) {
         throw new InvalidArgumentException("Top-up amount must be between 0.01 and 9999999999.99.");
     }
+    
+    $refNumber = gen_book_ref_num(8,"TUP");
 
     $data = [
         'user_id' => $this->userId,
@@ -26,7 +28,8 @@ public function topUp($amount) {
         'txn_type_id' => $_SESSION['txn_cat_id'],
         'wallet_txn_status' => 'C',
         'wallet_action' => 'Top Up Wallet',
-        'wallet_txn_start_ts' => date('Y-m-d H:i:s')
+        'payment_type' => 'T',
+        'reference_number' => $refNumber
     ];
 
     // Attempt to insert data and log errors if unsuccessful
@@ -45,12 +48,29 @@ public function topUp($amount) {
      *
      * @return float - Total balance.
      */
-    public function getBalance() {
+    public function getBalance($user = null) {
+        if ($user == null) {
+
+            $result = query("SELECT SUM( CASE WHEN ? = payTo THEN wallet_txn_amt * -1 
+                              		          WHEN payment_type = 'T' THEN wallet_txn_amt
+                                              ELSE wallet_txn_amt
+                                         END 
+                   ) AS balance 
+                   FROM user_wallet 
+                  WHERE (user_id = ? or payTo = ?)
+                    AND wallet_txn_status = 'C'",
+                [$this->userId, $this->userId, $this->userId]
+            );
+
+        }
+        else{
+
         $result = query(
             "SELECT SUM(wallet_txn_amt) AS balance FROM user_wallet WHERE user_id = ? AND wallet_txn_status = 'C'",
-            [$this->userId]
+            [$user]
         );
 
+        }
         return $result[0]['balance'] ?? 0;
     }
 
@@ -59,29 +79,97 @@ public function topUp($amount) {
      * Inserts a negative transaction record to represent the payment.
      *
      * @param float $amount - Amount to be deducted.
-     * @return bool
+     * @param int $payFrom - User Id who paid
+     * @param int $payTo - User Id who will be paid
+     * @param string $wallet_action - action taken
+     * @return array
      * @throws Exception if balance is insufficient.
      */
-    public function makePayment($amount, $wallet_action="null") {
-    if ($amount <= 0 || $amount > 9999999999.99) {
-        throw new InvalidArgumentException("Payment amount must be between 0.01 and 9999999999.99.");
+    public function makePaymentToRider($amount, $payFrom = null, $payTo = null, $refNumber = null, $paymentType = null, $wallet_action = "Made Payment") {
+        $response = ["success" => false, "message" => null];
+        $refNum = $refNumber;
+        $payType = $paymentType;
+        $payTo = $payTo ?? -99;
+        $payFrom = $payFrom ?? USER_LOGGED; 
+        $walletAction = $wallet_action ?? "Made Payment";
+    
+        try {
+            if ($amount <= 0 || $amount > 9999999999.99) {
+                throw new InvalidArgumentException("Payment amount must be between 0.01 and 9999999999.99.");
+            }
+    
+            $balance = $this->getBalance();
+            if ($balance < $amount) {
+                throw new Exception("Insufficient balance.");
+            }
+    
+            // Start transaction
+            mysqli_begin_transaction(CONN);
+    
+            // Deduction from customer wallet
+            $data1 = [
+                'user_id' => USER_LOGGED,
+                'payFrom' => USER_LOGGED,
+                'wallet_txn_amt' => number_format(-$amount, 2, '.', ''),
+                'txn_type_id' => $_SESSION['txn_cat_id'],
+                'wallet_action' => "$walletAction for $refNum",
+                'reference_number' => $refNum,
+                'payment_type' => $payType,
+                'wallet_txn_status' => 'C'
+            ];
+            if (!insert_data('user_wallet', $data1)) {
+                throw new Exception("Deducting Payment from Customer Failed");
+            }
+    
+            if ($payType === 'R') {
+                $amountToRider = $amount * 0.7;
+
+                $data2 = [
+                    'payFrom' => USER_LOGGED,
+                    'wallet_txn_amt' => number_format($amountToRider, 2, '.', ''),
+                    'txn_type_id' => $_SESSION['txn_cat_id'],
+                    'wallet_action' => "$walletAction from $payFrom",
+                    'reference_number' => $refNum,
+                    'payment_type' => $payType,
+                    'wallet_txn_status' => 'C'
+                ];
+                if (!insert_data('user_wallet', $data2)) {
+                    throw new Exception("Inserting Funds to Rider Failed");
+                }
+            
+    
+                $amountToAdmin = $amount * 0.3;
+                
+                $data3 = [
+                    'payFrom' => $payFrom,
+                    'payTo' => -99, //pay for admin
+                    'wallet_txn_amt' => number_format($amountToAdmin, 2, '.', ''),
+                    'txn_type_id' => $_SESSION['txn_cat_id'],
+                    'wallet_action' => "$walletAction to Admin",
+                    'reference_number' => $refNum,
+                    'payment_type' => $payType,
+                    'wallet_txn_status' => 'C'
+                ];
+                if (!insert_data('user_wallet', $data3)) {
+                    throw new Exception("Recording Wallet Funds to Admin Failed");
+                }
+            }
+    
+            // Commit transaction
+            mysqli_commit(CONN);
+            $response = ["success" => true, "message" => "Payment has been made."];
+        } catch (Exception $e) {
+            // Rollback transaction on failure
+            mysqli_rollback(CONN);
+            $response['message'] = $e->getMessage();
+        }
+    
+        return $response;
     }
+    
+    
+   
 
-    $balance = $this->getBalance();
-    if ($balance < $amount) {
-        throw new Exception("Insufficient balance.");
-    }
-
-    $data = [
-        'user_id' => $this->userId,
-        'wallet_txn_amt' => number_format(-$amount, 2, '.', ''),
-        'txn_type_id' => $_SESSION['txn_cat_id'],
-        'wallet_action' => "Made Payment $wallet_action",
-        'wallet_txn_status' => 'C',
-        'wallet_txn_start_ts' => date('Y-m-d H:i:s')
-    ];
-
-    return insert_data('user_wallet', $data);
         
-    }
+    
 }

@@ -2,6 +2,7 @@
 include_once "../../_db.php"; // Include your database connection
 include_once "_class_grocery.php"; // Include the Merchant, Product, and Cart classes
 
+// Initialize user ID
 $userId = USER_LOGGED;
 
 // Check if the user ID is valid
@@ -10,40 +11,21 @@ if (NULL === $userId) {
     exit;
 }
 
-// Fetch cart items for the user directly from the shop_orders table
-$query = "
-    SELECT ci.order_id ,ci.item_id, ci.quantity
-    FROM shop_orders ci
-    WHERE ci.user_id = ? AND ci.order_state_ind = 'C'
-";
-$stmt = CONN->prepare($query);
-$stmt->bind_param("s", $userId);
+try {
+    // Create a Cart instance
+    $cart = new Cart($userId);
 
-$response = ["success" => true, "cartItems" => []];
+    // Fetch cart details
+    $cartItems = $cart->getCartDetails();
 
-if ($stmt->execute()) {
-    $result = $stmt->get_result();
-
-    while ($row = $result->fetch_assoc()) {
-        // Fetch the product details for each item in the cart
-        $product = Product::fetchById($row['item_id']);
-        if ($product) {
-            // Prepare the response data with product details and quantity
-            $response["cartItems"][] = [
-                "order_id" => $row['order_id'],
-                "item_id" => $row['item_id'],
-                "item_name" => $product->getName(),
-                "price" => $product->getPrice(),
-                "quantity" => $row['quantity'],
-                "item_img" => $product->getItemImg()
-            ];
-        }
+    // Prepare the response
+    if (empty($cartItems)) {
+        echo json_encode(["success" => false, "message" => "Your cart is empty."]);
+    } else {
+        echo json_encode(["success" => true, "cartItems" => $cartItems]);
     }
-} else {
-    $response["success"] = false;
-    $response["message"] = "Failed to fetch cart items.";
+} catch (Exception $e) {
+    // Handle errors gracefully
+    echo json_encode(["success" => false, "message" => $e->getMessage()]);
 }
-
-// Return the response as JSON
-header("Content-Type: application/json");
-echo json_encode($response);
+?>

@@ -165,26 +165,6 @@ function getDistanceAndETA( $fromLat, $fromLng, $toLat, $toLng, $APIKey = Config
     }
 }
 
-// Cost computation function based on distance
-
-function computeCostByDistance( $distanceText ) {
-    if ( is_null( $distanceText ) || !is_numeric( $distanceText ) ) {
-        return number_format( ( $minDistance * $rateAfter3KMs ) + $flagDownRate, 2 );
-    }
-
-    $distanceValue = ( float ) $distanceText;
-    $currentHour = ( int ) date( 'G' );
-    $flagDownRate = ( $currentHour >= 18 || $currentHour < 5 ) ? 100.00 : 60.00;
-    $rateAfter3KMs = 10.00;
-    $minDistance = 3.00;
-
-    if ( $distanceValue > $minDistance ) {
-        return number_format( ( $distanceValue  * $rateAfter3KMs ) + $flagDownRate, 2 );
-    }
-
-    return number_format( ( $minDistance * $rateAfter3KMs ) + $flagDownRate, 2 );
-}
-
 function isCONN( $conn ) {
     return $conn ? true : false;
 }

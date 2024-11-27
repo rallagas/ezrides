@@ -1,16 +1,12 @@
 $(document).ready(function(){
-    
 //find a car module in Rent
 $('#formFindCar').submit(function(e){
-
 				$.ajax({
 				type: "POST",
 				url: "ajax_process_find_car.php",
 				data: $("#formFindCar").serialize(),
 				success: function(data){	
-                                
                            $("#queryresult").html(data);    
-						
 				        }
 				});		
 		e.preventDefault();

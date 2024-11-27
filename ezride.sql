@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Nov 19, 2024 at 02:08 PM
+-- Generation Time: Nov 27, 2024 at 09:30 AM
 -- Server version: 10.4.21-MariaDB
 -- PHP Version: 8.1.6
 
@@ -26,12 +26,9 @@ SET time_zone = "+00:00";
 --
 -- Table structure for table `angkas_bookings`
 --
--- Creation: Nov 19, 2024 at 06:24 AM
--- Last update: Nov 19, 2024 at 10:31 AM
---
 
-CREATE TABLE IF NOT EXISTS `angkas_bookings` (
-  `angkas_booking_id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `angkas_bookings` (
+  `angkas_booking_id` int(11) NOT NULL,
   `angkas_booking_reference` varchar(20) DEFAULT NULL,
   `shop_order_reference_number` varchar(25) DEFAULT NULL,
   `shop_cost` decimal(12,2) DEFAULT NULL,
@@ -51,44 +48,42 @@ CREATE TABLE IF NOT EXISTS `angkas_bookings` (
   `booking_status` varchar(1) NOT NULL DEFAULT 'P' COMMENT 'case when ab.booking_status = ''P'' THEN ''Waiting for Driver''\r\n                                         when ab.booking_status = ''A'' THEN ''Driver Found''\r\n                                         when ab.booking_status = ''R'' THEN ''Driver Arrived in Your Location''\r\n                                         when ab.booking_status = ''I'' THEN ''In Transit''\r\n                                         when ab.booking_status = ''C'' THEN ''Completed''\r\n                                    end as booking_status\r\n',
   `payment_status` char(1) NOT NULL DEFAULT 'P' COMMENT 'P = Pending, D=Declined, C=Completed Payment',
   `payment_id` int(11) DEFAULT NULL,
-  `rating` varchar(20) NOT NULL DEFAULT '3',
-  PRIMARY KEY (`angkas_booking_id`),
-  KEY `transaction_category_id` (`transaction_category_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4;
+  `rating` varchar(20) NOT NULL DEFAULT '3'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
 --
 -- Table structure for table `angkas_rider_queue`
 --
--- Creation: Oct 21, 2024 at 09:46 AM
--- Last update: Nov 19, 2024 at 10:31 AM
---
 
-CREATE TABLE IF NOT EXISTS `angkas_rider_queue` (
-  `angkas_rider_queue_id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `angkas_rider_queue` (
+  `angkas_rider_queue_id` int(11) NOT NULL,
   `angkas_rider_id` int(11) NOT NULL COMMENT '(FK) to user_id for riders',
   `queue_date` timestamp NOT NULL DEFAULT current_timestamp(),
-  `queue_status` varchar(1) NOT NULL DEFAULT 'A' COMMENT 'A - available\r\nI - In Transit\r\nD - Done',
-  PRIMARY KEY (`angkas_rider_queue_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=87 DEFAULT CHARSET=utf8mb4;
+  `queue_status` varchar(1) NOT NULL DEFAULT 'A' COMMENT 'A - available\r\nI - In Transit\r\nD - Done'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `angkas_rider_queue`
+--
+
+INSERT INTO `angkas_rider_queue` (`angkas_rider_queue_id`, `angkas_rider_id`, `queue_date`, `queue_status`) VALUES
+(111, 32, '2024-11-26 22:53:57', 'I');
 
 -- --------------------------------------------------------
 
 --
 -- Table structure for table `angkas_vehicle_model`
 --
--- Creation: Nov 06, 2024 at 07:30 AM
---
 
-CREATE TABLE IF NOT EXISTS `angkas_vehicle_model` (
-  `vehicle_model_id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `angkas_vehicle_model` (
+  `vehicle_model_id` int(11) NOT NULL,
   `vehicle_model` varchar(100) NOT NULL,
   `model_body_type` varchar(20) NOT NULL,
   `number_of_seats` int(11) NOT NULL,
-  `allowed_ind` varchar(1) NOT NULL DEFAULT 'Y',
-  PRIMARY KEY (`vehicle_model_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8mb4;
+  `allowed_ind` varchar(1) NOT NULL DEFAULT 'Y'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `angkas_vehicle_model`
@@ -139,11 +134,9 @@ INSERT INTO `angkas_vehicle_model` (`vehicle_model_id`, `vehicle_model`, `model_
 --
 -- Table structure for table `app_transactions`
 --
--- Creation: Oct 04, 2024 at 01:31 PM
---
 
-CREATE TABLE IF NOT EXISTS `app_transactions` (
-  `app_txn_id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `app_transactions` (
+  `app_txn_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `txn_category_id` int(11) NOT NULL,
   `txn_status` varchar(1) NOT NULL DEFAULT 'P',
@@ -153,9 +146,8 @@ CREATE TABLE IF NOT EXISTS `app_transactions` (
   `book_location_id` varchar(50) NOT NULL COMMENT 'for booking type transactions',
   `book_item_inventory_id` int(11) NOT NULL COMMENT 'connects to items_inventory_id in items_inventory table',
   `amount_to_pay` decimal(7,2) DEFAULT NULL,
-  `payment_status` char(1) NOT NULL DEFAULT 'P' COMMENT 'P - Pending\r\nD - Done Payment',
-  PRIMARY KEY (`app_txn_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4;
+  `payment_status` char(1) NOT NULL DEFAULT 'P' COMMENT 'P - Pending\r\nD - Done Payment'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -163,7 +155,7 @@ CREATE TABLE IF NOT EXISTS `app_transactions` (
 -- Stand-in structure for view `booking_shop_combined`
 -- (See below for the actual view)
 --
-CREATE TABLE IF NOT EXISTS `booking_shop_combined` (
+CREATE TABLE `booking_shop_combined` (
 `shop_order_id` int(11)
 ,`shop_order_reference_number` varchar(20)
 ,`shop_order_voucher_code` int(11)
@@ -184,9 +176,7 @@ CREATE TABLE IF NOT EXISTS `booking_shop_combined` (
 ,`shop_order_special_instructions` text
 ,`angkas_booking_id` int(11)
 ,`angkas_booking_reference` varchar(20)
-,`angkas_booking_shop_order_reference_number` varchar(25)
 ,`angkas_booking_transaction_category_id` int(2)
-,`angkas_booking_user_id` int(11)
 ,`angkas_booking_rider_user_id` int(11)
 ,`angkas_booking_from_destination_name` varchar(255)
 ,`angkas_booking_user_current_location_latitude` varchar(55)
@@ -201,14 +191,6 @@ CREATE TABLE IF NOT EXISTS `booking_shop_combined` (
 ,`angkas_booking_status` varchar(1)
 ,`angkas_booking_payment_status` char(1)
 ,`angkas_booking_rating` varchar(20)
-,`user_username` varchar(55)
-,`user_password` varchar(255)
-,`user_status` varchar(1)
-,`user_date_joined` timestamp
-,`user_type` varchar(1)
-,`user_rider_status` varchar(1)
-,`user_online_status` tinyint(1)
-,`user_last_online_timestamp` timestamp
 ,`user_profile_id` int(11)
 ,`user_firstname` varchar(55)
 ,`user_lastname` varchar(55)
@@ -227,7 +209,7 @@ CREATE TABLE IF NOT EXISTS `booking_shop_combined` (
 -- Stand-in structure for view `booking_shop_header_view`
 -- (See below for the actual view)
 --
-CREATE TABLE IF NOT EXISTS `booking_shop_header_view` (
+CREATE TABLE `booking_shop_header_view` (
 `angkas_booking_id` int(11)
 ,`angkas_booking_reference` varchar(20)
 ,`shop_order_reference_number` varchar(25)
@@ -251,21 +233,16 @@ CREATE TABLE IF NOT EXISTS `booking_shop_header_view` (
 --
 -- Table structure for table `items_inventory`
 --
--- Creation: Oct 02, 2024 at 04:21 PM
---
 
-CREATE TABLE IF NOT EXISTS `items_inventory` (
-  `items_inventory_id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `items_inventory` (
+  `items_inventory_id` int(11) NOT NULL,
   `item_reference_id` int(11) DEFAULT NULL,
   `item_description` text NOT NULL,
   `vendor_id` int(11) NOT NULL COMMENT 'associated with vendors inside the app',
   `txn_category_id` int(11) NOT NULL,
   `item_price` double NOT NULL,
-  `date_added` timestamp NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`items_inventory_id`),
-  KEY `vendor_items` (`vendor_id`),
-  KEY `txn_category_items` (`txn_category_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4;
+  `date_added` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `items_inventory`
@@ -298,11 +275,9 @@ INSERT INTO `items_inventory` (`items_inventory_id`, `item_reference_id`, `item_
 --
 -- Table structure for table `lu_cars`
 --
--- Creation: Oct 02, 2024 at 04:07 PM
---
 
-CREATE TABLE IF NOT EXISTS `lu_cars` (
-  `car_id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `lu_cars` (
+  `car_id` int(11) NOT NULL,
   `car_brand` varchar(55) NOT NULL,
   `car_rent_price` decimal(6,2) NOT NULL,
   `car_plate_no` varchar(15) NOT NULL,
@@ -311,21 +286,17 @@ CREATE TABLE IF NOT EXISTS `lu_cars` (
   `car_model_id` int(11) NOT NULL,
   `car_body_type_id` int(11) NOT NULL,
   `car_img` varchar(255) NOT NULL,
-  `car_year_model` varchar(4) NOT NULL,
-  PRIMARY KEY (`car_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
+  `car_year_model` varchar(4) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
 --
 -- Table structure for table `payment`
 --
--- Creation: Nov 19, 2024 at 03:25 AM
--- Last update: Nov 19, 2024 at 03:25 AM
---
 
-CREATE TABLE IF NOT EXISTS `payment` (
-  `payment_id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `payment` (
+  `payment_id` int(11) NOT NULL,
   `payment_amount` decimal(12,2) DEFAULT NULL,
   `paidBy_userid` int(11) DEFAULT NULL,
   `paidTo_user_id` int(11) DEFAULT NULL,
@@ -333,8 +304,7 @@ CREATE TABLE IF NOT EXISTS `payment` (
   `payment_status` int(11) DEFAULT NULL,
   `wallet_id` int(11) DEFAULT NULL,
   `txn_category_id` int(11) DEFAULT NULL,
-  `txn_type_desc` int(11) NOT NULL,
-  PRIMARY KEY (`payment_id`)
+  `txn_type_desc` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -342,19 +312,15 @@ CREATE TABLE IF NOT EXISTS `payment` (
 --
 -- Table structure for table `refcitymun`
 --
--- Creation: Oct 02, 2024 at 04:31 PM
--- Last update: Oct 02, 2024 at 04:31 PM
---
 
-CREATE TABLE IF NOT EXISTS `refcitymun` (
-  `id` int(255) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `refcitymun` (
+  `id` int(255) NOT NULL,
   `psgcCode` varchar(255) DEFAULT NULL,
   `citymunDesc` text DEFAULT NULL,
   `regDesc` varchar(255) DEFAULT NULL,
   `provCode` varchar(255) DEFAULT NULL,
-  `citymunCode` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=1648 DEFAULT CHARSET=utf8 COMMENT='lu_city_mun';
+  `citymunCode` varchar(255) DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='lu_city_mun';
 
 --
 -- Dumping data for table `refcitymun`
@@ -1267,7 +1233,8 @@ INSERT INTO `refcitymun` (`id`, `psgcCode`, `citymunDesc`, `regDesc`, `provCode`
 (904, '072246000', 'SIBONGA', '07', '0722', '072246'),
 (905, '072247000', 'SOGOD', '07', '0722', '072247'),
 (906, '072248000', 'TABOGON', '07', '0722', '072248'),
-(907, '072249000', 'TABUELAN', '07', '0722', '072249'),
+(907, '072249000', 'TABUELAN', '07', '0722', '072249');
+INSERT INTO `refcitymun` (`id`, `psgcCode`, `citymunDesc`, `regDesc`, `provCode`, `citymunCode`) VALUES
 (908, '072250000', 'CITY OF TALISAY', '07', '0722', '072250'),
 (909, '072251000', 'TOLEDO CITY', '07', '0722', '072251'),
 (910, '072252000', 'TUBURAN', '07', '0722', '072252'),
@@ -2014,18 +1981,14 @@ INSERT INTO `refcitymun` (`id`, `psgcCode`, `citymunDesc`, `regDesc`, `provCode`
 --
 -- Table structure for table `refprovince`
 --
--- Creation: Oct 02, 2024 at 04:32 PM
--- Last update: Oct 02, 2024 at 04:32 PM
---
 
-CREATE TABLE IF NOT EXISTS `refprovince` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `refprovince` (
+  `id` int(11) NOT NULL,
   `psgcCode` varchar(255) DEFAULT NULL,
   `provDesc` text DEFAULT NULL,
   `regCode` varchar(255) DEFAULT NULL,
-  `provCode` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=89 DEFAULT CHARSET=utf8;
+  `provCode` varchar(255) DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `refprovince`
@@ -2126,18 +2089,13 @@ INSERT INTO `refprovince` (`id`, `psgcCode`, `provDesc`, `regCode`, `provCode`) 
 --
 -- Table structure for table `refregion`
 --
--- Creation: Oct 02, 2024 at 04:32 PM
--- Last update: Oct 02, 2024 at 04:32 PM
--- Last check: Oct 02, 2024 at 04:38 PM
---
 
-CREATE TABLE IF NOT EXISTS `refregion` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `refregion` (
+  `id` int(11) NOT NULL,
   `psgcCode` varchar(255) DEFAULT NULL,
   `regDesc` text DEFAULT NULL,
-  `regCode` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=18 DEFAULT CHARSET=utf8;
+  `regCode` varchar(255) DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `refregion`
@@ -2165,17 +2123,44 @@ INSERT INTO `refregion` (`id`, `psgcCode`, `regDesc`, `regCode`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Stand-in structure for view `shop_booking_header_view`
+-- (See below for the actual view)
+--
+CREATE TABLE `shop_booking_header_view` (
+`shop_order_reference_number` varchar(20)
+,`angkas_booking_reference` varchar(20)
+,`customer_user_id` int(11)
+,`rider_user_id` int(11)
+,`rider_name` varchar(112)
+,`shop_cost` decimal(31,2)
+,`angkas_booking_eta_duration` decimal(6,2)
+,`angkas_booking_total_distance` decimal(6,2)
+,`angkas_booking_estimated_cost` decimal(12,2)
+,`angkas_booking_avg_rating` double
+,`customer_username` varchar(55)
+,`customer_user_type` varchar(1)
+,`customer_firstname` varchar(55)
+,`customer_lastname` varchar(55)
+,`booking_status` varchar(1)
+,`booking_payment_status` char(1)
+,`order_state_ind` char(1)
+,`merchant_name` varchar(255)
+,`order_date` varchar(21)
+,`shop_payment_status` varchar(1)
+,`elapsed_time` varchar(33)
+);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `shop_category`
 --
--- Creation: Nov 06, 2024 at 10:19 PM
---
 
-CREATE TABLE IF NOT EXISTS `shop_category` (
-  `sc_id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `shop_category` (
+  `sc_id` int(11) NOT NULL,
   `shop_category_name` varchar(55) NOT NULL,
-  `shop_category_status` varchar(1) NOT NULL DEFAULT 'A',
-  PRIMARY KEY (`sc_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4;
+  `shop_category_status` varchar(1) NOT NULL DEFAULT 'A'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `shop_category`
@@ -2191,77 +2176,85 @@ INSERT INTO `shop_category` (`sc_id`, `shop_category_name`, `shop_category_statu
 --
 -- Table structure for table `shop_items`
 --
--- Creation: Nov 13, 2024 at 09:23 AM
---
 
-CREATE TABLE IF NOT EXISTS `shop_items` (
-  `item_id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `shop_items` (
+  `item_id` int(11) NOT NULL,
   `item_name` varchar(255) NOT NULL,
   `price` decimal(10,2) NOT NULL,
   `merchant_id` int(11) DEFAULT NULL,
   `category` int(11) NOT NULL,
   `quantity` int(11) NOT NULL,
   `item_img` varchar(255) DEFAULT NULL,
-  `date_added` timestamp NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`item_id`),
-  KEY `item-cat` (`category`),
-  KEY `item-merchant` (`merchant_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=101 DEFAULT CHARSET=utf8mb4;
+  `date_added` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `shop_items`
 --
 
 INSERT INTO `shop_items` (`item_id`, `item_name`, `price`, `merchant_id`, `category`, `quantity`, `item_img`, `date_added`) VALUES
-(1, 'Whole Wheat Bread', '2.99', 1, 1, 0, NULL, '2024-11-04 21:19:49'),
-(2, 'Organic Milk', '3.49', 1, 1, 30, NULL, '2024-11-04 21:19:49'),
-(3, 'Fresh Spinach', '1.99', 1, 1, 100, NULL, '2024-11-04 21:19:49'),
-(4, 'Eggs (dozen)', '2.49', 1, 1, 40, NULL, '2024-11-04 21:19:49'),
-(5, 'Chicken Breast (lb)', '5.99', 1, 1, 25, NULL, '2024-11-04 21:19:49'),
-(6, 'Apples (per lb)', '1.79', 1, 1, 60, NULL, '2024-11-04 21:19:49'),
-(7, 'Almonds (16 oz)', '6.99', 1, 1, 15, NULL, '2024-11-04 21:19:49'),
-(8, 'Oatmeal (18 oz)', '3.29', 1, 1, 20, NULL, '2024-11-04 21:19:49'),
-(9, 'Greek Yogurt (32 oz)', '4.49', 1, 1, 25, NULL, '2024-11-04 21:19:49'),
-(10, 'Olive Oil (500 ml)', '8.99', 1, 1, 10, NULL, '2024-11-04 21:19:49');
+(1, 'Whole Wheat Bread', '2.99', 1, 1, 0, 'whole-wheat.jpg', '2024-11-04 21:19:49'),
+(2, 'Organic Milk', '3.49', 1, 1, 30, 'organic-milk.jpg', '2024-11-04 21:19:49'),
+(3, 'Fresh Spinach', '1.99', 1, 1, 100, 'fresh-spinach.jpeg', '2024-11-04 21:19:49'),
+(4, 'Eggs (dozen)', '2.49', 1, 1, 40, 'eggs.webp', '2024-11-04 21:19:49'),
+(5, 'Chicken Breast (lb)', '5.99', 1, 1, 25, 'chicken-breasts.jpg', '2024-11-04 21:19:49'),
+(6, 'Apples (per lb)', '1.79', 1, 1, 60, 'apple.jpg', '2024-11-04 21:19:49'),
+(7, 'Almonds (16 oz)', '6.99', 1, 1, 15, 'almonds.jpg', '2024-11-04 21:19:49'),
+(8, 'Oatmeal (18 oz)', '3.29', 1, 1, 20, 'classic-oats.png', '2024-11-04 21:19:49'),
+(9, 'Greek Yogurt (32 oz)', '4.49', 1, 1, 25, 'greek-style-vanilla.png', '2024-11-04 21:19:49'),
+(10, 'Olive Oil (500 ml)', '8.99', 1, 1, 10, 'olive-oil.jpg', '2024-11-04 21:19:49');
+
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `shop_item_merchant_view`
+-- (See below for the actual view)
+--
+CREATE TABLE `shop_item_merchant_view` (
+`shop_order_ref_num` varchar(20)
+,`item_name` varchar(255)
+,`quantity` int(11)
+,`price` decimal(10,2)
+,`merchant_name` varchar(255)
+,`merchant_address` varchar(255)
+,`customer_user_id` int(11)
+);
 
 -- --------------------------------------------------------
 
 --
 -- Table structure for table `shop_merchants`
 --
--- Creation: Nov 17, 2024 at 05:58 AM
--- Last update: Nov 18, 2024 at 08:45 AM
---
 
-CREATE TABLE IF NOT EXISTS `shop_merchants` (
-  `merchant_id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `shop_merchants` (
+  `merchant_id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
   `address` varchar(255) DEFAULT NULL,
   `phone` varchar(15) DEFAULT NULL,
   `email` varchar(255) DEFAULT NULL,
   `merchant_loc_coor` varchar(100) DEFAULT NULL,
-  PRIMARY KEY (`merchant_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4;
+  `merchant_img` varchar(100) DEFAULT NULL,
+  `merchant_type` varchar(55) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `shop_merchants`
 --
 
-INSERT INTO `shop_merchants` (`merchant_id`, `name`, `address`, `phone`, `email`, `merchant_loc_coor`) VALUES
-(1, 'LCC Ligao', '6GRQ+7HM Ligao, Albay', '123-456-7890', 'freshmart@example.com', '13.2407034,123.5389159'),
-(11, 'Mercury Drug Corporation@Ligao City McKinley', '6GRR+455, McKinley Street, Ligao, 4504 Albay', '0524851150', NULL, NULL);
+INSERT INTO `shop_merchants` (`merchant_id`, `name`, `address`, `phone`, `email`, `merchant_loc_coor`, `merchant_img`, `merchant_type`) VALUES
+(1, 'LCC Ligao', '6GRQ+7HM Ligao, Albay', '123-456-7890', 'freshmart@example.com', '13.2407034,123.5389159', 'lcc-ligao.jpg', 'Supermarket'),
+(11, 'Mercury Drug Corporation@Ligao City McKinley', '6GRR+455, McKinley Street, Ligao, 4504 Albay', '0524851150', NULL, '13.2401825,123.5403961', 'mercury-drug-ligao.jpeg', 'Pharmacy'),
+(12, 'McDonald\'s Ligao', '276 National Hwy, Ligao, 4504 Albay', '0288886236', NULL, '13.2377605,123.5423527', 'mcdo-ligao.jpg', 'Food Delivery'),
+(13, 'Philippine Statistics Authority Region V', '4540 Daraga - Legazpi City - Tiwi Rd, Legazpi City, 4500 Albay', '0524817479', NULL, '13.1653945,123.7499651', 'psa-daraga.jpg', 'Document Processing');
 
 -- --------------------------------------------------------
 
 --
 -- Table structure for table `shop_orders`
 --
--- Creation: Nov 17, 2024 at 10:10 AM
--- Last update: Nov 19, 2024 at 10:08 AM
---
 
-CREATE TABLE IF NOT EXISTS `shop_orders` (
-  `order_id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `shop_orders` (
+  `order_id` int(11) NOT NULL,
   `shop_order_ref_num` varchar(20) DEFAULT 'ON_CART',
   `voucher_code` int(11) DEFAULT NULL,
   `Shipping_fee` int(11) DEFAULT NULL,
@@ -2276,23 +2269,19 @@ CREATE TABLE IF NOT EXISTS `shop_orders` (
   `amount_to_pay` decimal(9,2) DEFAULT NULL,
   `order_date` timestamp NULL DEFAULT current_timestamp(),
   `delivery_status` varchar(1) DEFAULT 'P',
-  `payment_status` varchar(1) DEFAULT 'P',
+  `payment_status` varchar(1) DEFAULT '',
   `order_state_ind` char(1) NOT NULL DEFAULT 'C' COMMENT 'C - Cart\r\nO - Checkout\r\nP - Payment\r\nD - Delivered\r\nX - Cancelled',
-  `order_special_instructions` text DEFAULT NULL,
-  PRIMARY KEY (`order_id`),
-  UNIQUE KEY `unique_user_item` (`user_id`,`item_id`,`shop_order_ref_num`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4;
+  `order_special_instructions` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
 --
 -- Table structure for table `txn_category`
 --
--- Creation: Nov 17, 2024 at 08:07 AM
---
 
-CREATE TABLE IF NOT EXISTS `txn_category` (
-  `txn_category_id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `txn_category` (
+  `txn_category_id` int(11) NOT NULL,
   `page_action` varchar(55) DEFAULT NULL,
   `txn_prefix` varchar(3) DEFAULT NULL,
   `txn_link` varchar(55) NOT NULL,
@@ -2301,9 +2290,8 @@ CREATE TABLE IF NOT EXISTS `txn_category` (
   `txn_category_status` varchar(1) NOT NULL,
   `icon_class` varchar(55) NOT NULL,
   `txn_title` varchar(55) NOT NULL,
-  `load_js_file` varchar(55) NOT NULL,
-  PRIMARY KEY (`txn_category_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4;
+  `load_js_file` varchar(55) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `txn_category`
@@ -2315,24 +2303,21 @@ INSERT INTO `txn_category` (`txn_category_id`, `page_action`, `txn_prefix`, `txn
 (3, NULL, NULL, '_food_delivery.php', '', 'Food Delivery', 'X', 'hamburger-soda', 'fooddelivery', ''),
 (4, NULL, NULL, '_rx.php', '', 'Medicine Pabili', 'X', 'file-prescription', 'rx', ''),
 (5, NULL, NULL, '_legal.php', '', 'Document Processing', 'X', 'legal', 'legal', ''),
-(6, 'shop', 'GRX', '_shop.php', '_shop', 'Grocery', 'A', 'grocery-bag', 'shop', ''),
+(6, 'shop', 'GRX', '_shop.php', '', 'Grocery', 'A', 'grocery-bag', 'shop', ''),
 (7, 'wallet', NULL, '_wallet.php', '', 'Top-Up Wallet', 'A', 'wallet', 'wallet', ''),
 (8, NULL, NULL, '_coupons.php', '', 'Coupons', 'X', 'ticket', 'coupons', ''),
 (9, NULL, NULL, '_surprise.php', '', 'Motorcycle Surprises', 'X', 'gift-box-benefits', 'motorcyclesurprises', ''),
-(10, 'earnings', NULL, '_my_earnings.php', '', 'My Earnings', 'R', 'peso-sign', 'My Earnings', ''),
-(11, NULL, NULL, '', '', 'My Bookings', 'R', 'location-alt', 'My Bookings', '');
+(10, 'earnings', NULL, '_my_earnings.php', '', 'My Earnings', 'X', 'peso-sign', 'My Earnings', ''),
+(11, 'bookings', NULL, '', '', 'My Bookings', 'X', 'location-alt', 'My Bookings', '');
 
 -- --------------------------------------------------------
 
 --
 -- Table structure for table `users`
 --
--- Creation: Nov 06, 2024 at 07:59 PM
--- Last update: Nov 19, 2024 at 12:52 PM
---
 
-CREATE TABLE IF NOT EXISTS `users` (
-  `user_id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `users` (
+  `user_id` int(11) NOT NULL,
   `t_username` varchar(55) NOT NULL,
   `t_password` varchar(255) NOT NULL,
   `t_status` varchar(1) NOT NULL DEFAULT 'A',
@@ -2340,21 +2325,30 @@ CREATE TABLE IF NOT EXISTS `users` (
   `t_user_type` varchar(1) NOT NULL DEFAULT 'C',
   `t_rider_status` varchar(1) DEFAULT NULL,
   `t_online_status` tinyint(1) NOT NULL DEFAULT 0 COMMENT 'Online / Offline',
-  `t_last_online_ts` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8mb4;
+  `t_last_online_ts` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `users`
+--
+
+INSERT INTO `users` (`user_id`, `t_username`, `t_password`, `t_status`, `date_joined`, `t_user_type`, `t_rider_status`, `t_online_status`, `t_last_online_ts`) VALUES
+(30, 'keff', '$2y$10$nAoQkk3RRWvPm/WrRReFRexzZQSdLr0L5Qh0mIm/Zp7/lKDvudP5m', 'A', '2024-11-13 09:37:38', 'C', '0', 1, '2024-11-13 02:37:57'),
+(31, 'cus01', '$2y$10$8nPDTT7Tv0HDb2oHiDY6COmVD0dmgNiuDIL0DBF9ERGQ3n84L1Lx.', 'A', '2024-11-13 12:08:50', 'C', '0', 1, '2024-11-27 00:59:29'),
+(32, 'rider1', '$2y$10$5nFUP8ZhjRpb5bSNmr98KOOFYav6tGkoHROp1wZyJtE0rPD72iQaS', 'A', '2024-11-14 16:52:02', 'C', '1', 1, '2024-11-27 00:59:49'),
+(33, 'cus02', '$2y$10$qW28YLXccl7BcN2EJTsDee9NVIEGYIV6EhRFYMEDlw6Sa/8/YmUGC', 'A', '2024-11-18 06:46:31', 'C', '0', 0, NULL),
+(34, 'ezrides1', '$2y$10$IrfSolc.d0g2tB0ZAs/ZP.LHE6I4UwsYMmtmKUaAC5BsotFrOb66a', 'A', '2024-11-18 09:05:11', 'C', '1', 0, NULL),
+(35, 'rlla', '$2y$10$aLAQJ6TnaK6ymmaRllKLS.3kWPdGqpSQa1d8QyevMLrTg64APHFS6', 'A', '2024-11-19 12:52:10', 'C', '0', 0, NULL),
+(36, 'cus03', '$2y$10$z9SfSS8KxrpasqKqG8j5l.fYfoGTxRZGmVacHEbJKopu13hbyJbQ2', 'A', '2024-11-21 05:25:17', 'C', '0', 1, '2024-11-26 22:08:44');
 
 -- --------------------------------------------------------
 
 --
 -- Table structure for table `user_profile`
 --
--- Creation: Nov 08, 2024 at 04:40 PM
--- Last update: Nov 19, 2024 at 12:52 PM
---
 
-CREATE TABLE IF NOT EXISTS `user_profile` (
-  `user_profile_id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `user_profile` (
+  `user_profile_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `user_firstname` varchar(55) DEFAULT NULL,
   `user_lastname` varchar(55) DEFAULT NULL,
@@ -2364,40 +2358,50 @@ CREATE TABLE IF NOT EXISTS `user_profile` (
   `user_email_address` varchar(255) DEFAULT NULL,
   `user_profile_image` varchar(255) DEFAULT 'female_person1.jpg',
   `rider_plate_no` varchar(10) DEFAULT NULL,
-  `rider_license_no` varchar(55) DEFAULT NULL,
-  PRIMARY KEY (`user_profile_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=44 DEFAULT CHARSET=utf8mb4;
+  `rider_license_no` varchar(55) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `user_profile`
+--
+
+INSERT INTO `user_profile` (`user_profile_id`, `user_id`, `user_firstname`, `user_lastname`, `user_mi`, `user_contact_no`, `user_gender`, `user_email_address`, `user_profile_image`, `rider_plate_no`, `rider_license_no`) VALUES
+(38, 30, 'Keffer Vince', 'Bangate', 'D', '09663799190', 'M', 'mrblackfrost0@gmail.com', 'female_person1.jpg', NULL, NULL),
+(39, 31, 'Juan', 'Dela', 'C', '09985518206', 'M', 'cus01@gmail.com', 'female_person1.jpg', NULL, NULL),
+(40, 32, 'Juan', 'Dela', 'C', '09985518206', 'M', 'rider1@gmail.com', 'female_person1.jpg', 'EAJ-3176', '333-3333'),
+(41, 33, 'Customer', 'Sample', 'X', '09985518206', 'M', 'cus02@gmail.com', 'female_person1.jpg', NULL, NULL),
+(42, 34, 'Ezekiel Daniel', 'De Luna', 'S', '09653516043', 'M', 'ezrides_1@gmail.com', 'female_person1.jpg', 'EAJ-3176', '333-3333'),
+(43, 35, 'reymar', 'llagas', 'a', '09985518206', 'M', 'rllagas.personal@gmail.com', 'female_person1.jpg', NULL, NULL),
+(44, 36, 'Justin', 'Beaver', 'A', '09989999999', 'M', 'cus03@gmail.com', 'female_person1.jpg', NULL, NULL);
 
 -- --------------------------------------------------------
 
 --
 -- Table structure for table `user_wallet`
 --
--- Creation: Nov 13, 2024 at 04:26 AM
--- Last update: Nov 18, 2024 at 09:16 AM
---
 
-CREATE TABLE IF NOT EXISTS `user_wallet` (
-  `user_wallet_id` bigint(11) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) NOT NULL,
+CREATE TABLE `user_wallet` (
+  `user_wallet_id` bigint(11) UNSIGNED ZEROFILL NOT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `payTo` int(11) DEFAULT NULL,
+  `payFrom` int(11) DEFAULT NULL,
   `wallet_txn_amt` decimal(12,2) NOT NULL DEFAULT 0.00,
   `txn_type_id` int(11) NOT NULL,
   `wallet_action` varchar(55) NOT NULL,
+  `payment_type` varchar(1) NOT NULL DEFAULT 'R' COMMENT 'R = Rider\r\n(has deduction of 70% to rider)\r\nS = Shop Cost (no deduction from rider , commission to Admin)\r\nA = Admin\r\nC = Cash Out\r\nT = Top Up\r\n',
+  `reference_number` varchar(32) DEFAULT NULL,
   `wallet_txn_status` varchar(1) NOT NULL DEFAULT 'P',
-  `wallet_txn_start_ts` timestamp NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`user_wallet_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=79 DEFAULT CHARSET=utf8mb4;
+  `wallet_txn_start_ts` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
 --
 -- Table structure for table `vehicle`
 --
--- Creation: Oct 03, 2024 at 01:06 AM
---
 
-CREATE TABLE IF NOT EXISTS `vehicle` (
-  `vehicle_id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `vehicle` (
+  `vehicle_id` int(11) NOT NULL,
   `vehicle_type` varchar(5) NOT NULL COMMENT '0010 - 10-wheeler truck\r\n0004 - e-bike\r\n0005 - sedan\r\n0006 - suv\r\n0007 - 7-seater\r\n02 - motorcycle\r\n01 - bike',
   `vehicle_plate_no` varchar(10) NOT NULL,
   `vehicle_color` varchar(55) NOT NULL,
@@ -2407,9 +2411,8 @@ CREATE TABLE IF NOT EXISTS `vehicle` (
   `vehicle_price_rate_per_hr` decimal(6,2) DEFAULT NULL,
   `vehicle_price_rate_per_day` decimal(7,2) DEFAULT NULL,
   `vehicle_price_rate_per_km` decimal(7,2) DEFAULT NULL,
-  `vehicle_txn_type` int(11) NOT NULL DEFAULT 2 COMMENT '1 - rent\r\n2 - angkas',
-  PRIMARY KEY (`vehicle_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4;
+  `vehicle_txn_type` int(11) NOT NULL DEFAULT 2 COMMENT '1 - rent\r\n2 - angkas'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `vehicle`
@@ -2433,17 +2436,14 @@ INSERT INTO `vehicle` (`vehicle_id`, `vehicle_type`, `vehicle_plate_no`, `vehicl
 --
 -- Table structure for table `vendors`
 --
--- Creation: Oct 03, 2024 at 02:18 PM
---
 
-CREATE TABLE IF NOT EXISTS `vendors` (
-  `vendor_id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `vendors` (
+  `vendor_id` int(11) NOT NULL,
   `vendor_name` varchar(55) NOT NULL,
   `vendor_type` int(2) NOT NULL COMMENT '99 - External\r\n1 - Internal',
   `vendor_status` varchar(1) NOT NULL DEFAULT 'A',
-  `vendor_contact_number` varchar(20) DEFAULT NULL,
-  PRIMARY KEY (`vendor_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4;
+  `vendor_contact_number` varchar(20) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `vendors`
@@ -2465,7 +2465,7 @@ INSERT INTO `vendors` (`vendor_id`, `vendor_name`, `vendor_type`, `vendor_status
 -- Stand-in structure for view `view_angkas_bookings`
 -- (See below for the actual view)
 --
-CREATE TABLE IF NOT EXISTS `view_angkas_bookings` (
+CREATE TABLE `view_angkas_bookings` (
 `transaction_category_id` int(2)
 ,`txn_prefix` varchar(3)
 ,`angkas_booking_id` int(11)
@@ -2503,18 +2503,15 @@ CREATE TABLE IF NOT EXISTS `view_angkas_bookings` (
 --
 -- Table structure for table `vouchers`
 --
--- Creation: Nov 16, 2024 at 10:23 PM
---
 
-CREATE TABLE IF NOT EXISTS `vouchers` (
-  `voucher_id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `vouchers` (
+  `voucher_id` int(11) NOT NULL,
   `voucher_code` varchar(10) NOT NULL,
   `voucher_amt` int(11) NOT NULL,
   `voucher_desc` varchar(255) NOT NULL,
   `voucher_valid_until` timestamp NULL DEFAULT NULL,
-  `voucher_avail_count` int(11) NOT NULL,
-  PRIMARY KEY (`voucher_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
+  `voucher_avail_count` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `vouchers`
@@ -2530,7 +2527,7 @@ INSERT INTO `vouchers` (`voucher_id`, `voucher_code`, `voucher_amt`, `voucher_de
 --
 DROP TABLE IF EXISTS `booking_shop_combined`;
 
-CREATE OR REPLACE ALGORITHM=UNDEFINED DEFINER=`` SQL SECURITY DEFINER VIEW `booking_shop_combined`  AS SELECT `so`.`order_id` AS `shop_order_id`, `so`.`shop_order_ref_num` AS `shop_order_reference_number`, `so`.`voucher_code` AS `shop_order_voucher_code`, `so`.`Shipping_fee` AS `shop_order_shipping_fee`, `so`.`shipping_name` AS `shop_order_shipping_name`, `so`.`shipping_address` AS `shop_order_shipping_address`, `so`.`shipping_address_coor` AS `shop_order_shipping_address_coordinates`, `so`.`shipping_phone` AS `shop_order_shipping_phone`, `so`.`user_id` AS `shop_order_user_id`, `so`.`rider_id` AS `shop_order_rider_id`, `so`.`item_id` AS `shop_order_item_id`, `so`.`quantity` AS `shop_order_quantity`, `so`.`amount_to_pay` AS `shop_order_amount_to_pay`, `so`.`order_date` AS `shop_order_date`, `so`.`delivery_status` AS `shop_order_delivery_status`, `so`.`payment_status` AS `shop_order_payment_status`, `so`.`order_state_ind` AS `shop_order_state_indicator`, `so`.`order_special_instructions` AS `shop_order_special_instructions`, `ab`.`angkas_booking_id` AS `angkas_booking_id`, `ab`.`angkas_booking_reference` AS `angkas_booking_reference`, `ab`.`shop_order_reference_number` AS `angkas_booking_shop_order_reference_number`, `ab`.`transaction_category_id` AS `angkas_booking_transaction_category_id`, `ab`.`user_id` AS `angkas_booking_user_id`, `ab`.`angkas_rider_user_id` AS `angkas_booking_rider_user_id`, `ab`.`form_from_dest_name` AS `angkas_booking_from_destination_name`, `ab`.`user_currentLoc_lat` AS `angkas_booking_user_current_location_latitude`, `ab`.`user_currentLoc_long` AS `angkas_booking_user_current_location_longitude`, `ab`.`form_to_dest_name` AS `angkas_booking_to_destination_name`, `ab`.`formToDest_long` AS `angkas_booking_to_destination_longitude`, `ab`.`formToDest_lat` AS `angkas_booking_to_destination_latitude`, `ab`.`form_ETA_duration` AS `angkas_booking_eta_duration`, `ab`.`form_TotalDistance` AS `angkas_booking_total_distance`, `ab`.`form_Est_Cost` AS `angkas_booking_estimated_cost`, `ab`.`date_booked` AS `angkas_booking_date_booked`, `ab`.`booking_status` AS `angkas_booking_status`, `ab`.`payment_status` AS `angkas_booking_payment_status`, `ab`.`rating` AS `angkas_booking_rating`, `u`.`t_username` AS `user_username`, `u`.`t_password` AS `user_password`, `u`.`t_status` AS `user_status`, `u`.`date_joined` AS `user_date_joined`, `u`.`t_user_type` AS `user_type`, `u`.`t_rider_status` AS `user_rider_status`, `u`.`t_online_status` AS `user_online_status`, `u`.`t_last_online_ts` AS `user_last_online_timestamp`, `up`.`user_profile_id` AS `user_profile_id`, `up`.`user_firstname` AS `user_firstname`, `up`.`user_lastname` AS `user_lastname`, `up`.`user_mi` AS `user_middle_initial`, `up`.`user_contact_no` AS `user_contact_number`, `up`.`user_gender` AS `user_gender`, `up`.`user_email_address` AS `user_email_address`, `up`.`user_profile_image` AS `user_profile_image`, `up`.`rider_plate_no` AS `user_rider_plate_number`, `up`.`rider_license_no` AS `user_rider_license_number` FROM ((((`shop_orders` `so` left join `angkas_bookings` `ab` on(`so`.`shop_order_ref_num` = `ab`.`shop_order_reference_number`)) left join `users` `u` on(`ab`.`user_id` = `u`.`user_id`)) left join `users` `ur` on(`ab`.`angkas_rider_user_id` = `ur`.`user_id` and `ur`.`t_rider_status` = 1)) left join `user_profile` `up` on(`u`.`user_id` = `up`.`user_id`))  ;
+CREATE OR REPLACE ALGORITHM=UNDEFINED DEFINER=`` SQL SECURITY DEFINER VIEW `booking_shop_combined`  AS SELECT `so`.`order_id` AS `shop_order_id`, `so`.`shop_order_ref_num` AS `shop_order_reference_number`, `so`.`voucher_code` AS `shop_order_voucher_code`, `so`.`Shipping_fee` AS `shop_order_shipping_fee`, `so`.`shipping_name` AS `shop_order_shipping_name`, `so`.`shipping_address` AS `shop_order_shipping_address`, `so`.`shipping_address_coor` AS `shop_order_shipping_address_coordinates`, `so`.`shipping_phone` AS `shop_order_shipping_phone`, `so`.`user_id` AS `shop_order_user_id`, `so`.`rider_id` AS `shop_order_rider_id`, `so`.`item_id` AS `shop_order_item_id`, `so`.`quantity` AS `shop_order_quantity`, `so`.`amount_to_pay` AS `shop_order_amount_to_pay`, `so`.`order_date` AS `shop_order_date`, `so`.`delivery_status` AS `shop_order_delivery_status`, `so`.`payment_status` AS `shop_order_payment_status`, `so`.`order_state_ind` AS `shop_order_state_indicator`, `so`.`order_special_instructions` AS `shop_order_special_instructions`, `ab`.`angkas_booking_id` AS `angkas_booking_id`, `ab`.`angkas_booking_reference` AS `angkas_booking_reference`, `ab`.`transaction_category_id` AS `angkas_booking_transaction_category_id`, `ab`.`angkas_rider_user_id` AS `angkas_booking_rider_user_id`, `ab`.`form_from_dest_name` AS `angkas_booking_from_destination_name`, `ab`.`user_currentLoc_lat` AS `angkas_booking_user_current_location_latitude`, `ab`.`user_currentLoc_long` AS `angkas_booking_user_current_location_longitude`, `ab`.`form_to_dest_name` AS `angkas_booking_to_destination_name`, `ab`.`formToDest_long` AS `angkas_booking_to_destination_longitude`, `ab`.`formToDest_lat` AS `angkas_booking_to_destination_latitude`, `ab`.`form_ETA_duration` AS `angkas_booking_eta_duration`, `ab`.`form_TotalDistance` AS `angkas_booking_total_distance`, `ab`.`form_Est_Cost` AS `angkas_booking_estimated_cost`, `ab`.`date_booked` AS `angkas_booking_date_booked`, `ab`.`booking_status` AS `angkas_booking_status`, `ab`.`payment_status` AS `angkas_booking_payment_status`, `ab`.`rating` AS `angkas_booking_rating`, `up`.`user_profile_id` AS `user_profile_id`, `up`.`user_firstname` AS `user_firstname`, `up`.`user_lastname` AS `user_lastname`, `up`.`user_mi` AS `user_middle_initial`, `up`.`user_contact_no` AS `user_contact_number`, `up`.`user_gender` AS `user_gender`, `up`.`user_email_address` AS `user_email_address`, `up`.`user_profile_image` AS `user_profile_image`, `up`.`rider_plate_no` AS `user_rider_plate_number`, `up`.`rider_license_no` AS `user_rider_license_number` FROM ((((`shop_orders` `so` left join `angkas_bookings` `ab` on(`so`.`shop_order_ref_num` = `ab`.`shop_order_reference_number`)) left join `users` `u` on(`ab`.`user_id` = `u`.`user_id`)) left join `users` `ur` on(`ab`.`angkas_rider_user_id` = `ur`.`user_id` and `ur`.`t_rider_status` = 1)) left join `user_profile` `up` on(`u`.`user_id` = `up`.`user_id`))  ;
 
 -- --------------------------------------------------------
 
@@ -2544,11 +2541,296 @@ CREATE OR REPLACE ALGORITHM=UNDEFINED DEFINER=`` SQL SECURITY DEFINER VIEW `book
 -- --------------------------------------------------------
 
 --
+-- Structure for view `shop_booking_header_view`
+--
+DROP TABLE IF EXISTS `shop_booking_header_view`;
+
+CREATE OR REPLACE ALGORITHM=UNDEFINED DEFINER=`` SQL SECURITY DEFINER VIEW `shop_booking_header_view`  AS SELECT `so`.`shop_order_ref_num` AS `shop_order_reference_number`, `ab`.`angkas_booking_reference` AS `angkas_booking_reference`, `so`.`user_id` AS `customer_user_id`, `ab`.`angkas_rider_user_id` AS `rider_user_id`, concat(coalesce(`ri`.`user_lastname`,''),', ',coalesce(`ri`.`user_firstname`,'')) AS `rider_name`, sum(`so`.`amount_to_pay`) AS `shop_cost`, max(`ab`.`form_ETA_duration`) AS `angkas_booking_eta_duration`, max(`ab`.`form_TotalDistance`) AS `angkas_booking_total_distance`, max(`ab`.`form_Est_Cost`) AS `angkas_booking_estimated_cost`, avg(`ab`.`rating`) AS `angkas_booking_avg_rating`, `u`.`t_username` AS `customer_username`, `u`.`t_user_type` AS `customer_user_type`, `up`.`user_firstname` AS `customer_firstname`, `up`.`user_lastname` AS `customer_lastname`, `ab`.`booking_status` AS `booking_status`, `ab`.`payment_status` AS `booking_payment_status`, `so`.`order_state_ind` AS `order_state_ind`, `sm`.`name` AS `merchant_name`, max(date_format(`so`.`order_date`,'%m-%d-%Y %H:%i')) AS `order_date`, max(`so`.`payment_status`) AS `shop_payment_status`, CASE WHEN timestampdiff(SECOND,`so`.`order_date`,current_timestamp()) < 60 THEN concat(timestampdiff(SECOND,`so`.`order_date`,current_timestamp()),' second',case when timestampdiff(SECOND,`so`.`order_date`,current_timestamp()) > 1 then 's' else '' end,' ago') WHEN timestampdiff(MINUTE,`so`.`order_date`,current_timestamp()) < 60 THEN concat(timestampdiff(MINUTE,`so`.`order_date`,current_timestamp()),' minute',case when timestampdiff(MINUTE,`so`.`order_date`,current_timestamp()) > 1 then 's' else '' end,' ago') WHEN timestampdiff(HOUR,`so`.`order_date`,current_timestamp()) < 24 THEN concat(timestampdiff(HOUR,`so`.`order_date`,current_timestamp()),' hour',case when timestampdiff(HOUR,`so`.`order_date`,current_timestamp()) > 1 then 's' else '' end,' ago') WHEN timestampdiff(DAY,`so`.`order_date`,current_timestamp()) < 30 THEN concat(timestampdiff(DAY,`so`.`order_date`,current_timestamp()),' day',case when timestampdiff(DAY,`so`.`order_date`,current_timestamp()) > 1 then 's' else '' end,' ago') WHEN timestampdiff(MONTH,`so`.`order_date`,current_timestamp()) < 12 THEN concat(timestampdiff(MONTH,`so`.`order_date`,current_timestamp()),' month',case when timestampdiff(MONTH,`so`.`order_date`,current_timestamp()) > 1 then 's' else '' end,' ago') ELSE concat(timestampdiff(YEAR,`so`.`order_date`,current_timestamp()),' year',case when timestampdiff(YEAR,`so`.`order_date`,current_timestamp()) > 1 then 's' else '' end,' ago') END AS `elapsed_time` FROM ((((((`shop_orders` `so` left join `shop_items` `si` on(`so`.`item_id` = `si`.`item_id`)) left join `shop_merchants` `sm` on(`si`.`merchant_id` = `sm`.`merchant_id`)) left join `angkas_bookings` `ab` on(`ab`.`shop_order_reference_number` = `so`.`shop_order_ref_num`)) left join `users` `u` on(`ab`.`user_id` = `u`.`user_id`)) left join `user_profile` `up` on(`ab`.`user_id` = `up`.`user_id`)) left join `user_profile` `ri` on(`ab`.`angkas_rider_user_id` = `ri`.`user_id`)) GROUP BY `so`.`shop_order_ref_num`, `so`.`order_state_ind`, `ab`.`angkas_booking_reference`, `so`.`user_id`, `ab`.`angkas_rider_user_id`, `u`.`t_username`, `u`.`t_user_type`, `up`.`user_firstname`, `up`.`user_lastname`, `ab`.`booking_status`, `ab`.`payment_status`, concat(coalesce(`ri`.`user_lastname`,''),', ',coalesce(`ri`.`user_firstname`,''))  ;
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `shop_item_merchant_view`
+--
+DROP TABLE IF EXISTS `shop_item_merchant_view`;
+
+CREATE OR REPLACE ALGORITHM=UNDEFINED DEFINER=`` SQL SECURITY DEFINER VIEW `shop_item_merchant_view`  AS SELECT `so`.`shop_order_ref_num` AS `shop_order_ref_num`, `si`.`item_name` AS `item_name`, `si`.`quantity` AS `quantity`, `si`.`price` AS `price`, `sm`.`name` AS `merchant_name`, `sm`.`address` AS `merchant_address`, `so`.`user_id` AS `customer_user_id` FROM ((`shop_orders` `so` join `shop_items` `si` on(`so`.`item_id` = `si`.`item_id`)) join `shop_merchants` `sm` on(`si`.`merchant_id` = `sm`.`merchant_id`)) WHERE `so`.`order_state_ind` <> 'C''C'  ;
+
+-- --------------------------------------------------------
+
+--
 -- Structure for view `view_angkas_bookings`
 --
 DROP TABLE IF EXISTS `view_angkas_bookings`;
 
 CREATE OR REPLACE ALGORITHM=UNDEFINED DEFINER=`` SQL SECURITY DEFINER VIEW `view_angkas_bookings`  AS SELECT `ab`.`transaction_category_id` AS `transaction_category_id`, `tc`.`txn_prefix` AS `txn_prefix`, `ab`.`angkas_booking_id` AS `angkas_booking_id`, `ab`.`angkas_booking_reference` AS `angkas_booking_reference`, `ab`.`user_id` AS `customer_user_id`, `ab`.`angkas_rider_user_id` AS `rider_user_id`, `ab`.`form_from_dest_name` AS `form_from_dest_name`, `ab`.`user_currentLoc_lat` AS `user_currentLoc_lat`, `ab`.`user_currentLoc_long` AS `user_currentLoc_long`, `ab`.`form_to_dest_name` AS `form_to_dest_name`, `ab`.`formToDest_long` AS `formToDest_long`, `ab`.`formToDest_lat` AS `formToDest_lat`, `ab`.`form_ETA_duration` AS `form_ETA_duration`, `ab`.`form_TotalDistance` AS `form_TotalDistance`, `ab`.`form_Est_Cost` AS `form_Est_Cost`, `ab`.`date_booked` AS `date_booked`, `ab`.`booking_status` AS `booking_status`, `ab`.`payment_status` AS `payment_status`, `ab`.`rating` AS `rating`, CASE WHEN `ab`.`payment_status` = 'P' THEN 'Pending Payment' WHEN `ab`.`payment_status` = 'D' THEN 'Payment Declined' WHEN `ab`.`payment_status` = 'C' THEN 'Paid' END AS `payment_status_text`, `up`.`user_firstname` AS `customer_firstname`, `up`.`user_lastname` AS `customer_lastname`, `up`.`user_mi` AS `customer_mi`, `up`.`user_gender` AS `customer_gender`, `up`.`user_contact_no` AS `customer_contact_no`, `up`.`user_email_address` AS `customer_email_address`, `up`.`user_profile_image` AS `customer_profile`, `rp`.`user_firstname` AS `rider_firstname`, `rp`.`user_lastname` AS `rider_lastname`, CASE WHEN `ab`.`booking_status` = 'P' THEN 'Waiting for Driver' WHEN `ab`.`booking_status` = 'A' THEN 'Driver Found' WHEN `ab`.`booking_status` = 'R' THEN 'Driver Arrived in Your Location' WHEN `ab`.`booking_status` = 'I' THEN 'In Transit' WHEN `ab`.`booking_status` = 'C' THEN 'Completed' WHEN `ab`.`booking_status` = 'F' THEN 'Pending Payment' WHEN `ab`.`booking_status` = 'D' THEN 'Done' END AS `booking_status_text` FROM ((((`angkas_bookings` `ab` join `user_profile` `up` on(`ab`.`user_id` = `up`.`user_id`)) join `users` `u` on(`up`.`user_id` = `u`.`user_id`)) join `txn_category` `tc` on(`ab`.`transaction_category_id` = `tc`.`txn_category_id`)) left join `user_profile` `rp` on(`ab`.`angkas_rider_user_id` = `rp`.`user_id`)) ORDER BY `ab`.`angkas_booking_id` AS `DESCdesc` ASC  ;
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `angkas_bookings`
+--
+ALTER TABLE `angkas_bookings`
+  ADD PRIMARY KEY (`angkas_booking_id`),
+  ADD KEY `transaction_category_id` (`transaction_category_id`);
+
+--
+-- Indexes for table `angkas_rider_queue`
+--
+ALTER TABLE `angkas_rider_queue`
+  ADD PRIMARY KEY (`angkas_rider_queue_id`);
+
+--
+-- Indexes for table `angkas_vehicle_model`
+--
+ALTER TABLE `angkas_vehicle_model`
+  ADD PRIMARY KEY (`vehicle_model_id`);
+
+--
+-- Indexes for table `app_transactions`
+--
+ALTER TABLE `app_transactions`
+  ADD PRIMARY KEY (`app_txn_id`);
+
+--
+-- Indexes for table `items_inventory`
+--
+ALTER TABLE `items_inventory`
+  ADD PRIMARY KEY (`items_inventory_id`),
+  ADD KEY `vendor_items` (`vendor_id`),
+  ADD KEY `txn_category_items` (`txn_category_id`);
+
+--
+-- Indexes for table `lu_cars`
+--
+ALTER TABLE `lu_cars`
+  ADD PRIMARY KEY (`car_id`);
+
+--
+-- Indexes for table `payment`
+--
+ALTER TABLE `payment`
+  ADD PRIMARY KEY (`payment_id`);
+
+--
+-- Indexes for table `refcitymun`
+--
+ALTER TABLE `refcitymun`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `refprovince`
+--
+ALTER TABLE `refprovince`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `refregion`
+--
+ALTER TABLE `refregion`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `shop_category`
+--
+ALTER TABLE `shop_category`
+  ADD PRIMARY KEY (`sc_id`);
+
+--
+-- Indexes for table `shop_items`
+--
+ALTER TABLE `shop_items`
+  ADD PRIMARY KEY (`item_id`),
+  ADD KEY `item-cat` (`category`),
+  ADD KEY `item-merchant` (`merchant_id`);
+
+--
+-- Indexes for table `shop_merchants`
+--
+ALTER TABLE `shop_merchants`
+  ADD PRIMARY KEY (`merchant_id`);
+
+--
+-- Indexes for table `shop_orders`
+--
+ALTER TABLE `shop_orders`
+  ADD PRIMARY KEY (`order_id`),
+  ADD UNIQUE KEY `unique_user_item` (`user_id`,`item_id`,`shop_order_ref_num`) USING BTREE;
+
+--
+-- Indexes for table `txn_category`
+--
+ALTER TABLE `txn_category`
+  ADD PRIMARY KEY (`txn_category_id`);
+
+--
+-- Indexes for table `users`
+--
+ALTER TABLE `users`
+  ADD PRIMARY KEY (`user_id`);
+
+--
+-- Indexes for table `user_profile`
+--
+ALTER TABLE `user_profile`
+  ADD PRIMARY KEY (`user_profile_id`);
+
+--
+-- Indexes for table `user_wallet`
+--
+ALTER TABLE `user_wallet`
+  ADD PRIMARY KEY (`user_wallet_id`),
+  ADD UNIQUE KEY `user_id` (`user_id`,`payment_type`,`txn_type_id`,`reference_number`,`wallet_txn_amt`);
+
+--
+-- Indexes for table `vehicle`
+--
+ALTER TABLE `vehicle`
+  ADD PRIMARY KEY (`vehicle_id`);
+
+--
+-- Indexes for table `vendors`
+--
+ALTER TABLE `vendors`
+  ADD PRIMARY KEY (`vendor_id`);
+
+--
+-- Indexes for table `vouchers`
+--
+ALTER TABLE `vouchers`
+  ADD PRIMARY KEY (`voucher_id`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `angkas_bookings`
+--
+ALTER TABLE `angkas_bookings`
+  MODIFY `angkas_booking_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `angkas_rider_queue`
+--
+ALTER TABLE `angkas_rider_queue`
+  MODIFY `angkas_rider_queue_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=112;
+
+--
+-- AUTO_INCREMENT for table `angkas_vehicle_model`
+--
+ALTER TABLE `angkas_vehicle_model`
+  MODIFY `vehicle_model_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
+
+--
+-- AUTO_INCREMENT for table `app_transactions`
+--
+ALTER TABLE `app_transactions`
+  MODIFY `app_txn_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `items_inventory`
+--
+ALTER TABLE `items_inventory`
+  MODIFY `items_inventory_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+
+--
+-- AUTO_INCREMENT for table `lu_cars`
+--
+ALTER TABLE `lu_cars`
+  MODIFY `car_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `payment`
+--
+ALTER TABLE `payment`
+  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `refcitymun`
+--
+ALTER TABLE `refcitymun`
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1648;
+
+--
+-- AUTO_INCREMENT for table `refprovince`
+--
+ALTER TABLE `refprovince`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=89;
+
+--
+-- AUTO_INCREMENT for table `refregion`
+--
+ALTER TABLE `refregion`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+
+--
+-- AUTO_INCREMENT for table `shop_category`
+--
+ALTER TABLE `shop_category`
+  MODIFY `sc_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `shop_items`
+--
+ALTER TABLE `shop_items`
+  MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=101;
+
+--
+-- AUTO_INCREMENT for table `shop_merchants`
+--
+ALTER TABLE `shop_merchants`
+  MODIFY `merchant_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+
+--
+-- AUTO_INCREMENT for table `shop_orders`
+--
+ALTER TABLE `shop_orders`
+  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `txn_category`
+--
+ALTER TABLE `txn_category`
+  MODIFY `txn_category_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+
+--
+-- AUTO_INCREMENT for table `users`
+--
+ALTER TABLE `users`
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
+
+--
+-- AUTO_INCREMENT for table `user_profile`
+--
+ALTER TABLE `user_profile`
+  MODIFY `user_profile_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
+
+--
+-- AUTO_INCREMENT for table `user_wallet`
+--
+ALTER TABLE `user_wallet`
+  MODIFY `user_wallet_id` bigint(11) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `vehicle`
+--
+ALTER TABLE `vehicle`
+  MODIFY `vehicle_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+
+--
+-- AUTO_INCREMENT for table `vendors`
+--
+ALTER TABLE `vendors`
+  MODIFY `vendor_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
+-- AUTO_INCREMENT for table `vouchers`
+--
+ALTER TABLE `vouchers`
+  MODIFY `voucher_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- Constraints for dumped tables

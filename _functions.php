@@ -5,9 +5,9 @@
 // Check if the current page is the specified page
 function ifPageis($page, $include, $default="") {
     if (isset($_GET['page']) && $_GET['page'] == $page && isset($_GET['txn_cat'])) {
-        
+
          $_SESSION['txn_cat_id'] = $_GET['txn_cat'];
-                    
+
         include_once "$include";
         return true;
         exit;
@@ -21,7 +21,7 @@ function ifPageis($page, $include, $default="") {
         return false;
         exit;
     }
-    
+
 }
 
 // Check if the current action is the specified action
@@ -48,15 +48,11 @@ function setOnlineStatus($user_id, $online_status = 0) {
     return update_data('users', $data, $where); // Update the 'users' table with data and condition
 }
 
-
-
-
-
 // Check if the username already exists
 function usernameExists($username) {
     $table = "users";
     $where = ["t_username" => $username];
-    
+
     // Use the select_data function to query the username
     $result = select_data($table, "t_username = '$username'");
     return !empty($result);
@@ -66,7 +62,7 @@ function usernameExists($username) {
 function emailExists($email) {
     $table = "user_profile";
     $where = ["user_email_address" => $email];
-    
+
     // Use the select_data function to query the email
     $result = select_data($table, "user_email_address = '$email'");
     return !empty($result);
@@ -76,7 +72,7 @@ function emailExists($email) {
 function checkOnlineStatus($user_id) {
     $table = "users";
     $result = select_data($table, "user_id = $user_id");
-    
+
     if (!empty($result)) {
         $row = $result[0];
         $online_status = ($row['t_online_status'] == 1) ? "Online" : "Offline";
@@ -85,7 +81,19 @@ function checkOnlineStatus($user_id) {
             'last_online_ts' => $row['t_last_online_ts']
         ];
     }
-    
+
     return null; // User not found
+}
+
+function isRider($user_id) {
+    // Table name and condition
+    $table = "users";
+    $where = "user_id = $user_id AND t_rider_status = 1";
+    
+    // Use the select_data utility function
+    $result = select_data($table, $where, null, 1); // Limit to 1 result for efficiency
+    
+    // Check if we got a result
+    return !empty($result); // If result is not empty, the user is a rider
 }
 ?>

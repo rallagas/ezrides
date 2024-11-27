@@ -35,14 +35,13 @@ $current_booking = query( "SELECT ab.angkas_booking_id
                                   , up.user_profile_image        
                                FROM angkas_bookings AS ab
                                JOIN user_profile AS up ON ab.user_id = up.user_id
-                               JOIN users u ON up.user_id = u.user_id
+                               JOIN users u ON up.user_id = u.user_id   
                                WHERE u.t_status = 'A'
                                AND ab.booking_status not in ('C','D')
                                AND ab.angkas_rider_user_id = ?",
                                [$rider_logged]);
 
 if (empty($current_booking)) {
-    
      $status = 'No bookings available';
 } else {
     foreach ($current_booking as $cx) {
