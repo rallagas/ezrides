@@ -6,7 +6,7 @@
             </svg>
         </a>
         <button id="appMenuBtn" class="border-0 navbar-brand btn btn-outline-light bg-purple mt-1 pb-1" type="button" data-bs-toggle="offcanvas" data-bs-target="#appMenu" aria-controls="appMenu">
-            <img src="../icons/ezrides.png"  alt="EZ Rides" height="20vh">
+            <img src="../../icons/ezrides.png"  alt="EZ Rides" height="20vh">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-ui-radios-grid" viewBox="0 0 16 16">
                 <path d="M3.5 15a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5m9-9a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5m0 9a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5M16 3.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0m-9 9a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0m5.5 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m-9-11a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m0 2a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7" />
             </svg>
@@ -78,12 +78,12 @@
             </div>
         </div>
     </div>
-
 </nav>
+
 
 <div class="offcanvas offcanvas-start bg-purple vh-100" tabindex="-1" id="appMenu" aria-labelledby="appMenu">
                     <div class="offcanvas-header">
-                        <img src="../icons/ezrides.png" alt="" class="img-fluid w-25">
+                        <img src="../../icons/ezrides.png" alt="" class="img-fluid w-25">
                         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                     </div>
                     <div class="offcanvas-body container-fluid vh-75">

@@ -27,6 +27,28 @@ $(document).on("submit", ".booking_form", function (e) {
 $(document).on("click",".confirmDropOffBtn", async function(){
 
 });
+function claimStubWallet(userWalletId) {
+    // Make AJAX request
+    $.ajax({
+        url: 'ajax_claim_stub.php', // Replace with your backend endpoint
+        type: 'POST',
+        data: {
+            user_wallet_id: userWalletId,
+        },
+        success: function(response) {
+            // Handle success response
+            if (response.success) {
+                console.log('Wallet record updated successfully!');
+            } else {
+                console.warn('Failed to update wallet record: ' + response.message);
+            }
+        },
+        error: function(xhr, status, error) {
+            // Handle error
+            console.error('Error updating wallet record:', error);
+        }
+    });
+}
 
     
 async function updateQueue() {
@@ -246,6 +268,59 @@ function ViewBookingCard(booking) {
     `;
 }
 
+// Refactored function to fetch wallet balance
+function getWalletBalance() {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: 'ajax_get_balance.php',
+            type: 'GET',
+            dataType: 'json',  // Expect JSON response
+            contentType: 'application/json',
+            success: function (response) {
+                resolve(response);  // Resolve with the response data
+            },
+            error: function (xhr, status, error) {
+                console.error('Error fetching wallet balance:', error);
+                reject({
+                    error: 'An error occurred. Please try again.'
+                });
+            }
+        });
+    });
+}
+// Function to fetch the balance and assign it to elements
+async function fetchAndAssignWalletBalance(elements) {
+    try {
+        const data = await getWalletBalance(); // Get wallet balance data
+        if (data && data.balance) {
+            const formattedBalance = `Php ${data.balance}`;
+
+            // Ensure `elements` is a jQuery object
+            $(elements).each(function () {
+                const element = $(this);
+
+                // Check if the element is an input or textarea (elements that use val())
+                if (element.is("input, textarea")) {
+                    element.val(formattedBalance);
+                } 
+                // Otherwise, use text() for other elements
+                else {
+                    element.text(formattedBalance);
+                }
+            });
+
+            console.log("Wallet balance assigned successfully:", formattedBalance);
+        } else {
+            console.warn("Warning: Cannot fetch wallet balance or balance is missing.");
+        }
+
+        return data; // Return the full response data for further usage if needed
+    } catch (error) {
+        console.error("Error:", error);
+        return { error: error.message }; // Return an error message in case of failure
+    }
+}
+
 
 /*Call functions upon document ready*/
 
@@ -259,4 +334,18 @@ $(document).ready(function() {
     }, 1000); // Check every 5 seconds
     
     
+    
+    
+});
+
+$(document).on("click",".claim-stub", function(e){
+    e.preventDefault;
+    const userWalletId = $(this).data("claimwallet");
+    console.log("Claiming",userWalletId);
+    claimStubWallet(userWalletId);
+    fetchAndAssignWalletBalance('.walletbalance');
+    console.log("Claimed",userWalletId);
+    $(this).prop("disabled",true);
+    $(this).text("Claimed!");
+    //$(this).addClass("d-none");
 });

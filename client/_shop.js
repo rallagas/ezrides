@@ -837,7 +837,7 @@ $(document).ready(function() {
     // Usage example with async/await
 
 
-    const LoadingIcon = `<span class="spinner-border spinner-border-sm ms-auto" aria-hidden="true"></span>`;
+    
     const walletbalance = $(".walletbalance");
 
  

@@ -56,11 +56,13 @@ include_once "_functions.php";
 
             <div class="col-lg-6 col-md-6 col-sm-12 pt-3">
                <button class="text-center bg-purple btn btn-lg btn-outline-secondary text-light my-1 d-flex w-100 p-3" type="button" data-bs-toggle="collapse" data-bs-target=".multi-collapse" aria-expanded="false" aria-controls="collapseLogin collapseRegister">
-                <span  data-bs-toggle="tooltip" data-bs-title="Create Account" data-bs-placement="bottom">Join Us</span>   
+                    <span  data-bs-toggle="tooltip" data-bs-title="Create Account" data-bs-placement="bottom" class="btnJoin">Join Us</span>   
                 </button>
+                <div class="status"></div>
                 <div class="multi-collapse collapse" id="collapseRegister">
+                    
                     <?php include "_registration.php";?>
-                    <div id="RegStatus"></div>
+                    <div class="status"></div>
                 </div>
             </div>
 

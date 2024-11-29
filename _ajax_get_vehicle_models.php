@@ -9,10 +9,10 @@ try {
         $search = $_GET['search'];
         
         // Define the search query with a parameter placeholder
-        $searchCondition = ['vehicle_model LIKE' => '%' . $search . '%'];
+        $searchCondition = ['vehicle_model' => "%$search%"];
         
         // Execute the query using the utility function
-        $results = select_data('angkas_vehicle_model', $searchCondition, 'vehicle_model');
+        $results = select('angkas_vehicle_model', $searchCondition, ['vehicle_model' => 'ASC']);
         
         if(!empty($results)) {
             echo json_encode($results);

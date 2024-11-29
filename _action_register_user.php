@@ -30,15 +30,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // Password validation (minimum length 6)
-    if (!empty($_POST['f_password']) && strlen($_POST['f_password']) < 6) {
-        $errors['f_password'] = "Password must be at least 6 characters long.";
-    }
-
-    // Password confirmation
-    if ($_POST['f_password'] !== $_POST['f_cpassword']) {
-        $errors['f_cpassword'] = "Passwords do not match. Please re-enter your password.";
-    }
 
     // Contact number validation (Philippines format: 09XXXXXXXXX)
     if (!empty($_POST['f_contact']) && !preg_match('/^09\d{9}$/', $_POST['f_contact'])) {

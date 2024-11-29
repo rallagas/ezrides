@@ -1,3 +1,10 @@
+
+const loginCheck = `<span class="text-light"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-check-fill" viewBox="0 0 16 16">
+<path fill-rule="evenodd" d="M15.854 5.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 0 1 .708-.708L12.5 7.793l2.646-2.647a.5.5 0 0 1 .708 0"/>
+<path d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/>
+</svg></span>`;
+const loadingIcon = "<span class='spinner-border spinner-border-sm'></span>";
+
 $(document).ready(function () {
 
     // Logout button click event
@@ -22,8 +29,6 @@ $(document).ready(function () {
         let username = $(this).val();
 
         // Send AJAX request only if there's input
-
-
         if (username.length > 0) {
             if (username.length <= 4) {
                 $('#f_username').addClass('is-invalid');
@@ -114,7 +119,7 @@ $(document).ready(function () {
     });
 
     // Vehicle suggestions
-    $('input#f_r_car_brand').on('keyup', function () {
+    $('input#f_r_car_brand').on('input', function() {
         console.log("User typing in car brand input");
         let str = $(this).val();
         if (str.length > 1) {
@@ -151,8 +156,9 @@ $(document).ready(function () {
     
     // Form submission handler with AJAX
     $('form#formRegistration').submit(function (e) {
-        e.preventDefault(); // Prevent the form from submitting traditionally
 
+        e.preventDefault(); // Prevent the form from submitting traditionally
+        $(".createAcctBtn").prop('disabled',true).html(loadingIcon);
         // Form validation checks for required fields
         let valid = true;
 
@@ -199,64 +205,55 @@ $(document).ready(function () {
         });
     });
 
-    // User Login Form Submit
-    $('form#formUserLog').submit(function (e) {
-        e.preventDefault(); // Prevent the form from submitting normally
-
-        // Disable the submit button and show loading spinner
-        const $loginButton = $("#loginButton");
-        const loginCheck = `<span class="text-light"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-check-fill" viewBox="0 0 16 16">
-                              <path fill-rule="evenodd" d="M15.854 5.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 0 1 .708-.708L12.5 7.793l2.646-2.647a.5.5 0 0 1 .708 0"/>
-                              <path d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/>
-                            </svg></span>`;
-        const loadingIcon = "<span class='spinner-border spinner-border-sm'></span>";
-        const $logUserField = $("#log_username"); 
-        const $logPassField = $("#log_password"); 
-        
-        
-        
-        if($logUserField.val() === ""){
-            $logUserField.addClass("is-invalid");
-        }
-           
-        else if($logPassField.val() === ""){
-            $logPassField.addClass("is-invalid");
-        }
-        else{
-            $logPassField.removeClass("is-invalid");
-            $logUserField.removeClass("is-invalid");
-            $loginButton.html(loadingIcon);
-            $.ajax({
+    async function logUser(formData) {
+        try {
+            const response = await $.ajax({
                 type: "POST",
                 url: "_action_log_user.php",
-                data: $(this).serialize(),
+                data: formData,
                 dataType: "json", // Expect JSON response from server
-                success: function (response) {
-                    if (response.status === "success") {
-                        $loginButton.empty().html(loginCheck).addClass("text-light bg-success");
-                        setTimeout( ()=> {
-                            location.assign(response.redirect); // Use redirect URL from server
-                        }, 2500);
-                    } else if (response.status === "error") {
-                        $loginButton.removeClass("btn-secondary btn-success").addClass("btn-danger").html("Login Failed");
-                        $("div.status")
-                            .removeClass("alert-success")
-                            .addClass("alert alert-danger")
-                            .html(response.message);
-                    }
-                },
-                error: function (xhr, status, error) {
-                    $("div.status")
-                        .removeClass("alert-success")
-                        .addClass("alert alert-danger")
-                        .html("An unexpected error occurred. Please try again.");
-                    console.error("AJAX error:", status, error);
-                },
-                complete: function () {
-                    $loginButton.prop("disabled", false).removeClass("btn-secondary").html("Login");
-                }
             });
+            return response; // Resolve with the response data
+        } catch (error) {
+            console.error("AJAX error:", error);
+            return { status: "error", message: "An unexpected error occurred. Please try again." };
         }
+    }
+    
+
+    $('form#formUserLog').submit(async function (e) {
+        e.preventDefault(); // Prevent default form submission
+        // Select necessary elements
+        const $loginButton = $("#loginButton");
+       
+        // Show loading icon and disable the button
+        $loginButton.prop("disabled", true).html(loadingIcon);
+    
+        // Call the logUser function
+        const formData = $(this).serialize();
+        const response = await logUser(formData);
+    
+        // Handle the response
+        if (response.status === "success") {
+            $loginButton.html(loginCheck).addClass("text-light bg-success");
+            setTimeout(() => {
+                location.assign(response.redirect); // Redirect after a short delay
+            }, 500);
+        } else {
+            $loginButton
+                .removeClass("btn-secondary btn-success")
+                .addClass("btn-danger")
+                .html("Login Failed");
+            $("div.status")
+                .removeClass("alert-success")
+                .addClass("alert alert-danger")
+                .html(response.message);
+        }
+    
+        // Reset button state
+        $loginButton.prop("disabled", false).removeClass("btn-secondary").html("Login");
     });
+    
+    
 
 });

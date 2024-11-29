@@ -1,7 +1,6 @@
 <?php
 include_once "../_sql_utility.php";
 
-
 class UserWallet {
     private $userId;
 
@@ -50,24 +49,29 @@ public function topUp($amount) {
      * @return float - Total balance.
      */
     public function getBalance($user = null) {
-    if($user != null){
-        $userId = $user;
-    }
-    else{
-        $userId = $this->userId;
-    }
-        $sql = "SELECT SUM(CASE WHEN payment_type = 'R' AND payTo = ? THEN  wallet_txn_amt 
-                             WHEN payment_type = 'R' AND payFrom = ? THEN  wallet_txn_amt
-                             WHEN payment_type = 'S' AND payFrom = ? THEN abs(wallet_txn_amt) * -1 
-                             WHEN payment_type = 'T' THEN wallet_txn_amt
-                             ELSE wallet_txn_amt
-                            END ) AS balance 
-                   FROM user_wallet 
-                  WHERE (user_id = ? or payTo = ? or payFrom = ?)
-                    AND wallet_txn_status = 'C'";
-            $result = query($sql,[$userId,$userId,$userId,$userId,$userId,$userId]);
+        if ($user == null) {
 
-        return (float) $result[0]['balance'] ?? 0;
+            $result = query("SELECT SUM( CASE WHEN ? = payTo THEN wallet_txn_amt * -1 
+                              		          WHEN payment_type = 'T' THEN wallet_txn_amt
+                                              ELSE wallet_txn_amt
+                                         END 
+                   ) AS balance 
+                   FROM user_wallet 
+                  WHERE (user_id = ? or payTo = ?)
+                    AND wallet_txn_status = 'C'",
+                [$this->userId, $this->userId, $this->userId]
+            );
+
+        }
+        else{
+
+        $result = query(
+            "SELECT SUM(wallet_txn_amt) AS balance FROM user_wallet WHERE user_id = ? AND wallet_txn_status = 'C'",
+            [$user]
+        );
+
+        }
+        return $result[0]['balance'] ?? 0;
     }
 
     /**
@@ -81,7 +85,7 @@ public function topUp($amount) {
      * @return array
      * @throws Exception if balance is insufficient.
      */
-    public function getPaymentToRider($amount, $payFrom = null, $payTo = null, $refNumber = null, $paymentType = null, $wallet_action = "Made Payment") {
+    public function makePaymentToRider($amount, $payFrom = null, $payTo = null, $refNumber = null, $paymentType = null, $wallet_action = "Made Payment") {
         $response = ["success" => false, "message" => null];
         $refNum = $refNumber;
         $payType = $paymentType;

@@ -4,7 +4,7 @@ const pageSize = 5;
 let transactions = [];
 let lastBookingStatus = null; // Store the last known value
 let debounceTimeout = null;
-
+const LoadingIcon = `<span class="spinner-border spinner-border-sm ms-auto" aria-hidden="true"></span>`;
 const CreateHtml = {
     loadingGrower : `<div class="spinner-grow text-danger spinner-grow-sm" role="status"></div><div class="spinner-grow text-danger spinner-grow-sm" role="status"></div><div class="spinner-grow text-danger spinner-grow-sm" role="status"></div>`
 }
@@ -104,7 +104,6 @@ function renderTransactions() {
             tbody.append(`
                 <tr>
                     <td>$${transaction.amount}</td>
-                    <td>${transaction.type}</td>
                     <td>${transaction.status}</td>
                     <td>${transaction.date}</td>
                 </tr>
@@ -201,7 +200,6 @@ function getWalletBalance() {
 async function fetchAndAssignWalletBalance(elements) {
     try {
         const data = await getWalletBalance(); // Get wallet balance data
-
         if (data && data.balance) {
             const formattedBalance = `Php ${data.balance}`;
 
@@ -801,7 +799,7 @@ function genBookRefNum(len, prefix = "") {
 }
 /****Triggers and Calling Functions****/
 
-$(document).on("click", elements.btnRideInfo, () => {
+$(document).on("click", ".btnRideInfo", () => {
     const walletBalanceElement = $(".walletbalance");
     fetchAndAssignWalletBalance(walletBalanceElement);
 });

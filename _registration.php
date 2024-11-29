@@ -1,6 +1,7 @@
-<div class="row">
+<div class="row g-1">
     <div class="col-12 pt-2">
         <h6 class="fw-bold display-6">Customer Registration</h6>
+        <div class="status"></div>
         <form id="formRegistration">
             <div class="mb-2">
                 <input name="f_emailadd" id="f_emailadd" type="email" class="form-control" Placeholder="Email Address" required>
@@ -73,18 +74,17 @@
             </div>
             <hr>
             <div class="form-check form-switch mb-2">
-                <input name="f_rider_status" class="form-check-input" data-bs-toggle="collapse" href="#riderForm" aria-controls="riderForm" type="checkbox" >
-                <label class="form-check-label fw-bold" for="flexSwitchCheckDefault">Do you Want to register as a Rider as well?</label>
+            <label class="form-check-label fw-bold" for="flexSwitchCheckDefault">    
+                <input name="f_rider_status" id="flexSwitchCheckDefault" class="form-check-input" style="width:25px" type="checkbox" >
+                    <a class="text-decoration-none" data-bs-toggle="collapse" href="#riderForm" aria-controls="riderForm"> Do you Want to register as a Rider as well?</a> 
+                </label> 
+            </div>
 
-                <div class="collapse multi-collapse mt-2" id="riderForm">
-
+                <div class="collapse mt-2" id="riderForm">
                     <div class="card card-body">
-
                         <div class="my-2">
-
                             <input id="f_r_car_brand" name="f_r_car_brand" type="text" class="form-control" Placeholder="Your Car Model">
                             <div id="suggestCar" class="p-1"></div>
-
                         </div>
 
                         <div class="mb-2">
@@ -92,12 +92,12 @@
                         </div>
 
                         <div class="mb-2">
-                            <input id="f_r_license_no" name="f_r_license_no" type="text" class="form-control" placeholder="license No. (XXX-XXXX)">
+                            <input id="f_r_license_no" name="f_r_license_no" type="text" class="form-control" placeholder="license No.">
                         </div>
 
                     </div>
                 </div>
-            </div>
+            
 
 
 
@@ -105,7 +105,7 @@
                 <input name="agreement_Checkbox" class="form-check-input" type="checkbox" role="switch" id="agreement_Checkbox_switch">
                 <label class="form-check-label fw-bold" for="agreement_Checkbox">Do you Accept the <a data-bs-toggle="collapse" href="#agreement_Checkbox" aria-controls="agreement_Checkbox">Privacy Terms and conditions</a>?</label>
 
-                <div class="collapse multi-collapse mt-2" id="agreement_Checkbox">
+                <div class="collapse multi-collapse mt-2 h-25 overflow-y-scroll" id="agreement_Checkbox">
 
                     <div class="card card-body">
 
@@ -120,7 +120,7 @@
             </div>
 
 
-            <button type="submit" class="btn btn-warning">Create Account</button>
+            <button type="submit" class="btn btn-warning createAcctBtn">Create Account</button>
             <button class="btn btn-secondary reset-button" data-bs-toggle="collapse" data-bs-target=".multi-collapse" aria-controls="riderForm" type="Reset">Reset Fields</button>
             <a href="?page=loguser" class="btn btn-link">Login Here</a>
         </form>

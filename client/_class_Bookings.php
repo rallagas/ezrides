@@ -222,7 +222,8 @@ class AngkasBookings {
 
     public function getColumnData( $columns, $userId = null, $bookingReference = null, $numRows = 0 ) {
         
-        $txn_cat = $_SESSION['txn_cat_id'] != 0  ?  $_SESSION['txn_cat_id'] : 2 ;
+        
+        $txn_cat = isset($_SESSION['txn_cat_id']) ?  $_SESSION['txn_cat_id'] : 2 ;
         // Ensure $columns is treated as an array if a single column is passed
         if ( is_string( $columns ) ) {
             $columns = [$columns];

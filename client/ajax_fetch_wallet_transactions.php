@@ -7,7 +7,7 @@ require_once '_class_userWallet.php';
 
 // Fetch transaction history
 $transactionHistory = query(
-    "SELECT wallet_txn_amt, txn_type_id, wallet_action, wallet_txn_start_ts 
+    "SELECT wallet_txn_amt, wallet_action, wallet_txn_start_ts 
      FROM user_wallet 
      WHERE user_id = ? 
      ORDER BY wallet_txn_start_ts DESC",
@@ -19,7 +19,6 @@ $response = [];
 foreach ($transactionHistory as $transaction) {
     $response[] = [
         'amount' => number_format($transaction['wallet_txn_amt'], 2),
-        'type' => ucfirst($transaction['txn_type_id']),
         'status' => $transaction['wallet_action'],
         'date' => date('Y-m-d H:i:s', strtotime($transaction['wallet_txn_start_ts']))
     ];

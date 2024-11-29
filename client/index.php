@@ -21,27 +21,7 @@ include_once "../_sql_utility.php";
 <body>
 
     <?php include_once "nav-client.php";?>
-                 <div class="offcanvas offcanvas-start bg-purple vh-100" tabindex="-1" id="appMenu" aria-labelledby="appMenu">
-                    <div class="offcanvas-header">
-                        <img src="../icons/ezrides.png" alt="" class="img-fluid w-25">
-                        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                    </div>
-                    <div class="offcanvas-body container-fluid vh-75">
-                        <div class="row g-1 mb-3">
-                            <?php  include_once "menu.php"; ?>
-                        </div>
-
-                        <div class="row g-1 mb-3 vh-50 border-1" id="BookingHistoryContent">
-                            <div class="col-sm-12 col-lg-12 col-md-12">
-                                <div id="BookingDetails" class="card shadow"></div>
-                                <div class="collapse" id="shopOrderCollapse">
-                                    <div id="shopOrderDetails">Loading...</div>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
+            
     <hr class="m-0 p-0 text-dark">
     <div class="container-fluid p-1">
         <div class="row px-5" id="queryresult"></div>
@@ -72,6 +52,10 @@ include_once "../_sql_utility.php";
                 if ( !isset( $_GET['page'] ) || ( isset( $_GET['page'] ) && $_GET['page'] == 'home' ) ) { ?>
                 
                             <div class="col-lg-8 offset-lg-4 col-sm-12 col-sm-12 vh-100">
+                                
+
+                                <?php include_once "_index_wallet.php"; ?>
+                                <h6 class="display-6">Discover Places</h6>
                                 <?php include_once "_restaurant_finder.php";?>
                             </div>
                        
@@ -87,7 +71,10 @@ include_once "../_sql_utility.php";
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
 
-<?php switch($page){  
+<?php 
+if(isset($_GET['page'])){
+$page = $_GET['page'];
+switch($page){  
         case 'rent': ?> <script src="./_car_rental.js"></script> 
  <?php break;  
         case 'angkas': ?> 
@@ -100,9 +87,16 @@ include_once "../_sql_utility.php";
  <?php break; 
        case 'shop': ?> 
                 <script src="_process_ajax.js"></script>
-                <script src="./_shop.js"></script> 
- <?php break;
-     default: null; ?>
-                <script src="_process_ajax.js"></script>
-      <?php } ?>
+                <script src="./_shop.js"></script>             
+      <?php 
+      break;
+      default:  ?> <script src="_process_ajax.js"></script>
+      <?php 
+      }
+}
+else{ ?>
+    <script src="_process_ajax.js"></script>
+<?php }
+ ?>
+
 </html>
