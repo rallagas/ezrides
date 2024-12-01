@@ -11,12 +11,10 @@
 
 <?php
 // Include your database class and the Product class
-//include '../_class_database.php'; // Ensure this points to your Database class file
 //include '../_class_grocery.php';   // Ensure this points to your Product class file
 
 // Create a new Database instance
-$db = new Database();
-$db->dbConnection(); // Assuming this method initializes the connection
+$db = CONN;
 
 $currPage="_items_control";
 // Fetch all products from the database

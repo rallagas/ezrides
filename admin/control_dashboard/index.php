@@ -1,4 +1,5 @@
 <?php 
+include_once "../_db.php";
 include_once "../_class_grocery.php";
 include_once "func.php";
 ?>
