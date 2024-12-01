@@ -56,7 +56,7 @@ class User {
             return "admin/";
         } elseif ($user['t_user_type'] === 'C') {
             return $user['t_rider_status'] == 1
-                ? "client/rider_dashboard"
+                ? "rider_dashboard/"
                 : "client/index.php?page=home";
         } else {
             return "client/index.php?page=home"; // Default redirect for other types
