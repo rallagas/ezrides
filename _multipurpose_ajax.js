@@ -183,7 +183,8 @@ $(document).ready(function () {
             data: $(this).serialize(),
             dataType: "json", // Expect JSON response from server
             success: function (response) {
-                $("div.status").removeClass("alert-danger alert-success"); // Clear previous alert classes
+                $("div.status").removeClass("alert-danger alert-success").html(""); // Clear previous messages
+                $(".error-message").remove(); // Clear previous error messages on fields
 
                 if (response.status === "success") {
                     $("button.reset-button").click(); // Reset form fields
@@ -193,14 +194,25 @@ $(document).ready(function () {
                 } else if (response.status === "error") {
                     $("div.status")
                         .addClass("alert alert-danger")
-                        .html(response.message); // Show error message
+                        .html(response.message); // Show general error message
+
+                    // Display specific field errors
+                    if (response.errors) {
+                        $.each(response.errors, function (field, errorMessage) {
+                            const fieldElement = $(`[name=${field}]`);
+                            fieldElement
+                                .addClass("border border-3 border-danger")
+                                .after(`<span class="error-message badge text-bg-danger">${errorMessage}</span>`);
+                        });
+                    }
+                    $(".createAcctBtn").prop('disabled',false).html("Create Account");
                 }
             },
-            error: function () {
+            error: function (xhr, status, error) {
                 $("div.status")
                     .removeClass("alert-success")
                     .addClass("alert alert-danger")
-                    .html("An unexpected error occurred. Please try again."); // Generic error message
+                    .html(`An unexpected error occurred: ${xhr.responseText || error}.`); // Show detailed error
             }
         });
     });

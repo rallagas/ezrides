@@ -4,7 +4,7 @@ include_once "./_shop/_class_grocery.php";
 include_once "./_shop/func.php";
 
 if(isset($_SESSION['txn_cat_id'])){
-    $txn_cat = $_SESSION['txn_cat_id'];
+    $TXN_CAT = $_SESSION['txn_cat_id'];
 }
 
 if (!empty($_SESSION['user_profile'])) {
@@ -149,82 +149,20 @@ if (!empty($_SESSION['user_profile'])) {
 
 
 <body>
-    <?php require_once "nav-client.php"; ?>
+    <?php //include_once "nav-client.php"; ?>
 
     <?php
     if(isset($_GET['order_history'])){
         include_once "_transaction_history.php";
     }
     ?>
-   
 
-    <?php if(!isset($_GET['merchant'])){ ?>
-    <div class="container-fluid mx-1">
-        <div class="row g-1">
-            <?php 
-        try {
-            // Fetch all merchants using the Merchant class
-            $merchants = Merchant::getAllMerchants();
-            
-            // Check if merchants are available
-            if (!empty($merchants)) {
-                foreach ($merchants as $merchant) { 
-                    // Ensure merchant data is valid
-                    if ($merchant instanceof Merchant) { ?>
-            <div class="col-6 mb-3">
 
-                <div class="card shadow" style="height:40vh">
-                    <div class="card-header p-0">
-                        <img src="../images/<?php echo  $merchant->getMerchantImg();?>" alt=""
-                            class="card-img-top object-fit-cover" style="height:20vh;">
-                    </div>
-                    <div class="card-body">
-                        <div class="col-12 card-title"
-                            style="overflow:hidden;text-overflow:ellipsis;white-space: nowrap;">
-                            <span class="fs-6 "><?php echo $merchant->getName(); ?></span>
-                        </div>
-                        <a class="btn btn-warning rounded-4 border-0"
-                            href="?page=<?php echo $_GET['page'] ?? ''; ?>&txn_cat=<?php echo $txn_cat; ?>&merchant=<?php echo $merchant->getId(); ?>">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                class="bi bi-shop mb-1" viewBox="0 0 16 16">
-                                <path
-                                    d="M2.97 1.35A1 1 0 0 1 3.73 1h8.54a1 1 0 0 1 .76.35l2.609 3.044A1.5 1.5 0 0 1 16 5.37v.255a2.375 2.375 0 0 1-4.25 1.458A2.37 2.37 0 0 1 9.875 8 2.37 2.37 0 0 1 8 7.083 2.37 2.37 0 0 1 6.125 8a2.37 2.37 0 0 1-1.875-.917A2.375 2.375 0 0 1 0 5.625V5.37a1.5 1.5 0 0 1 .361-.976zm1.78 4.275a1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0 1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0 1.375 1.375 0 1 0 2.75 0V5.37a.5.5 0 0 0-.12-.325L12.27 2H3.73L1.12 5.045A.5.5 0 0 0 1 5.37v.255a1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0M1.5 8.5A.5.5 0 0 1 2 9v6h1v-5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v5h6V9a.5.5 0 0 1 1 0v6h.5a.5.5 0 0 1 0 1H.5a.5.5 0 0 1 0-1H1V9a.5.5 0 0 1 .5-.5M4 15h3v-5H4zm5-5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1zm3 0h-2v3h2z" />
-                            </svg>
-                        </a>
-                    </div>
-                    <div class="card-footer badge text-bg-warning p-1 pb-2">
-                        <span class="w-100"><?php echo $merchant->getMerchantType();?></span>
-                    </div>
-                </div>
-
-            </div>
-            <?php } else { ?>
-            <div class="col-12">
-                <p class="text-center text-danger">Invalid merchant data found.</p>
-            </div>
-            <?php }
-                }
-            } else { ?>
-            <div class="col-12">
-                <p class="text-center">No merchants found.</p>
-            </div>
-            <?php } 
-        } catch (Exception $e) { ?>
-            <div class="col-12">
-                <p class="text-center text-danger">An error occurred while fetching merchants:
-                    <?php echo htmlspecialchars($e->getMessage()); ?></p>
-            </div>
-            <?php } ?>
-        </div>
-    </div>
-    <?php } ?>
 
 
     <?php
-if (isset($_GET['merchant'])) {
-    // Sanitize the merchant ID to prevent potential SQL injection or other attacks
-    $merchant_id = $_GET['merchant'];
-    
+    if(isset($_GET['merchant'])) {
+    $merchant_id = $_GET['merchant'];    
     try {
         // Fetch all products for the specified merchant ID
         $products = Product::fetchByMerchantId($merchant_id);
@@ -250,27 +188,7 @@ if (isset($_GET['merchant'])) {
             $startIndex = ($currentPage - 1) * $itemsPerPage;
 
             // Slice the products array to get the items for the current page
-            $currentProducts = array_slice($products, $startIndex, $itemsPerPage); 
-        } else {
-            // Handle case where products fetch fails or returns invalid data
-            $products = [];
-            $currentProducts = [];
-            $totalProducts = 0;
-            $totalPages = 0;
-            $currentPage = 1;
-            $startIndex = 0;
-        }
-    } catch (Exception $e) {
-        // Log the error and display a user-friendly message
-        error_log($e->getMessage());
-        $products = [];
-        $currentProducts = [];
-        $totalProducts = 0;
-        $totalPages = 0;
-        $currentPage = 1;
-    }
-
-?>
+            $currentProducts = array_slice($products, $startIndex, $itemsPerPage);  ?>
 
     <div class="bg-dark bg-opacity-75 py-2 position-fixed bottom-0 end-0 d-inline-block z-3">
         <!-- Button to Show Cart Items -->
@@ -322,30 +240,31 @@ if (isset($_GET['merchant'])) {
     <div class="container-fluid" id="MainShop">
         <div class="row  gx-1">
             <div class="col-12 p-0">
- <nav aria-label="breadcrumb small mb-0">
-  <ol class="breadcrumb m-0" style="font-size:2vh">
-    <li class="breadcrumb-item small"><a class="text-decoration-none" href="index.php">Home</a></li>
-    <li class="breadcrumb-item small">
-      <a class="text-decoration-none" href="?page=<?php echo htmlspecialchars($_GET['page']); ?>&txn_cat=<?php echo htmlspecialchars($txn_cat); ?>">Merchants</a>
-    </li>
-    <li class="breadcrumb-item active small" aria-current="page">
-      <?php
-        // Fetch merchant ID from query string or other sources
-        $merchantId = isset($_GET['merchant']) ? intval($_GET['merchant']) : null;
-        if ($merchantId) {
-            try {
-                $merchantName = Merchant::getMerchantNamesById($merchantId);
-                echo !empty($merchantName) ? $merchantName[0] : "Unknown Merchant";
-            } catch (Exception $e) {
-                echo "Error fetching merchant name";
-            }
-        } else {
-            echo "Merchant not specified";
-        }
-      ?>
-    </li>
-  </ol>
-</nav>
+                <nav aria-label="breadcrumb small mb-0">
+                    <ol class="breadcrumb m-0" style="font-size:2vh">
+                        <li class="breadcrumb-item small"><a class="text-decoration-none" href="index.php">Home</a></li>
+                        <li class="breadcrumb-item small">
+                            <a class="text-decoration-none"
+                                href="?page=<?php echo $_GET['page']; ?>&txn_cat=<?php echo $TXN_CAT; ?>">Merchants</a>
+                        </li>
+                        <li class="breadcrumb-item active small" aria-current="page">
+                            <?php
+                        // Fetch merchant ID from query string or other sources
+                        $merchantId = $merchant_id;
+                        if ($merchantId) {
+                            try {
+                                $merchantName = Merchant::getMerchantNamesById($merchantId);
+                                echo !empty($merchantName) ? $merchantName[0] : "Unknown Merchant";
+                            } catch (Exception $e) {
+                                echo "Error fetching merchant name";
+                            }
+                        } else {
+                            echo "Merchant not specified";
+                        }
+                    ?>
+                        </li>
+                    </ol>
+                </nav>
 
                 <div id="TransactionStatus"></div>
             </div>
@@ -522,7 +441,7 @@ if (isset($_GET['merchant'])) {
 
             </div>
         </div>
-        <div class="row">
+        <div class="row gx-1">
             <nav aria-label="Page navigation" class="shop-navigation p-0">
                 <ul class="pagination pagination-sm justify-content-center m-1">
                     <?php if ($currentPage > 1): ?>
@@ -569,7 +488,7 @@ if (isset($_GET['merchant'])) {
                 </ul>
             </nav>
         </div>
-        <div class="row g-1" style="height:80vh" id="searchResults">
+        <div class="row gx-1" style="height:80vh" id="searchResults">
             <?php
             foreach ($currentProducts as $product) {
                 $oosBtn = $product->getQuantity() == 0 ? "disabled" : "";
@@ -625,19 +544,101 @@ if (isset($_GET['merchant'])) {
 
 
             </div>
+            <?php 
+            } ?>
+        </div>
+    </div>
+
+    <?php } else {
+            // Handle case where products fetch fails or returns invalid data
+            $products = [];
+            $currentProducts = [];
+            $totalProducts = 0;
+            $totalPages = 0;
+            $currentPage = 1;
+            $startIndex = 0;
+        }
+    } catch (Exception $e) {
+        // Log the error and display a user-friendly message
+        error_log($e->getMessage());
+        $products = [];
+        $currentProducts = [];
+        $totalProducts = 0;
+        $totalPages = 0;
+        $currentPage = 1;
+    }
+} else { ?>
+    <div class="container-fluid mx-1">
+        <div class="row g-1">
+            <?php 
+        try {
+            // Fetch all merchants using the Merchant class
+            $merchants = Merchant::getAllMerchants();
+            
+            // Check if merchants are available
+            if (!empty($merchants)) {
+                foreach ($merchants as $merchant) { 
+                    // Ensure merchant data is valid
+                    if ($merchant instanceof Merchant) { 
+                        $merchType = $merchant->getMerchantType(); ?>
+            <div class="col-6 mb-3">
+
+                <div class="card shadow" style="height:40vh">
+                    <div class="card-header p-0">
+                        <img src="../images/<?php echo  $merchant->getMerchantImg();?>" alt=""
+                            class="card-img-top object-fit-cover" style="height:20vh;">
+                    </div>
+                    <div class="card-body">
+                        <div class="col-12 card-title"
+                            style="overflow:hidden;text-overflow:ellipsis;white-space: nowrap;">
+                            <span class="fs-6 "><?php echo $merchant->getName(); ?></span>
+                        </div>
+                        <a class="btn btn-warning rounded-4 border-0"
+                            href="?page=<?php echo $_GET['page'] ?? ''; ?>&txn_cat=<?php echo $TXN_CAT; ?>&merchant=<?php echo $merchant->getId(); ?>">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                class="bi bi-shop mb-1" viewBox="0 0 16 16">
+                                <path
+                                    d="M2.97 1.35A1 1 0 0 1 3.73 1h8.54a1 1 0 0 1 .76.35l2.609 3.044A1.5 1.5 0 0 1 16 5.37v.255a2.375 2.375 0 0 1-4.25 1.458A2.37 2.37 0 0 1 9.875 8 2.37 2.37 0 0 1 8 7.083 2.37 2.37 0 0 1 6.125 8a2.37 2.37 0 0 1-1.875-.917A2.375 2.375 0 0 1 0 5.625V5.37a1.5 1.5 0 0 1 .361-.976zm1.78 4.275a1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0 1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0 1.375 1.375 0 1 0 2.75 0V5.37a.5.5 0 0 0-.12-.325L12.27 2H3.73L1.12 5.045A.5.5 0 0 0 1 5.37v.255a1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0M1.5 8.5A.5.5 0 0 1 2 9v6h1v-5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v5h6V9a.5.5 0 0 1 1 0v6h.5a.5.5 0 0 1 0 1H.5a.5.5 0 0 1 0-1H1V9a.5.5 0 0 1 .5-.5M4 15h3v-5H4zm5-5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1zm3 0h-2v3h2z" />
+                            </svg>
+                            <?php
+                            switch($merchType){
+                                case "Document Processing": echo "Process Document";
+                                 break;
+                                case "Food Delivery": echo "Delivery";
+                                 break;
+                                case "Pharmacy": echo "Order";
+                                break;
+                                default: echo "Shop Here";
+                            }
+                            ?>
+                        </a>
+                    </div>
+                    <div class="card-footer badge text-bg-warning p-1 pb-2">
+                        <span class="w-100"><?php echo $merchant->getMerchantType();?></span>
+                    </div>
+                </div>
+
+            </div>
+            <?php } else { ?>
+            <div class="col-12">
+                <p class="text-center text-danger">Invalid merchant data found.</p>
+            </div>
+            <?php }
+                }
+            } else { ?>
+            <div class="col-12">
+                <p class="text-center">No merchants found.</p>
+            </div>
+            <?php } 
+        } catch (Exception $e) { ?>
+            <div class="col-12">
+                <p class="text-center text-danger">An error occurred while fetching merchants:
+                    <?php echo htmlspecialchars($e->getMessage()); ?></p>
+            </div>
             <?php } ?>
         </div>
     </div>
-<?php
-} else {
-    $products = [];
-    $currentProducts = [];
-    $totalProducts = 0;
-    $totalPages = 0;
-    $currentPage = 1;
-    $startIndex = 0;
-}
-?>
+    <?php } ?>
 
 </body>
 

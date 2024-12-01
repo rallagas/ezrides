@@ -15,7 +15,7 @@ include_once "_functions.php";
         .bg-purple {
             background-color: mediumpurple;
         }
-
+        
     </style>
 </head>
 

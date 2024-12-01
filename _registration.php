@@ -1,7 +1,6 @@
 <div class="row g-1">
     <div class="col-12 pt-2">
         <h6 class="fw-bold display-6">Customer Registration</h6>
-        <div class="status"></div>
         <form id="formRegistration">
             <div class="mb-2">
                 <input name="f_emailadd" id="f_emailadd" type="email" class="form-control" Placeholder="Email Address" required>
@@ -121,6 +120,9 @@
 
 
             <button type="submit" class="btn btn-warning createAcctBtn">Create Account</button>
+
+            <div class="status"></div>
+
             <button class="btn btn-secondary reset-button" data-bs-toggle="collapse" data-bs-target=".multi-collapse" aria-controls="riderForm" type="Reset">Reset Fields</button>
             <a href="?page=loguser" class="btn btn-link">Login Here</a>
         </form>
