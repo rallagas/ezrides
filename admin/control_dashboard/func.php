@@ -6,7 +6,7 @@ function loadPage() {
         $page = basename($_GET['page']); // Get the page name and sanitize it
         
         // Define a list of allowed pages to prevent security issues
-        $allowedPages = ['_items_control']; // Add your allowed pages here
+        $allowedPages = ['_items_control','_riders_control']; // Add your allowed pages here
 
         // Check if the requested page is in the allowed list
         if (in_array($page, $allowedPages)) {
@@ -15,6 +15,7 @@ function loadPage() {
         } else {
             // Handle invalid page request
             include '404.php'; // Optionally include a 404 page or redirect
+            
         }
     } else {
         // Default page to load if 'page' is not set
