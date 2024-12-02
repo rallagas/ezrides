@@ -7,7 +7,11 @@ require_once '_class_userWallet.php'; // Assuming this is where the UserWallet c
 $userWallet = new UserWallet(USER_LOGGED);
 $balance = $userWallet->getBalance();
 $transactionHistory = query(
-    "SELECT wallet_txn_amt, wallet_action, wallet_txn_start_ts 
+    "SELECT wallet_txn_amt, wallet_action, wallet_txn_start_ts
+          , CASE WHEN wallet_txn_status = 'P' THEN 'Pending Approval'
+                WHEN wallet_txn_status = 'C' THEN 'Approved'
+                ELSE 'DECLINED'
+            END AS wallet_txn_status
      FROM user_wallet 
      WHERE user_id = ? 
      ORDER BY wallet_txn_start_ts DESC",
@@ -67,9 +71,10 @@ $transactionHistory = query(
                 <table id="transactionHistoryTable" class="table table-bordered table-responsive">
                     <thead class="table-dark">
                         <tr>
-                            <th>Amount</th>
+                            <th>Amount (Php)</th>
                             <th>Action</th>
                             <th>Date</th>
+                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody>

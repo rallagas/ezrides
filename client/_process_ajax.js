@@ -103,9 +103,10 @@ function renderTransactions() {
         pageTransactions.forEach(transaction => {
             tbody.append(`
                 <tr>
-                    <td>$${transaction.amount}</td>
+                    <td>${transaction.amount}</td>
                     <td>${transaction.status}</td>
                     <td>${transaction.date}</td>
+                    <td>${transaction.wallet_txn_status}</td>
                 </tr>
             `);
         });
@@ -877,27 +878,7 @@ $(document).ready(function () {
         }
     });
   
-    elements.topUpForm.on('submit', (event) => {
-        event.preventDefault();
-        $.ajax({
-            url: 'ajax_top_up_wallet.php',
-            type: 'POST',
-            data: { amount: elements.topUpAmount.val() },
-            dataType: 'json',
-            success: function (response) {
-                if (response.success) {
-                    elements.topUpModal.modal('hide');
-                    loadTransactionHistory();
-                    fetchAndAssignWalletBalance(elements.walletBalance);
-                } else {
-                    alert(response.error || 'Top-up failed. Please try again.');
-                }
-            },
-            error: function () {
-                alert('An error occurred. Please try again later.');
-            }
-        });
-    });
+  
 
     elements.userLogOut.click(() => {
         const grower = CreateHtml.loadingGrower;
@@ -911,4 +892,32 @@ $(document).ready(function () {
 
     
 
+});
+
+
+$(document).on('submit', '#topUpForm', function (event) {
+    event.preventDefault();
+
+    const form = $(this);
+    const formData = form.serialize(); // Serialize the form data
+
+    $.ajax({
+        url: 'ajax_top_up_wallet.php',
+        type: 'POST',
+        data: formData, // Use serialized data
+        dataType: 'json',
+        success: function (response) {
+            if (response.success) {
+                $('#topUpModal').modal('hide'); // Close the modal
+                form.closest('tr').addClass('d-none'); // Hide the parent row
+                loadTransactionHistory(); // Refresh transaction history
+                fetchAndAssignWalletBalance(elements.walletBalance); // Update wallet balance
+            } else {
+                alert(response.error || 'Top-up failed. Please try again.');
+            }
+        },
+        error: function () {
+            alert('An error occurred. Please try again later.');
+        }
+    });
 });

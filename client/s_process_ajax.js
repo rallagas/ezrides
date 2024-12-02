@@ -73,9 +73,9 @@ function renderTransactions() {
             const row = `
             <tr>
                 <td>$${transaction.amount}</td>
-                <td>${transaction.type}</td>
                 <td>${transaction.status}</td>
                 <td>${transaction.date}</td>
+                <td>${transaction.wallet_txn_status}</td>
             </tr>
         `;
             tbody.append(row);

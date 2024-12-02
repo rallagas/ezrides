@@ -172,6 +172,10 @@ function isCONN( $conn ) {
 // Initialize classes
 $db = new Database();
 define( 'CONN', $db->getConnection() );
+define('SECRET_KEY', 'ezrides'); // Use a secure, random key
+define('SECRET_IV', 'ezrides123456789');   // Use a secure, random IV
+define('GCASH_ADMIN_ACCOUNT',"09985518206");
+define('GCASH_ADMIN_NAME',NULL);
 
 $sessionManager = new SessionManager();
 $redirect = new Redirect( $sessionManager );

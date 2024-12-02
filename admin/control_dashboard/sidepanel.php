@@ -1,7 +1,23 @@
 <div class="accordion accordion-flush" id="accordionFlushExample">
+    
+<div class="accordion-item">
+    <h2 class="accordion-header">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseHome" aria-expanded="false" aria-controls="flush-collapseOne">
+        Home
+      </button>
+    </h2>
+    <div id="flush-collapseHome" class="accordion-collapse collapse show" data-bs-parent="#accordionFlushExample">
+      <div class="accordion-body p-0">
+          <!-- <div class="btn-group-vertical rounded-0 d-flex" role="group" aria-label="Vertical button group"> -->
+                    <a href="index.php" class="btn btn-link text-decoration-none">View Dashboard</a>
+            <!-- </div> -->
+      </div>
+    </div>
+  </div>
+
   <div class="accordion-item">
     <h2 class="accordion-header">
-      <button class="accordion-button bg-info text-light collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
         Shop
       </button>
     </h2>
@@ -25,16 +41,5 @@
       </div>
     </div>
   </div>
-  <div class="accordion-item">
-    <h2 class="accordion-header">
-      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseThree" aria-expanded="false" aria-controls="flush-collapseThree">
-        Top Up
-      </button>
-    </h2>
-    <div id="flush-collapseThree" class="accordion-collapse collapse show" data-bs-parent="#accordionFlushExample">
-    <div class="accordion-body p-0">
-            <a href="" class="btn btn-link text-decoration-none">Manage Top Ups</a>
-      </div>
-    </div>
-  </div>
+
 </div>
