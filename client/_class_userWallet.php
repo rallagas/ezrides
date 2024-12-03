@@ -46,6 +46,37 @@ class UserWallet {
         return true;
     }
     
+    public function CashOut($amount, $gcashData = []) {
+        if ($amount <= 0 || $amount > 9999999999.99) {
+            throw new InvalidArgumentException("Cash Out amount must be between 0.01 and 9999999999.99.");
+        }
+    
+        $refNumber = gen_book_ref_num(8, "COUT");
+        $txn_type_id = isset($_SESSION['txn_cat_id']) ? $_SESSION['txn_cat_id'] : 7;
+    
+        $data = [
+            'user_id' => $this->userId,
+            'wallet_txn_amt' => number_format(-$amount, 2, '.', ''),
+            'txn_type_id' => $txn_type_id,
+            'wallet_action' => 'Cash Out',
+            'payment_type' => 'C',
+            'reference_number' => $refNumber,
+            'gcash_account_number' => $gcashData['gcash_account_number'] ?? null,
+            'gcash_account_name' => $gcashData['gcash_account_name'] ?? null,
+            'gcash_reference_number' => $gcashData['gcash_ref_number'] ?? null,
+            'wallet_txn_status' => 'P'
+        ];
+    
+        // Attempt to insert data into the database
+        $result = insert_data('user_wallet', $data);
+    
+        if (!$result) {
+            error_log("Failed to insert data: " . print_r($data, true)); // Log the data being inserted
+            return false;
+        }
+    
+        return true;
+    }
 
     /**
      * Check the total balance in the user's wallet.
@@ -90,11 +121,11 @@ class UserWallet {
      * @return array
      * @throws Exception if balance is insufficient.
      */
-    public function makePaymentToRider($amount, $payFrom = null, $payTo = null, $refNumber = null, $paymentType = null, $wallet_action = "Made Payment") {
+    public function makePayment($amount, $payFrom = null, $payTo = null, $refNumber = null, $paymentType = null, $wallet_action = "Made Payment") {
         $response = ["success" => false, "message" => null];
         $refNum = $refNumber;
         $payType = $paymentType;
-        $payTo = $payTo ?? -99;
+        $payTo = $payTo ?? -1;
         $payFrom = $payFrom ?? USER_LOGGED; 
         $walletAction = $wallet_action ?? "Made Payment";
     
@@ -110,6 +141,7 @@ class UserWallet {
     
             // Start transaction
             mysqli_begin_transaction(CONN);
+
     
             // Deduction from customer wallet
             $data1 = [
@@ -147,7 +179,7 @@ class UserWallet {
                 
                 $data3 = [
                     'payFrom' => $payFrom,
-                    'payTo' => -99, //pay for admin
+                    'payTo' => -1, //pay for admin
                     'wallet_txn_amt' => number_format($amountToAdmin, 2, '.', ''),
                     'txn_type_id' => $_SESSION['txn_cat_id'],
                     'wallet_action' => "$walletAction to Admin",

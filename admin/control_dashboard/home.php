@@ -12,16 +12,16 @@
 $sql = null;
 $sql = "SELECT SUM(wallet_txn_amt) as income FROM `user_wallet` WHERE wallet_action LIKE '%Admin' ";
 $sales_data = query($sql);
-$sales = $sales_data[0]['income'];
+$sales = $sales_data[0]['income'] ?? 0;
 
 $sql = "SELECT SUM(wallet_txn_amt) as total_wallet_pool from `user_wallet` ";
 $wallet_pool_data = query($sql);
-$wallet_pool = $wallet_pool_data[0]['total_wallet_pool'];
+$wallet_pool = $wallet_pool_data[0]['total_wallet_pool'] ?? 0 ;
 
 
 $sql_booking_total = "SELECT COUNT(angkas_booking_reference) total_number_of_bookings from `angkas_bookings` where `booking_status` in ('C','D') and `payment_status` in ('C') and DATE(date_booked) > CURRENT_DATE - 60";
 $sql_booking_total_data = query($sql_booking_total);
-$booking_total = $sql_booking_total_data[0]['total_number_of_bookings'];
+$booking_total = $sql_booking_total_data[0]['total_number_of_bookings'] ?? 0;
 
 $sql_booking_trend = "SELECT DATE(date_booked) as date_booked, COUNT(angkas_booking_reference) total_number_of_bookings from `angkas_bookings` where `booking_status` in ('C','D') and `payment_status` in ('C') and DATE(date_booked) > CURRENT_DATE - 60 group by DATE(date_booked) order by  DATE(date_booked)";
 $booking_per_day_data = query($sql_booking_trend);

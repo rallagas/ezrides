@@ -64,8 +64,12 @@ public function topUp($amount) {
                             END ) AS balance 
                    FROM user_wallet 
                   WHERE (user_id = ? or payTo = ? or payFrom = ?)
-                    AND wallet_txn_status = 'C'";
+                    AND (wallet_txn_status = 'C'
+                     OR (payment_type = 'C' and wallet_txn_status = 'P')
+                     )
+                    ";
             $result = query($sql,[$userId,$userId,$userId,$userId,$userId,$userId]);
+
 
         return (float) $result[0]['balance'] ?? 0;
     }

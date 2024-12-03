@@ -349,3 +349,132 @@ $(document).on("click",".claim-stub", function(e){
     $(this).text("Claimed!");
     //$(this).addClass("d-none");
 });
+
+$(document).on('submit','#formCashOut', function (event) {
+    event.preventDefault(); // Prevent default form submission behavior
+    
+    // Extract form data
+    const amount = parseFloat($('input[name="CashOutAmount"]').val().trim());
+    const gcashAccountNumber = $('input[name="GCashAccountNumber"]').val().trim();
+    const gcashAccountName = $('input[name="GCashAccountName"]').val().trim();
+
+    // Validate form inputs
+    if (!amount || amount <= 0) {
+        alert('Please enter a valid amount.');
+        return;
+    }
+    if (!gcashAccountNumber) {
+        alert('Please provide a valid GCash Account Number.');
+        return;
+    }
+    if (!gcashAccountName) {
+        alert('Please provide a valid GCash Account Name.');
+        return;
+    }
+
+    // Call the cashOut function
+    cashOut({
+        amount: amount,
+        payFrom: -1, // Assuming 99 is a default value for "payFrom"
+        referenceNum : null, // Generate a unique reference number
+        paymentType: 'C', // Default payment type is 'C'
+        action: 'Cash Out', // Wallet action
+        gcashAccountNumber: gcashAccountNumber,
+        gcashAccountName: gcashAccountName
+    });
+});
+
+async function cashOut({ 
+    amount, 
+    payFrom = 99, 
+    payTo = null, 
+    referenceNum = null, 
+    paymentType = 'C', 
+    action = 'Cash Out', 
+    gcashAccountNumber = null, 
+    gcashAccountName = null 
+}) {
+    const walletBalanceElement = $(".walletbalance");
+    const triggerElement = $(this);
+    const currentBalanceText = walletBalanceElement.text().trim();
+    let currentBalance = 0.00;
+
+    
+    const data = await getWalletBalance(); // Get wallet balance data
+    if (data && data.balance) {
+        currentBalance = parseFloat(data.balance.replace(/[^0-9.-]+/g, ""));
+    }
+    else{
+        currentBalance = parseFloat(
+            currentBalanceText.replace(/[^0-9.-]+/g, "") // Remove "Php" and commas
+        );
+    }
+
+
+    console.log(amount, currentBalance);
+    if(amount > currentBalance){
+        $('.txn_status')
+        .addClass("alert pt-2")
+        .removeClass("alert-success")
+        .addClass("alert-danger")
+        .html(`
+            <br>Requested cash out of Php ${parseFloat(amount).toFixed(2)} 
+            to GCash Account: ${gcashAccountNumber} is not possible. You cannot request more than your balance<br>
+        `);
+        console.error("Cannot Cash Out more than your balance", amount,currentBalance );
+        return;
+    }
+    else{
+
+    // Disable the button during the request
+    triggerElement.prop('disabled', true);
+
+
+    $.ajax({
+        url: 'ajax_cash_out.php',
+        method: 'POST',
+        dataType: 'json',
+        data: JSON.stringify({
+            amount,
+            payToUser: payTo,
+            payFromUser: payFrom,
+            refNum: referenceNum,
+            paymentType,
+            wallet_action: action,
+            gcashAccountNumber,
+            gcashAccountName
+        }),
+        contentType: 'application/json',
+        success: function (response) {
+            if (response.success) {
+                console.log("Cash-out request submitted successfully.");
+                $('.txn_status')
+                    .removeClass("alert-danger")
+                    .addClass("alert-success")
+                    .html(`
+                        <br>Requested cash out of Php ${parseFloat(response.amount).toFixed(2)} 
+                        to GCash Account: ${gcashAccountNumber}<br>
+                    `);
+
+                fetchAndAssignWalletBalance(walletBalanceElement);
+            } else {
+                $('.txn_status')
+                    .removeClass("alert-success")
+                    .addClass("alert-danger")
+                    .text(response.message || "Cash-out request failed.");
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error('Cash-out request error:', error);
+            $('.txn_status')
+                .removeClass("alert-success")
+                .addClass("alert-danger")
+                .text("An error occurred while processing the cash-out request.");
+        },
+        complete: function () {
+            triggerElement.prop('disabled', false);
+        }
+    });
+    }
+
+}

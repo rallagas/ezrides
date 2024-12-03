@@ -20,7 +20,7 @@ try {
     $userWallet = new UserWallet($userId);
     
     // Attempt to make the payment
-    $transact = $userWallet->makePaymentToRider($amount, $payFromUser,$payToUser, $refNumber,  $paymentType ,$wallet_action);
+    $transact = $userWallet->makePayment($amount, $payFromUser,$payToUser, $refNumber,  $paymentType ,$wallet_action);
     if (!empty($transact)) {
         $transact['amount'] = $amount;
         echo json_encode($transact);

@@ -42,6 +42,38 @@ public function topUp($amount) {
     return true;
 }
 
+
+public function CashOut($amount, $gcashData = []) {
+    if ($amount <= 0 || $amount > 9999999999.99) {
+        throw new InvalidArgumentException("Cash Out amount must be between 0.01 and 9999999999.99.");
+    }
+
+    $refNumber = gen_book_ref_num(8, "COUT");
+    $txn_type_id = isset($_SESSION['txn_cat_id']) ? $_SESSION['txn_cat_id'] : 7;
+
+    $data = [   
+        'user_id' => $this->userId,
+        'wallet_txn_amt' => number_format(-$amount, 2, '.', ''),
+        'txn_type_id' => $txn_type_id,
+        'wallet_action' => 'Cash Out',
+        'payment_type' => 'C',
+        'reference_number' => $refNumber,
+        'gcash_account_number' => $gcashData['gcash_account_number'] ?? null,
+        'gcash_account_name' => $gcashData['gcash_account_name'] ?? null,
+        'gcash_reference_number' => $gcashData['gcash_ref_number'] ?? null,
+        'wallet_txn_status' => 'P'
+    ];
+
+    // Attempt to insert data into the database
+    $result = insert_data('user_wallet', $data);
+
+    if (!$result) {
+        error_log("Failed to insert data: " . print_r($data, true)); // Log the data being inserted
+        return false;
+    }
+
+    return true;
+}
     /**
      * Check the total balance in the user's wallet.
      * Calculates the sum of all transaction amounts for the specified user.
@@ -53,12 +85,16 @@ public function topUp($amount) {
 
             $result = query("SELECT SUM( CASE WHEN ? = payTo THEN wallet_txn_amt * -1 
                               		          WHEN payment_type = 'T' THEN wallet_txn_amt
+                                              WHEN payment_type = 'C' THEN wallet_txn_amt
                                               ELSE wallet_txn_amt
                                          END 
                    ) AS balance 
                    FROM user_wallet 
                   WHERE (user_id = ? or payTo = ?)
-                    AND wallet_txn_status = 'C'",
+                    AND (wallet_txn_status in ('C')
+                          OR (payment_type = 'C' and wallet_txn_status = 'P')
+                           )
+                    ",
                 [$this->userId, $this->userId, $this->userId]
             );
 
@@ -85,7 +121,7 @@ public function topUp($amount) {
      * @return array
      * @throws Exception if balance is insufficient.
      */
-    public function makePaymentToRider($amount, $payFrom = null, $payTo = null, $refNumber = null, $paymentType = null, $wallet_action = "Made Payment") {
+    public function makePayment($amount, $payFrom = null, $payTo = null, $refNumber = null, $paymentType = null, $wallet_action = "Made Payment") {
         $response = ["success" => false, "message" => null];
         $refNum = $refNumber;
         $payType = $paymentType;

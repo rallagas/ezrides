@@ -47,7 +47,7 @@ $currentProducts = array_slice($products, $startIndex, $itemsPerPage);
 ?>
 
 
-<div class="container">
+<div class="container" style="height:85vh">
     <div class="row">
         <div class="col-12">
             <form action="">
@@ -56,30 +56,27 @@ $currentProducts = array_slice($products, $startIndex, $itemsPerPage);
         </div>
     </div>
     <div class="row">
+        <div class="col-12 my-1 alert txn_status">
+            
+        </div>
+    </div>
+    <div class="row">
         <!-- Pagination Links -->
 
-        <div class="col-12">
+        <div class="col-lg-12">
 
-            <a class="btn btn-primary" data-bs-toggle="collapse" href="#FormNewItem" role="button" aria-expanded="false"
-                aria-controls="FormNewItem"> New Item + </a>
-            <a href="" class="btn btn-outline-primary">Filter </a>
-            <div id="FormNewItem" class="collapse fade">
-                <form action="">
+            <a class="btn btn-primary" data-bs-toggle="collapse" href="#DivNewItem" role="button" aria-expanded="false"
+                aria-controls="DivNewItem"> New Item + </a>
+            <div id="DivNewItem" class="collapse shadow">
+                <form id="FormNewItem" enctype="multipart/form-data">
                     <div class="border border-1 p-2 my-3">
                         <h6 class="fw-bold">New Item</h6>
-                        <div class="mb-1 input-group">
-                            <input type="text" class="form-control" Placeholder="item name" />
-                            <!--
-                      <select name="merchant" id="selectMerchant" class="form-select">
-                          <option value="">--Merchant--</option>
-                      </select>
--->
-                            
-                            <input type="text" class="form-control inputMerchant" placeholder="Search Merchant">
-                            <input type="text" class="form-control" Placeholder="Initial Qty">
-                            <button type="submit" class="btn btn-primary">Save</button>
-                        </div>
 
+                            <input type="text" class="form-control mb-2" name="ItemName" Placeholder="Item Name" />
+                            <input type="text" class="form-control mb-2" name="ItemPrice" Placeholder="Item Price" />
+                            <input type="text" class="form-control mb-2 inputMerchant" name="MerchantName" placeholder="Search Merchant">
+                            <input type="file" class="form-control mb-2" name="itemImg">
+                            <button type="submit" class="btn btn-primary">Save</button>
                         <div id="merchantSuggestions" class="my-2"></div>
                     </div>
                 </form>
@@ -114,7 +111,7 @@ $currentProducts = array_slice($products, $startIndex, $itemsPerPage);
             </ul>
         </nav>
     </div>
-    <div class="row g-1" id="searchResults">
+    <div class="row g-1 h-100 overflow-y-scroll" id="searchResults">
         <?php foreach ($currentProducts as $product): ?>
 
         <div class="col-sm-4 col-md-6 col-lg-3 mb-3 mb-sm-1">
@@ -167,61 +164,63 @@ $(document).ready(function() {
     });
    
 
-
-    function displaySuggestions(suggestions) {
-        let suggestionBox = $('div#merchantSuggestions');
-        suggestionBox.empty(); // Clear previous suggestions
-
-        if (suggestions.length > 0) {
-            suggestions.forEach(function(merchant) {
-                let item = $('<a></a>')
-                    .addClass('btn btn-sm m-1 btn-outline-secondary rounded-4 small')
-                    .text(merchant.name) // Assumes response contains 'name'
-                    .on('click', function() {
-                        $('.inputMerchant').val(merchant.name);
-                        suggestionBox.hide();
-                    });
-                suggestionBox.append(item);
-            });
-            suggestionBox.show(); // Display the suggestions dropdown
-        } else {
-            suggestionBox.hide(); // Hide if no suggestions found
-        }
-    }
-
     
 
    
 
 });
 
-$(document).on('input','.inputMerchant', function() { // Changed to 'input' for real-time updates
-        let query = $(this).val().trim();
 
-        if (query.length > 1) { // Start suggesting after 2 characters
-            $.ajax({
-                url: '_search_merchants.php', // Your backend endpoint
-                method: 'GET',
-                data: {
-                    query: query
-                },
-                dataType: 'json', // Expect JSON response
-                success: function(data) {
-                    if (data.length > 0) {
-                        displaySuggestions(data); // Update suggestions display
-                    } else {
-                        $('#merchantSuggestions').hide(); // Hide if no suggestions
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error('Error fetching merchant suggestions:', status, error);
-                    $('#merchantSuggestions').hide();
+function displaySuggestions(suggestions) {
+    const suggestionBox = $('#merchantSuggestions');
+    suggestionBox.empty(); // Clear previous suggestions
+
+    if (suggestions.length > 0) {
+        suggestions.forEach(function (merchant) {
+            const item = $('<a></a>')
+                .addClass('btn btn-sm m-1 btn-outline-secondary rounded-4 small')
+                .text(merchant.name)
+                .on('click', function () {
+                    $('.inputMerchant').val(merchant.name); // Set the selected merchant name
+                    suggestionBox.hide(); // Hide the suggestion box
+                });
+            suggestionBox.append(item);
+        });
+        suggestionBox.show(); // Display the suggestions box
+    } else {
+        suggestionBox.hide(); // Hide if no suggestions found
+    }
+}
+
+$(document).on('input', '.inputMerchant', function () {
+    const query = $(this).val().trim();
+
+    if (query.length > 1) { // Fetch suggestions after 2 characters
+        $.ajax({
+            url: '_search_merchants.php', // Your backend endpoint
+            method: 'GET',
+            data: { query: query },
+            dataType: 'json', // Expect JSON response
+            success: function (data) {
+                if (data.error || data.message) {
+                    console.error('Error:', data.error);
+                    console.warn("Warning:", data.message);
+                    $('#merchantSuggestions').html(data.message);
+                } else if (data.merchants && data.merchants.length > 0) {
+                    displaySuggestions(data.merchants);
+                } else {
+                    $('#merchantSuggestions').hide(); // Hide if no merchants found
                 }
-            });
-        } else {
-            $('#merchantSuggestions').hide(); // Hide if input is too short
-        }
-    });
+            },
+            error: function (xhr, status, error) {
+                console.error('Error fetching merchant suggestions:', status, error);
+                $('#merchantSuggestions').hide();
+            }
+        });
+    } else {
+        $('#merchantSuggestions').hide(); // Hide if input is too short
+    }
+});
 
 
 $(document).on('submit', '.formUpdateItem', function (e) {
@@ -238,14 +237,23 @@ $(document).on('submit', '.formUpdateItem', function (e) {
         contentType: false, // Important: Prevent jQuery from setting content type
         success: function (response) {
             if (response.success) {
-                alert('Item updated successfully!');
+                $(".txn_status").html('Item updated successfully!').removeClass("alert-danger").addClass("alert-success");
+                setTimeout(()=>{
+                    $(".txn_status").fadeOut();
+                },2000);
             } else {
-                alert('Failed to update item: ' + (response.error || 'Unknown error'));
+                $(".txn_status").html('Failed to update item: ' + (response.error || 'Unknown error')).removeClass("alert-success").addClass("alert-danger");
+                setTimeout(()=>{
+                    $(".txn_status").fadeOut();
+                },2000);
             }
         },
         error: function (xhr, status, error) {
             console.error('AJAX error:', status, error);
-            alert('An error occurred while updating the item.');
+            $(".txn_status").html('Failed to update item: ' + (error || 'Unknown error')).removeClass("alert-success").addClass("alert-danger");
+            setTimeout(()=>{
+                $(".txn_status").fadeOut();
+                },2000);
         }
     });
 });

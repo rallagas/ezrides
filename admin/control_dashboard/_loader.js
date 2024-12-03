@@ -73,3 +73,34 @@ $(document).on('click', '.btn-approve', function (e) {
         alert('Invalid wallet ID.');
     }
 });
+
+
+$(document).on('submit', '#FormNewItem', function (e) {
+    e.preventDefault();
+
+    const form = $(this)[0];
+    const formData = new FormData(form);
+
+    $.ajax({
+        url: 'save_new_item.php', // Backend script to process the form
+        type: 'POST',
+        data: formData,
+        processData: false, // Prevent jQuery from automatically processing the data
+        contentType: false, // Let the server set the content type
+        dataType: 'json', // Expect JSON response
+        success: function (response) {
+            if (response.success) {
+                $(".txn_status").html('New Item Saved successfully!').removeClass("alert-danger").addClass("alert-success");
+                form.reset(); // Reset the form after success
+                $('#merchantSuggestions').empty(); // Clear suggestions
+            } else {
+                alert();
+                $(".txn_status").html('Failed to save item: ' + (response.error || 'Unknown error.')).removeClass("alert-success").addClass("alert-danger");
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error('AJAX error:', status, error);
+            $(".txn_status").html('Failed to save item: ' + (error || 'Unknown error.')).removeClass("alert-success").addClass("alert-danger");
+        }
+    });
+});
