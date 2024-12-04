@@ -34,6 +34,7 @@ include_once "../_sql_utility.php";
                             if(isset($_GET['page']) && isset($_GET['txn_cat'])){
                                 $page = $_GET['page']; 
                                 $categ = $_GET['txn_cat']; 
+                                $_SESSION['txn_cat_id'] = $_GET['txn_cat'] ?? 1;
                                 ?>
                                 <?php 
                                 if($cat['page_action'] == $page && $cat['txn_category_id'] == $categ){ 
@@ -41,7 +42,6 @@ include_once "../_sql_utility.php";
                                 ?>          
                                 <div class="col-12 p-0" id=""></div>              
                                     <?php include_once $txnlink; 
-                                        $_SESSION['txn_cat_id'] = $_GET['txn_cat'];
                                     ?>
                                  </div>
                                 <?php 

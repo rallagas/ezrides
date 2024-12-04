@@ -4,7 +4,7 @@ include_once "_class_riderWallet.php";  // Include the UserWallet class
 
 header('Content-Type: application/json');
 
-$response = ['balance' => 0.00, 'error' => null];
+$response = ['balance' => 0.00, 'earnings' => 0.00 ,'error' => null];
 
 try {
     // Assume user ID is stored in session
@@ -15,9 +15,11 @@ try {
     
     // Get the user's balance
     $balance = $userWallet->getBalance();
+    $earnings = $userWallet->getEarnings();
     
     // Return the balance as JSON
     $response['balance'] =  number_format($balance, 2);
+    $response['earnings'] =  number_format($earnings, 2);
     
 } catch (Exception $e) {
     // Return an error message in case of failure

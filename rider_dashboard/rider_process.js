@@ -289,14 +289,16 @@ function getWalletBalance() {
     });
 }
 // Function to fetch the balance and assign it to elements
-async function fetchAndAssignWalletBalance(elements) {
+async function fetchAndAssignWalletBalance(balance = null, earnings  = null) {
     try {
         const data = await getWalletBalance(); // Get wallet balance data
-        if (data && data.balance) {
+        if (data && data.balance && data.earnings ) {
             const formattedBalance = `Php ${data.balance}`;
+            const formattedEarnings = `Php ${data.earnings}`
 
             // Ensure `elements` is a jQuery object
-            $(elements).each(function () {
+        if(balance !== null){
+            $(balance).each(function () {
                 const element = $(this);
 
                 // Check if the element is an input or textarea (elements that use val())
@@ -308,6 +310,22 @@ async function fetchAndAssignWalletBalance(elements) {
                     element.text(formattedBalance);
                 }
             });
+        }
+        if(earnings !== null){
+            $(earnings).each(function () {
+                const element = $(this);
+
+                // Check if the element is an input or textarea (elements that use val())
+                if (element.is("input, textarea")) {
+                    element.val(formattedBalance);
+                } 
+                // Otherwise, use text() for other elements
+                else {
+                    element.text(formattedBalance);
+                }
+            });
+        }
+          
 
             console.log("Wallet balance assigned successfully:", formattedBalance);
         } else {
@@ -343,7 +361,7 @@ $(document).on("click",".claim-stub", function(e){
     const userWalletId = $(this).data("claimwallet");
     console.log("Claiming",userWalletId);
     claimStubWallet(userWalletId);
-    fetchAndAssignWalletBalance('.walletbalance');
+    fetchAndAssignWalletBalance('.walletbalance',".earnings");
     console.log("Claimed",userWalletId);
     $(this).prop("disabled",true);
     $(this).text("Claimed!");
@@ -394,7 +412,7 @@ async function cashOut({
     gcashAccountNumber = null, 
     gcashAccountName = null 
 }) {
-    const walletBalanceElement = $(".walletbalance");
+    const walletBalanceElement = $(".earnings");
     const triggerElement = $(this);
     const currentBalanceText = walletBalanceElement.text().trim();
     let currentBalance = 0.00;
@@ -456,7 +474,7 @@ async function cashOut({
                         to GCash Account: ${gcashAccountNumber}<br>
                     `);
 
-                fetchAndAssignWalletBalance(walletBalanceElement);
+                fetchAndAssignWalletBalance('.walletbalance','.earnings');
             } else {
                 $('.txn_status')
                     .removeClass("alert-success")
@@ -478,3 +496,32 @@ async function cashOut({
     }
 
 }
+
+
+
+$(document).on('submit', '#topUpForm', function (event) {
+    event.preventDefault();
+
+    const form = $(this);
+    const formData = form.serialize(); // Serialize the form data
+
+    $.ajax({
+        url: 'ajax_top_up_wallet.php',
+        type: 'POST',
+        data: formData, // Use serialized data
+        dataType: 'json',
+        success: function (response) {
+            if (response.success) {
+                $('#topUpModal').modal('hide'); // Close the modal
+                form.closest('tr').addClass('d-none'); // Hide the parent row
+                loadTransactionHistory(); // Refresh transaction history
+                fetchAndAssignWalletBalance(elements.walletBalance); // Update wallet balance
+            } else {
+                alert(response.error || 'Top-up failed. Please try again.');
+            }
+        },
+        error: function () {
+            alert('An error occurred. Please try again later.');
+        }
+    });
+});

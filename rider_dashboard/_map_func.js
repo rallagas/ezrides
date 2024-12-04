@@ -253,6 +253,7 @@ document.getElementById("DropOffCustomer").addEventListener("click", () => {
                     document.getElementById("paymentSection").style.display = "block";
                     document.getElementById("confirmDropOffBtn").style.display = "none";
                     document.getElementById("confirmPaymentBtn").style.display = "inline-block";
+                    deleteRiderFromQueue();
                 }
             })
             .catch(error => {
@@ -375,8 +376,9 @@ document.getElementById("ConfirmArrivalButton").addEventListener("click", () => 
     });
 
     // Hide confirm arrival button
-    document.getElementById("ConfirmArrivalButton").style.display = "none";
-    document.getElementById("DropOffCustomer").style.display = "block";
+    document.getElementById("DropOffCustomer").classList.remove("d-none");
+    document.getElementById("ConfirmArrivalButton").classList.add("d-none");
+    
 
     // Set intended destination (should come from another input field)
     const intendedCoords = form_cust_to_dest.split(",");

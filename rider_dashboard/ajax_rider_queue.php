@@ -50,7 +50,7 @@ else {
     $status = "Already Queued";
 }
 
-if ($current_queue) {
+if ($current_queue > 0) {
     // Get the list of bookings needed by the rider
     $list_of_need_rider =
             query( "SELECT  ab.angkas_booking_id

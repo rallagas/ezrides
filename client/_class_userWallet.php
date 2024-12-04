@@ -88,7 +88,6 @@ class UserWallet {
         if ($user == null) {
 
             $result = query("SELECT SUM( CASE WHEN ? = payTo THEN wallet_txn_amt * -1 
-                              		          WHEN payment_type = 'T' THEN wallet_txn_amt
                                               ELSE wallet_txn_amt
                                          END 
                    ) AS balance 

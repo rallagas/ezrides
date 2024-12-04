@@ -17,7 +17,7 @@ function appButton( $icon_class
                      ){ ?>
      <div class="col-lg-3 col-md-2 col-sm-2 col-3 p-0 mb-4 text-center">
             
-              <a href="index.php?page=<?php echo $page_action; ?>&txn_cat=<?php echo $txn_cat?>" 
+              <a href="../client/index.php?page=<?php echo $page_action; ?>&txn_cat=<?php echo $txn_cat?>" 
                  class="btn btn-outline-light m-0 <?php echo $bgcolor; ?>">
                    <i  class="fs-1 fi fi-rr-<?php echo $icon_class;?>" ></i>
               </a>

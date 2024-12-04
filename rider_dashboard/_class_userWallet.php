@@ -80,6 +80,35 @@ public function CashOut($amount, $gcashData = []) {
      *
      * @return float - Total balance.
      */
+
+     public function getEarnings($user = null) {
+        if ($user == null) {
+
+            $result = query("SELECT SUM(CASE WHEN payment_type = 'R' AND payTo = ? THEN  wallet_txn_amt 
+                             WHEN payment_type = 'S' AND payFrom = ? THEN abs(wallet_txn_amt) * -1 
+                             WHEN payment_type = 'C' THEN wallet_txn_amt
+                             ELSE wallet_txn_amt
+                            END ) AS earnings 
+                   FROM user_wallet 
+                  WHERE (payTo = ?)
+                    AND (wallet_txn_status = 'C'
+                     OR (payment_type = 'C' and wallet_txn_status = 'P')
+                     )
+                    ",
+                [$this->userId, $this->userId, $this->userId]
+            );
+
+        }
+        else{
+
+        $result = query(
+            "SELECT SUM(wallet_txn_amt) AS balance FROM user_wallet WHERE user_id = ? AND wallet_txn_status = 'C'",
+            [$user]
+        );
+
+        }
+        return $result[0]['balance'] ?? 0;
+    }
     public function getBalance($user = null) {
         if ($user == null) {
 

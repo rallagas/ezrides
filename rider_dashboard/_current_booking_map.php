@@ -1,7 +1,15 @@
 <?php include_once "../_db.php";
-      include_once "../_sql_utility.php";
 
-$rider_logged=USER_LOGGED;
+if(!isset($_SESSION['user_id'])){
+  header("location: index.php");
+}
+else {
+  $rider_logged = USER_LOGGED;
+}
+
+
+
+  
 
 if(isset($_GET['cancelBooking'])){
     $booking_ref = htmlentities($_GET['cancelBooking']);
