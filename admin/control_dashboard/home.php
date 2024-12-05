@@ -11,8 +11,11 @@ $sql = "SELECT SUM(wallet_txn_amt) as total_wallet_pool from `user_wallet` ";
 $wallet_pool_data = query($sql);
 $wallet_pool = $wallet_pool_data[0]['total_wallet_pool'] ?? 0 ;
 
+$activeRidersSQL = "SELECT COUNT(1) countActiveRiders from `angkas_rider_queue` WHERE DATE(queue_date) = CURRENT_DATE";
+$activeRider = query($activeRidersSQL);
+$ActiveRidersCount = $activeRider[0]['countActiveRiders'];
 
-$sql_booking_total = "SELECT COUNT(angkas_booking_reference) total_number_of_bookings from `angkas_bookings` where `booking_status` in ('C','D') and `payment_status` in ('C') and DATE(date_booked) > CURRENT_DATE - 60";
+$sql_booking_total = "SELECT COUNT(angkas_booking_reference) total_number_of_bookings from `angkas_bookings` where `booking_status` NOT in ('C','D') and DATE(date_booked) = CURRENT_DATE ";
 $sql_booking_total_data = query($sql_booking_total);
 $booking_total = $sql_booking_total_data[0]['total_number_of_bookings'] ?? 0;
 
@@ -41,7 +44,7 @@ $pendingTopupList = query($sql_top_up_approval);
 
     <div class="container mt-4">
         <div class="row g-2">
-            <div class="col-lg-4">
+            <div class="col-lg-3">
                 <div class="card border-0 shadow">
                     <div class="card-body">
                         <h6 class="card-title fw-bold">INCOME <small
@@ -50,7 +53,7 @@ $pendingTopupList = query($sql_top_up_approval);
                     </div>
                 </div>
             </div>
-            <div class="col-lg-4 col-sm-6 col-6">
+            <div class="col-lg-3 col-sm-6 col-6">
                 <div class="card border-0 shadow">
                     <div class="card-body">
                         <h6 class="card-title fw-bold">WALLET POOL <small
@@ -60,10 +63,19 @@ $pendingTopupList = query($sql_top_up_approval);
                 </div>
             </div>
 
-            <div class="col-lg-4 col-sm-6 col-6">
+            <div class="col-lg-3 col-sm-6 col-6">
                 <div class="card border-0 shadow">
                     <div class="card-body">
-                        <h6 class="card-title fw-bold">BOOKING COUNT (60 days)</h6>
+                    <h6 class="card-title fw-bold">ACTIVE RIDERS</h6>
+                        <h1 class="display-4"><?php echo $ActiveRidersCount;?></h1>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-sm-6 col-6">
+                <div class="card border-0 shadow">
+                    <div class="card-body">
+                        <h6 class="card-title fw-bold">ACTIVE BOOKINGS</h6>
                         <h1 class="display-4"><?php echo $booking_total;?></h1>
                     </div>
                 </div>
@@ -282,7 +294,7 @@ $pendingTopupList = query($sql_top_up_approval);
             </div>
 
             <div class="col-lg">
-                
+
             </div>
         </div>
     </div>
