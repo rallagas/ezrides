@@ -4,11 +4,6 @@ include_once "../../_sql_utility.php";
 include_once "../_class_grocery.php";
 include_once "func.php";
 
-if(isset($_GET['logout'])){
-    session_unset();
-    session_destroy();
-    header("location: ../../index.php?logoutSuccessful");
-}
 ?>
 
 <!DOCTYPE html>

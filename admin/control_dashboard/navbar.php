@@ -16,6 +16,6 @@
         </li>
       </ul>
     </div>
-    <a href="?page=_items_control" class="text-decoration-none text-warning  float-lg-end">Logout</a>
+    <a href="?page=_logout" class="text-decoration-none text-warning  float-lg-end">Logout</a>
   </div>
 </nav>

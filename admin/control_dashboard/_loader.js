@@ -147,3 +147,16 @@ $(document).on('submit', '#FormNewItem', function (e) {
         }
     });
 });
+
+$(document).on("click",".img-preview",function(){
+    const imageUrl = $(this).data("imgsrc");
+    previewImage(imageUrl);
+});
+
+function previewImage(imageUrl) {
+    // Set the image source
+    $('#previewImage').attr('src', imageUrl);
+
+    // Show the modal
+    $('#imagePreviewModal').modal('show');
+}
