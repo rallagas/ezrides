@@ -130,6 +130,8 @@ include_once "../_sql_utility.php";
         </div>
     </div>
 
+    <?php include_once "../top_up_modal.php" ;?>
+
     <nav class="navbar fixed-bottom bg-purple rideInfoContainer d-none">
         <div class="container py-3">
             <button id="btnRideInfo" class="btn btn-outline-light my-3" type="button" data-bs-toggle="offcanvas"
@@ -160,7 +162,9 @@ include_once "../_sql_utility.php";
                         <span class="input-group-text small">Wallet</span>
                         <span class="input-group-text small walletbalance"></span>
                         <button class="btn btn-outline-light bg-purple btn-sm" data-bs-toggle="modal"
-                            data-bs-target="#topUpModal">Top-Up</button>
+                            data-bs-target="#topUpModal">
+                            
+                            + CASH-IN</button>
                     </span>
 
                 </div>

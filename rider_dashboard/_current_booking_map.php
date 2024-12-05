@@ -13,12 +13,15 @@ else {
 
 if(isset($_GET['cancelBooking'])){
     $booking_ref = htmlentities($_GET['cancelBooking']);
-    $data = array("angkas_rider_user_id" => NULL);
-    $where = array("angkas_booking_reference" =>$booking_ref );
+    $data = array("angkas_rider_user_id" => NULL, );
+    $where = array("angkas_booking_reference" => $booking_ref );
+
     update_data( "angkas_bookings",$data, $where);
+
     ?>
     <div class="alert alert-danger">Booking Cancelled</div>
     <?php 
+    header("location: index.php");
 }
 
  
