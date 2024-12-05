@@ -101,7 +101,7 @@ function handleQueueData(data) {
     const queueList = data.queue_list;
     const status = data.status;
 
-    $("#availableBookings").html(`<span class="badge text-bg-info">Current Queue: ${currentQueue}, Status: ${status} </span>`);
+    //$("#availableBookings").html(`<span class="badge text-bg-info">Current Queue: ${currentQueue}, Status: ${status} </span>`);
     $("#bookingCards").remove(); // Remove previous cards
     $("#availableBookings").append('<div id="bookingCards" class="col-12"></div>');
 
@@ -129,7 +129,7 @@ function fetchCurrentBookings() {
                 bookingCards.remove();
                 availableBookings.append('<div id="bookingCards" class="col-12"></div>');
                 data.queue_list.forEach((booking) => {
-                    const card = ViewBookingCard(booking); // Use the accepted booking card view
+                    const card = ViewBookingCard(booking, false); // Use the accepted booking card view
                     $("#bookingCards").append(card);
                 });
             } else {
@@ -142,6 +142,34 @@ function fetchCurrentBookings() {
     });
 }
 
+
+function fetchHistBookings() {
+    alert("fetching history.");
+    $.ajax({
+        url: "ajax_fetch_ride_history.php",
+        dataType: "json",
+        success: function (data) {
+            const availableBookings = $("#rideHistory");
+            const bookingCards = $("#bookingCards");
+
+            availableBookings.empty();
+
+            if (data && Array.isArray(data.queue_list) && data.queue_list.length > 0) {
+                bookingCards.remove();
+                availableBookings.append('<div id="bookingCards" class="col-12"></div>');
+                data.queue_list.forEach((booking) => {
+                    const card = ViewBookingCard(booking, null); // Use the accepted booking card view
+                    $("#bookingCards").append(card);
+                });
+            } else {
+                availableBookings.html('<div class="alert alert-info">No current bookings available.</div>');
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error("Error fetching current bookings:", error);
+        }
+    });
+}
 
 // Declare Functions
 
@@ -204,69 +232,71 @@ else if (elapsedTimeInMinutes <= 10) {
     
 
     // Function to create booking card
-function ViewBookingCard(booking) {
-    // Get the current date and time
-    const currentDate = new Date();
-    // Parse booking.date_booked as a Date object
-    const dateBooked = new Date(booking.date_booked);
-    const elapsedTimeInMinutes = Math.floor((currentDate - dateBooked) / (1000 * 60));
+    function ViewBookingCard(booking, hist = true) {
+        const isHist = (hist == null ? false : true);
+        // Get the current date and time
+        const currentDate = new Date();
+        // Parse booking.date_booked as a Date object
+        const dateBooked = new Date(booking.date_booked);
+        const elapsedTimeInMinutes = Math.floor((currentDate - dateBooked) / (1000 * 60));
     
-    let colorText = "";
-    if (elapsedTimeInMinutes > 30) {
-        colorText = "text-danger";
+        // Determine the color class based on elapsed time
+        let colorText = "";
+        if (elapsedTimeInMinutes > 30) {
+            colorText = "text-danger";
+        } else if (elapsedTimeInMinutes > 15) {
+            colorText = "text-warning";
+        } else if (elapsedTimeInMinutes > 10) {
+            colorText = "text-info";
+        } else {
+            colorText = "text-success";
+        }
+    
+        // Create the action button only if hist is true
+        const actionButton = (isHist === false)
+            ? "" : `<div class="col-md-3 d-flex align-items-center justify-content-center">
+                    <a href="_current_booking_map.php" 
+                       class="btn shadow btn-success w-75">
+                       Show Location
+                    </a>
+               </div>`
+            ;
+    
+        // Return the booking card HTML
+        return `
+          <div class="row d-flex align-items-start mb-4 p-3 shadow-sm border-0 rounded bg-white">
+            <!-- Image Section -->
+            <div class="col-md-3 col-sm-12">
+                <img src="../icons/${booking.user_profile_image}" 
+                     class="img-fluid rounded-start" 
+                     alt="${booking.user_firstname} ${booking.user_lastname}" 
+                     style="object-fit: cover; height: 200px; width: 100%;">
+            </div>
+    
+            <!-- Info Section -->
+            <div class="col-md-6">
+                <div class="row mb-2">
+                    <h5 class="text-primary">${booking.angkas_booking_reference}</h5>
+                    <p class="small text-muted">Booked ${elapsedTimeInMinutes} minutes ago</p>
+                </div>
+                <hr class="my-2">
+                <div class="row">
+                    <p class="mb-1"><strong>From:</strong> ${booking.form_from_dest_name}</p>
+                    <p class="mb-1"><strong>To:</strong> ${booking.form_to_dest_name}</p>
+                    <p class="mb-1">
+                        <strong>ETA Duration:</strong> ${booking.form_ETA_duration} mins 
+                        <strong>Total Distance:</strong> ${booking.form_TotalDistance} km
+                    </p>
+                    <p class="mb-0">
+                        <strong>Contact:</strong> ${booking.user_contact_no} 
+                        <span class="text-muted">(${booking.user_email_address})</span>
+                    </p>
+                </div>
+            </div>
+            ${actionButton}
+          </div>`;
     }
-    else if (elapsedTimeInMinutes > 15) {
-         colorText = "text-warning";
-    }
-    else if (elapsedTimeInMinutes > 10) {
-         colorText = "text-info";
-    }
-    else if (elapsedTimeInMinutes <= 10) {
-         colorText = "text-success";
-    }
-    return `
-      <div class="row d-flex align-items-start mb-4 p-3 shadow-sm border-0 rounded bg-white">
-    <!-- Image Section -->
-    <div class="col-md-3 col-sm-12">
-        <img src="../icons/${booking.user_profile_image}" 
-             class="img-fluid rounded-start" 
-             alt="${booking.user_firstname} ${booking.user_lastname}" 
-             style="object-fit: cover; height: 200px; width: 100%;">
-    </div>
-
-    <!-- Info Section -->
-    <div class="col-md-6">
-        <div class="row mb-2">
-            <h5 class="text-primary">${booking.angkas_booking_reference}</h5>
-            <p class="small text-muted">Booked ${elapsedTimeInMinutes} minutes ago</p>
-        </div>
-        <hr class="my-2">
-        <div class="row">
-            <p class="mb-1"><strong>From:</strong> ${booking.form_from_dest_name}</p>
-            <p class="mb-1"><strong>To:</strong> ${booking.form_to_dest_name}</p>
-            <p class="mb-1">
-                <strong>ETA Duration:</strong> ${booking.form_ETA_duration} mins 
-                <strong>Total Distance:</strong> ${booking.form_TotalDistance} km
-            </p>
-            <p class="mb-0">
-                <strong>Contact:</strong> ${booking.user_contact_no} 
-                <span class="text-muted">(${booking.user_email_address})</span>
-            </p>
-        </div>
-    </div>
-
-    <!-- Action Button -->
-    <div class="col-md-3 d-flex align-items-center justify-content-center">
-        <a href="_current_booking_map.php" 
-           class="btn shadow btn-success w-75">
-           Show Location
-        </a>
-    </div>
-</div>
-
-
-    `;
-}
+    
 
 // Refactored function to fetch wallet balance
 function getWalletBalance() {
@@ -351,10 +381,17 @@ $(document).ready(function() {
         updateQueue();
     }, 1000); // Check every 5 seconds
     
-    
-    
-    
+
+
 });
+
+$(document).on("click",'#booking-tab',async function(){
+    fetchCurrentBookings();
+});
+$(document).on("click",'#history-tab',async function(){
+    fetchHistBookings();
+});
+
 
 $(document).on("click",".claim-stub", function(e){
     e.preventDefault;
@@ -364,7 +401,7 @@ $(document).on("click",".claim-stub", function(e){
     fetchAndAssignWalletBalance('.walletbalance',".earnings");
     console.log("Claimed",userWalletId);
     $(this).prop("disabled",true);
-    $(this).text("Claimed!");
+    $(this).html("<h3 class='fw-bold text-success'>Claimed!</h3>");
     //$(this).addClass("d-none");
 });
 
@@ -496,6 +533,8 @@ async function cashOut({
     }
 
 }
+
+
 
 
 

@@ -144,7 +144,11 @@ query("DELETE FROM angkas_bookings WHERE date_booked < (NOW() - INTERVAL 2 HOUR)
                                                 </div>
                                             </div>
                                         </div>
-                                        <?php $sql_claims = "SELECT uw.user_wallet_id, uw.wallet_txn_amt as wallet_txn_amt, uw.reference_number, DATE(uw.wallet_txn_start_ts) as txn_dte
+                                       
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                <?php $sql_claims = "SELECT uw.user_wallet_id, uw.wallet_txn_amt as wallet_txn_amt, uw.reference_number, DATE(uw.wallet_txn_start_ts) as txn_dte
                                                                 FROM   `angkas_bookings` ab
                                                                     JOIN `user_wallet` uw
                                                                         ON ( ab.angkas_booking_reference = uw.reference_number
@@ -170,7 +174,7 @@ query("DELETE FROM angkas_bookings WHERE date_booked < (NOW() - INTERVAL 2 HOUR)
 
                                             foreach($claims as $c){ ?>
 
-                                        <a data-claimwallet="<?php echo $c['user_wallet_id']?>" class="text-decoration-none claim-stub">
+                                        <a href="#" data-claimwallet="<?php echo $c['user_wallet_id']?>" class="text-decoration-none claim-stub">
                                             <div
                                                 class="shadow card rounded-0 bg-success bg-opacity-75 border-5 border-end-0 border-top-0 border-bottom-0 my-1 p-3 text-light clear-fix">
                                                 <span class="text-secondary"><?php echo $c['txn_dte']; ?></span>
@@ -181,19 +185,28 @@ query("DELETE FROM angkas_bookings WHERE date_booked < (NOW() - INTERVAL 2 HOUR)
                                         </a>
                                         <?php } 
                                         } ?>
-                                    </div>
                                 </div>
                         </div>
                     </div>
 
                     <div class="tab-pane fade" id="bookings-tab-pane" role="tabpanel" aria-labelledby="bookings-tab"
                         tabindex="0">
-                        <button class="btn btn-sm btn-outline-info mb-1">Re-Queue</button>
-                        <div id="availableBookings"></div>
+                        <div id="availableBookings" >
+                                        <div class="card p-3">
+                                            <div class="card-body">
+                                                
+                                            <h3 class="fs-4">No Customers at the moment.</h3>
+                                            </div>
+                                        </div>
+
+                        </div>
 
                     </div>
                     <div class="tab-pane fade" id="history-tab-pane" role="tabpanel" aria-labelledby="history-tab"
                         tabindex="0">
+                        <div id="rideHistory">
+
+                        </div>
 
                     </div>
 
