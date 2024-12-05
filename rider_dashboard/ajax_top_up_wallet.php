@@ -2,15 +2,14 @@
 include_once '../_db.php';
 require_once '_class_userWallet.php';
 
-// Verify that user is logged in
-if (!isset($_SESSION['user_id'])) {
-    echo json_encode(['success' => false, 'error' => 'User not logged in.']);
-    exit;
-}
-
 $response = ['success' => false];
 
 try {
+    // Verify user is logged in
+    if (!isset($_SESSION['user_id'])) {
+        throw new Exception('User not logged in.');
+    }
+
     // Validate and sanitize inputs
     $amount = isset($_POST['topUpAmount']) ? (float)$_POST['topUpAmount'] : 0.00;
     $gcashAccountNumber = isset($_POST['gcashAccountNumber']) ? trim($_POST['gcashAccountNumber']) : '';
@@ -24,6 +23,27 @@ try {
         throw new Exception('All fields are required.');
     }
 
+    // Handle file upload
+    if (!isset($_FILES['gcashScreenshot']) || $_FILES['gcashScreenshot']['error'] != UPLOAD_ERR_OK) {
+        throw new Exception('Screenshot is required.');
+    }
+
+    $file = $_FILES['gcashScreenshot'];
+    $allowedExtensions = ['jpg', 'jpeg', 'png', 'pdf'];
+    $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+
+    if (!in_array(strtolower($extension), $allowedExtensions)) {
+        throw new Exception('Invalid file type. Only JPG, PNG, or PDF allowed.');
+    }
+
+    $uploadDir = '../uploads/';
+    $filename = uniqid('gcash_') . '.' . $extension;
+    $filePath = $uploadDir . $filename;
+
+    if (!move_uploaded_file($file['tmp_name'], $filePath)) {
+        throw new Exception('Failed to upload the screenshot.');
+    }
+
     // Initialize the user wallet and attempt the top-up
     $userWallet = new UserWallet(USER_LOGGED);
 
@@ -31,12 +51,13 @@ try {
         'gcash_account_number' => $gcashAccountNumber,
         'gcash_account_name' => $gcashAccountName,
         'gcash_ref_number' => $gcashRefNumber,
+        'gcash_attachment' => $filename
     ];
 
     if ($userWallet->topUp($amount, $data)) {
         $response['success'] = true;
     } else {
-        $response['error'] = 'Failed to top-up. Please try again.';
+        throw new Exception('Failed to top-up. Please try again.');
     }
 } catch (Exception $e) {
     $response['error'] = $e->getMessage();

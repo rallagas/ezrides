@@ -16,32 +16,37 @@ class UserWallet {
      * @param float $amount - Amount to be topped up.
      * @return bool
      */
-public function topUp($amount) {
-    if ($amount <= 0 || $amount > 9999999999.99) {
-        throw new InvalidArgumentException("Top-up amount must be between 0.01 and 9999999999.99.");
-    }
+    public function topUp($amount, $gcashData = []) {
+        if ($amount <= 0 || $amount > 9999999999.99) {
+            throw new InvalidArgumentException("Top-up amount must be between 0.01 and 9999999999.99.");
+        }
     
-    $refNumber = gen_book_ref_num(8,"TUP");
-
-    $data = [
-        'user_id' => $this->userId,
-        'wallet_txn_amt' => number_format($amount, 2, '.', ''),
-        'txn_type_id' => $_SESSION['txn_cat_id'],
-        'wallet_txn_status' => 'C',
-        'wallet_action' => 'Top Up Wallet',
-        'payment_type' => 'T',
-        'reference_number' => $refNumber
-    ];
-
-    // Attempt to insert data and log errors if unsuccessful
-    $result = insert_data('user_wallet', $data);
-    if (!$result) {
-        error_log("Failed to insert data: " . print_r($data, true)); // Log the data being inserted
-        return false;
+        $refNumber = gen_book_ref_num(8, "TUP");
+        $txn_type_id = isset($_SESSION['txn_cat_id']) ? $_SESSION['txn_cat_id'] : 7;
+    
+        $data = [
+            'user_id' => $this->userId,
+            'wallet_txn_amt' => number_format($amount, 2, '.', ''),
+            'txn_type_id' => $txn_type_id,
+            'wallet_action' => 'Top Up Wallet',
+            'payment_type' => 'T',
+            'reference_number' => $refNumber,
+            'gcash_account_number' => $gcashData['gcash_account_number'] ?? null,
+            'gcash_account_name' => $gcashData['gcash_account_name'] ?? null,
+            'gcash_reference_number' => $gcashData['gcash_ref_number'] ?? null,
+            'gcash_attachment' => $gcashData['gcash_attachment'] ?? null
+        ];
+    
+        // Attempt to insert data into the database
+        $result = insert_data('user_wallet', $data);
+    
+        if (!$result) {
+            error_log("Failed to insert data: " . print_r($data, true)); // Log the data being inserted
+            return false;
+        }
+    
+        return true;
     }
-
-    return true;
-}
 
 public function getEarnings($user = null) {
     if($user != null){

@@ -31,9 +31,13 @@ $transactionHistory = query(
         <!-- Display Current Balance -->
         <div class="card mb-2">
             <div class="card-body">
-                <span class="card-title text-secondary">Current Wallet Balance</span>
-                <p class="walletbalance card-text display-4">$<?php echo number_format($balance, 2); ?></p>
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#topUpModal">Top-Up</button>
+                <span class="card-title text-secondary">EZ Wallet 
+                     <button class="btn btn-link text-decoration-none" data-bs-toggle="modal" data-bs-target="#topUpModal">
+                        CASH IN
+                     </button>
+                </span>
+                <p class="walletbalance card-text display-4 pt-0"> <small class="small fs-6 align-top">PHP</small><?php echo number_format($balance, 2); ?></p>
+                
             </div>
         </div>
 

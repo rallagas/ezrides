@@ -33,6 +33,7 @@ class UserWallet {
             'gcash_account_number' => $gcashData['gcash_account_number'] ?? null,
             'gcash_account_name' => $gcashData['gcash_account_name'] ?? null,
             'gcash_reference_number' => $gcashData['gcash_ref_number'] ?? null,
+            'gcash_attachment' => $gcashData['gcash_attachment'] ?? null
         ];
     
         // Attempt to insert data into the database

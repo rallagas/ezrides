@@ -903,21 +903,38 @@ $(document).ready(function () {
 $(document).on('submit', '#topUpForm', function (event) {
     event.preventDefault();
 
-    const form = $(this);
-    const formData = form.serialize(); // Serialize the form data
+    const form = $(this)[0];
+    const formData = new FormData(form); // Use FormData for handling file uploads
+    const submitButton = $('button[type=submit]');
+    submitButton.html(LoadingIcon);
+    submitButton.prop('disabled', true);
 
     $.ajax({
         url: 'ajax_top_up_wallet.php',
         type: 'POST',
-        data: formData, // Use serialized data
+        data: formData, // Use FormData
+        processData: false, // Prevent jQuery from automatically processing the data
+        contentType: false, // Prevent jQuery from setting the content type
         dataType: 'json',
         success: function (response) {
             if (response.success) {
-                $('#topUpModal').modal('hide'); // Close the modal
-                form.closest('tr').addClass('d-none'); // Hide the parent row
-                loadTransactionHistory(); // Refresh transaction history
-                fetchAndAssignWalletBalance(elements.walletBalance); // Update wallet balance
-            } else {
+                // Disable the button and show the loading icon
+                // Process data (e.g., refresh transaction history and update wallet balance)
+                loadTransactionHistory();
+                fetchAndAssignWalletBalance(elements.walletBalance);
+        
+                // Simulate processing delay
+                setTimeout(() => {
+                    // Replace the button icon with the confirmation icon
+                    submitButton.html(chkIcon);
+        
+                    // Re-enable the button and hide the modal after a short delay
+                    setTimeout(() => {
+                        $('#topUpModal').modal('hide');
+                        submitButton.prop('disabled', false).html('Top-Up'); // Reset button text for future use
+                    }, 2000); // Delay before closing the modal
+                }, 2000); // Delay for showing the loading icon
+            }  else {
                 alert(response.error || 'Top-up failed. Please try again.');
             }
         },
@@ -925,4 +942,10 @@ $(document).on('submit', '#topUpForm', function (event) {
             alert('An error occurred. Please try again later.');
         }
     });
+});
+
+
+$(document).on('click','.attachmentBtn',function() {
+    alert(1);
+    $('.attachInput').trigger('click');
 });

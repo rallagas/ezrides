@@ -103,12 +103,7 @@ switch($page){
         case 'rent': ?> <script src="./_car_rental.js"></script> 
  <?php break;  
         case 'angkas': ?> 
-                <!-- <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDB4tE_5d8sQVRR1x2KMTFbQbCpUYWXx8A&libraries=maps,places,geometry,marker&callback=initializeApp&loading=async"></script> -->
-                <!-- <script src="./_map_config.js"></script>  -->
-                <!-- <script src="./_map_func.js"></script>  -->
-                <!-- <script src="angkas_map.js"></script> -->
-                <!-- <script src="_process_ajax.js"></script> -->
-    
+
  <?php break; 
        case 'shop': ?> 
                 <script src="_process_ajax.js"></script>
