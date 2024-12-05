@@ -144,7 +144,6 @@ function fetchCurrentBookings() {
 
 
 function fetchHistBookings() {
-    alert("fetching history.");
     $.ajax({
         url: "ajax_fetch_ride_history.php",
         dataType: "json",
@@ -371,26 +370,42 @@ async function fetchAndAssignWalletBalance(balance = null, earnings  = null) {
 
 
 /*Call functions upon document ready*/
+let queueInterval; // Declare the interval variable globally
+
+// Function to start the queue interval
+function startQueueInterval() {
+    queueInterval = setInterval(() => {
+        updateQueue();
+    }, 3000); // Run every 3 seconds
+}
+
+// Function to stop the queue interval
+function stopQueueInterval() {
+    if (queueInterval) {
+        clearInterval(queueInterval);
+        queueInterval = null; // Ensure it's cleared
+    }
+}
 
 $(document).ready(function() {
 
     // Initial data fetch
-    
-    
-    const queueInterval = setInterval(() => {
-        updateQueue();
-    }, 1000); // Check every 5 seconds
-    
-
+    // Start the queue interval when the page loads
+    startQueueInterval();
 
 });
+    // Event listener for history-tab click
+    $(document).on("click", "#history-tab", async function () {
+        stopQueueInterval(); // Stop the queue updates
+        fetchHistBookings();
+    });
 
-$(document).on("click",'#booking-tab',async function(){
-    fetchCurrentBookings();
-});
-$(document).on("click",'#history-tab',async function(){
-    fetchHistBookings();
-});
+    // Event listener for booking-tab click
+    $(document).on("click", "#bookings-tab", async function () {
+        
+        fetchCurrentBookings();
+        startQueueInterval(); // Restart the queue updates
+    });
 
 
 $(document).on("click",".claim-stub", function(e){

@@ -204,9 +204,7 @@ query("DELETE FROM angkas_bookings WHERE date_booked < (NOW() - INTERVAL 2 HOUR)
                     </div>
                     <div class="tab-pane fade" id="history-tab-pane" role="tabpanel" aria-labelledby="history-tab"
                         tabindex="0">
-                        <div id="rideHistory">
-
-                        </div>
+                        <div id="rideHistory"></div>
 
                     </div>
 

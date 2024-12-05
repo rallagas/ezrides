@@ -5,24 +5,24 @@ const loginCheck = `<span class="text-light"><svg xmlns="http://www.w3.org/2000/
 </svg></span>`;
 const loadingIcon = "<span class='spinner-border spinner-border-sm'></span>";
 
+
+$(document).on('click','#btnUserLogout',function(){
+    console.log("Logout button clicked");
+    $.ajax({
+        url: '_action_logout_user.php',
+        type: 'POST',
+        success: function (response) {
+            console.log('Session ended successfully:', response);
+            window.location.href = '../index.php?page=loguser';
+        },
+        error: function (xhr, status, error) {
+            console.error('Failed to end session:', error);
+            alert('An error occurred while trying to log you out. Please try again.');
+        }
+    });
+});
 $(document).ready(function () {
 
-    // Logout button click event
-    $("#btnUserLogout").on("click", function () {
-        console.log("Logout button clicked");
-        $.ajax({
-            url: '../_action_logout_user.php',
-            type: 'POST',
-            success: function (response) {
-                console.log('Session ended successfully:', response);
-                window.location.href = '../index.php?page=loguser';
-            },
-            error: function (xhr, status, error) {
-                console.error('Failed to end session:', error);
-                alert('An error occurred while trying to log you out. Please try again.');
-            }
-        });
-    });
 
     // Validate Username
     $('#f_username').on('input', function () {

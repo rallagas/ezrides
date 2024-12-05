@@ -3,13 +3,16 @@
 
 include_once "../_class_userWallet.php";
 $sql = null;
-$sql = "SELECT SUM(wallet_txn_amt) as income FROM `user_wallet` WHERE wallet_action LIKE '%Admin' ";
+$sql = " SELECT SUM(x.wallet) as income from (
+    SELECT case WHEN payment_type = 'A' then wallet_txn_amt *  -1 else wallet_txn_amt end as wallet
+  FROM `user_wallet` WHERE wallet_action LIKE '%Admin' OR payment_type = 'A' ) as x ";
 $sales_data = query($sql);
 $sales = $sales_data[0]['income'] ?? 0;
 
-$sql = "SELECT SUM(wallet_txn_amt) as total_wallet_pool from `user_wallet` ";
+$sql = "SELECT SUM(wallet_txn_amt) as total_wallet_pool, count(user_id) as userCount from `user_wallet` where payment_type = 'T' ";
 $wallet_pool_data = query($sql);
 $wallet_pool = $wallet_pool_data[0]['total_wallet_pool'] ?? 0 ;
+$userOwnerCount = $wallet_pool_data[0]['userCount'] ?? 0 ;
 
 $activeRidersSQL = "SELECT COUNT(1) countActiveRiders from `angkas_rider_queue` WHERE DATE(queue_date) = CURRENT_DATE";
 $activeRider = query($activeRidersSQL);
@@ -54,8 +57,9 @@ $pendingTopupList = query($sql_top_up_approval);
                 <div class="card border-0 shadow">
                     <div class="card-body">
                         <h6 class="card-title fw-bold">INCOME <small
-                                class="small fs-6 fw-light text-success">PHP</small></h6>
+                                class="small fs-6 fw-light text-success">PHP</small> </h6>
                         <h1 class="display-4"><?php echo number_format($sales,2);?></h1>
+                        <sup class="text-secondary"> <?php echo ($wallet_pool > 0) ? number_format(($sales/$wallet_pool)*100,2) : 0.00 ;?>% OF WALLET POOL </sup>
                     </div>
                 </div>
             </div>
@@ -65,6 +69,7 @@ $pendingTopupList = query($sql_top_up_approval);
                         <h6 class="card-title fw-bold">WALLET POOL <small
                                 class="small fs-6 fw-light text-success">PHP</small></h6>
                         <h1 class="display-4"><?php echo number_format($wallet_pool,2);?></h1>
+                        <sup class="text-secondary"> <?php echo $userOwnerCount; ?> WALLET USERS </sup>
                     </div>
                 </div>
             </div>
@@ -73,7 +78,7 @@ $pendingTopupList = query($sql_top_up_approval);
                 <div class="card border-0 shadow">
                     <div class="card-body">
 
-                        <h6 class="card-title fw-bold">ACTIVE RIDERS</h6>
+                        <h6 class="card-title fw-bold">ACTIVE RIDERS <span class="text-info fw-light">TODAY</span></h6>
                         <h1 class="display-4"><?php echo $ActiveRidersCount;?></h1>
                     </div>
                 </div>
@@ -263,7 +268,7 @@ $pendingTopupList = query($sql_top_up_approval);
 
                         <table class="table table-striped table-responsive overflow-y-scroll" style="height:10vh">
                             <thead>
-                                <th>User Balance <br><sup>PHP</sup></th>
+                              <?php if(!isset($_GET['rentalHist'])){ ?>  <th>User Balance <br><sup>PHP</sup></th> <?php } ?>
                                 <th>Name</th>
                                 <th>Contact</th>
                                 <th>Plate No.</th>
@@ -284,9 +289,10 @@ $pendingTopupList = query($sql_top_up_approval);
                             $car = explode(':',$item_description);
                             ?>
                             <tr>
-                                <td
+                               <?php if(!isset($_GET['rentalHist'])){ ?> <td
                                     class="align-middle <?php echo ($userWallet < $amount_to_pay) ? "text-danger":"text-success" ; ?>">
                                     <?php echo $userWallet;?></td>
+                                <?php } ?>
                                 <td class="align-middle">
                                     <?php echo $user_firstname . " " . $user_mi . " " . $user_lastname; ?></td>
                                 <td class="align-middle"><?php echo $user_contact_no; ?></td>
@@ -349,8 +355,15 @@ $pendingTopupList = query($sql_top_up_approval);
                 </div>
             </div>
 
-            <div class="col-lg">
-
+            <div class="col-lg-12">
+                        <div class="card shadow border-0">
+                            <div class="card-header">
+                                <h6 class="fs-6 fw-bold">CASH OUT APPROVAL</h6>
+                            </div>
+                            <div class="card-body">
+                                
+                            </div>
+                        </div>
             </div>
         </div>
     </div>

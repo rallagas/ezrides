@@ -1,3 +1,10 @@
+<?php
+if(isset($_GET['logout'])){
+    session_destroy();
+    session_unset();
+    header("location: ../");
+}
+?>
 <nav class="navbar navbar-dark bg-dark-purple sticky-top">
     <div class="container-fluid clear-fix">
 
@@ -82,7 +89,8 @@
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
-                            <li><a id="userLogOut" href="#" class="dropdown-item">Logout</a></li>
+
+                            <li><a id="btnUserLogOut" href="?logout" class="dropdown-item">Logout</a></li>
                         </ul>
                     </li>
                 </ul>
