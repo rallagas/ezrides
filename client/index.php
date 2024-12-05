@@ -51,11 +51,36 @@ include_once "../_sql_utility.php";
                 } $cat=null;
                 if ( !isset( $_GET['page'] ) || ( isset( $_GET['page'] ) && $_GET['page'] == 'home' ) ) { ?>
                 
-                            <div class="col-lg-8 offset-lg-4 col-sm-12 col-sm-12 vh-100">
-                                
-
+                            <div class="col-lg-12">
                                 <?php include_once "_index_wallet.php"; ?>
-                                <h6 class="display-6">Discover Places</h6>
+                            </div>
+                            <div class="col-lg-4 col-md-12 col-sm-12 ps-5">
+            
+                                <h1 class="fw-bold display-6 mt-5"> Welcome! </h1>
+                                <p class="fw-light">Going Somewhere? Craving for some Burger?</p>
+
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="container-fluid m-0">
+                                            <div class="row">
+                                                <?php
+                                                $txn_cats = select_data("txn_category","txn_category_status='A'","txn_category_id",100);
+
+                                                if($_SESSION['t_user_type'] == 'C'){
+                                                    foreach($txn_cats as $tcat){
+                                                        appButton($tcat['icon_class']
+                                                                    , $tcat['txn_category_id']
+                                                                    , $tcat['page_action']
+                                                                );
+                                                    }
+                                                }?>
+                                                </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            
+                            </div>
+                            <div class="col-lg-8 col-sm-12 col-sm-12 vh-100">
                                 <?php include_once "_restaurant_finder.php";?>
                             </div>
                        
