@@ -47,6 +47,37 @@ class UserWallet {
     
         return true;
     }
+    public function CashOut($amount, $gcashData = []) {
+        if ($amount <= 0 || $amount > 9999999999.99) {
+            throw new InvalidArgumentException("Cash Out amount must be between 0.01 and 9999999999.99.");
+        }
+    
+        $refNumber = gen_book_ref_num(8, "COUT");
+        $txn_type_id = isset($_SESSION['txn_cat_id']) ? $_SESSION['txn_cat_id'] : 7;
+    
+        $data = [   
+            'user_id' => $this->userId,
+            'wallet_txn_amt' => number_format(-$amount, 2, '.', ''),
+            'txn_type_id' => $txn_type_id,
+            'wallet_action' => 'Cash Out',
+            'payment_type' => 'C',
+            'reference_number' => $refNumber,
+            'gcash_account_number' => $gcashData['gcash_account_number'] ?? null,
+            'gcash_account_name' => $gcashData['gcash_account_name'] ?? null,
+            'gcash_reference_number' => $gcashData['gcash_ref_number'] ?? null,
+            'wallet_txn_status' => 'P'
+        ];
+    
+        // Attempt to insert data into the database
+        $result = insert_data('user_wallet', $data);
+    
+        if (!$result) {
+            error_log("Failed to insert data: " . print_r($data, true)); // Log the data being inserted
+            return false;
+        }
+    
+        return true;
+    }
 
 public function getEarnings($user = null) {
     if($user != null){
@@ -61,12 +92,10 @@ public function getEarnings($user = null) {
                              ELSE wallet_txn_amt
                             END ) AS earnings 
                    FROM user_wallet 
-                  WHERE (payTo = ?)
-                    AND (wallet_txn_status = 'C'
-                     OR (payment_type = 'C' and wallet_txn_status = 'P')
-                     )
+                  WHERE (payTo = ? or (payment_type = 'C' and user_id = ?) )
+                    AND (wallet_txn_status = 'C' OR (payment_type = 'C' and wallet_txn_status = 'P') )
                     ";
-            $result = query($sql,[$userId,$userId,$userId]);
+            $result = query($sql,[$userId,$userId,$userId, $userId]);
 
 
         return (float) $result[0]['earnings'] ?? 0;

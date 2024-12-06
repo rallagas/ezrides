@@ -4,6 +4,29 @@ include_once "../../_sql_utility.php";
 include_once "../_class_grocery.php";
 include_once "func.php";
 
+if (isset($_GET['approveCashout'])) {
+    // Decode the wallet ID from Base64
+    $walletid_encoded = $_GET['walletid'];
+    $walletid = base64_decode($walletid_encoded);
+
+
+    // Validate and sanitize decoded wallet ID
+    if ($walletid && ctype_digit($walletid)) { // Ensure it's a numeric value
+        $table = 'user_wallet';
+        $set = ['wallet_txn_status' => 'C'];
+        $where = ['user_wallet_id' => $walletid];
+
+        // Update data in the database
+        update_data($table, $set, $where);
+        
+        header("location: ?CashoutApproved");
+        
+    } else {
+        // Handle invalid wallet ID (log or show error)
+        echo "Invalid wallet ID.";
+    }
+}
+
 ?>
 
 <!DOCTYPE html>

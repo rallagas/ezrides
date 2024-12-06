@@ -108,17 +108,17 @@ query("DELETE FROM angkas_bookings WHERE date_booked < (NOW() - INTERVAL 2 HOUR)
                                                     </a>
                                                 </span>
                                                 <?php 
-                                                    $balance = $userWallet->getEarnings(USER_LOGGED);
+                                                    $earnings = $userWallet->getEarnings(USER_LOGGED);
                                                 ?>
                                                 <p class="earnings card-text display-4">
-                                                    Php <?php echo number_format($balance,2)  ;?>
+                                                    Php <?php echo number_format($earnings,2)  ;?>
                                                 </p>
 
                                                 <div class="collapse card border-opacity-25" id="cashOut">
                                                     <div class="card card-body">
                                                         <form id="formCashOut">
                                                             <input name="CashOutAmount" type="number" class="form-control mb-3"
-                                                                placeholder="Amount">
+                                                                placeholder="Amount" max="<?php echo $earnings;?>">
                                                             <input name="GCashAccountNumber" type="text" class="form-control mb-3"
                                                                 placeholder="GCASH Account Number">
                                                             <input name="GCashAccountName" type="text" class="form-control mb-3"

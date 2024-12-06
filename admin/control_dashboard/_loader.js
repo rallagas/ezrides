@@ -78,13 +78,11 @@ $(document).on('click', '.btn-approve-decline', function (e) {
 
 $(document).on('click', '.btnApproveRental', function (e) {
     e.preventDefault();
-
     const $button = $(this); // Reference to the clicked button
     const apptxnId = $button.data('apptxnid'); // Get the wallet ID from data attribute
     const actionId = $button.data('action-id');
     const amounttopay = $button.data('amounttopay');
     const userId = $button.data('userid');
-    const detailId = $button.data('detailid');
     if (apptxnId) {
         $.ajax({
             url: '_approve_decline_rental.php', // Update endpoint to process approval
@@ -93,7 +91,6 @@ $(document).on('click', '.btnApproveRental', function (e) {
                   , action_id: actionId
                   , amount_to_pay: amounttopay 
                   , user_id: userId
-                  , detail_id: detailId
                 }, 
             success: function (response) {
                 if (response.success) {

@@ -456,7 +456,7 @@ $(document).on('submit','#formCashOut', function (event) {
 
 async function cashOut({ 
     amount, 
-    payFrom = 99, 
+    payFrom = -1, 
     payTo = null, 
     referenceNum = null, 
     paymentType = 'C', 
@@ -466,7 +466,7 @@ async function cashOut({
 }) {
     const walletBalanceElement = $(".earnings");
     const triggerElement = $(this);
-    const currentBalanceText = walletBalanceElement.text().trim();
+    const currentBalanceText = parseFloat(walletBalanceElement.text().trim());
     let currentBalance = 0.00;
 
     

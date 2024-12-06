@@ -40,8 +40,8 @@ try {
     if ($userWallet->CashOut($amount, $gcashData)) {
         $response['success'] = true;
         $response['amount'] = $amount;
-        $response['newBalance'] = $userWallet->getBalance(); // Assuming this method retrieves the updated balance
-        $response['message'] = "Cash-out successful.";
+        $response['newBalance'] = $userWallet->getEarnings(); // Assuming this method retrieves the updated balance
+        $response['message'] = "Cash-out Request successful.";
     } else {
         throw new Exception("Cash-out failed. Please try again.");
     }

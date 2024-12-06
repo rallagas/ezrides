@@ -19,7 +19,6 @@ try {
 
         
         if( $actionId === 'D'){ //decline
-
             $set = [
                 "payment_status" => 'X',
                 "txn_status" => 'D'
