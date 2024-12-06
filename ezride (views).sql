@@ -15,7 +15,7 @@ START TRANSACTION;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
 
-CREATE VIEW `booking_shop_combined` AS 
+CREATE OR REPLACE VIEW `booking_shop_combined` AS 
 SELECT 
   `so`.`order_id` AS `shop_order_id`, 
   `so`.`shop_order_ref_num` AS `shop_order_reference_number`, 
@@ -82,7 +82,7 @@ FROM
     left join `user_profile` `up` on(`u`.`user_id` = `up`.`user_id`)
   );
 -- --------------------------------------------------------
-CREATE VIEW `booking_shop_header_view` AS 
+CREATE OR REPLACE VIEW `booking_shop_header_view` AS 
 SELECT 
   `ab`.`angkas_booking_id` AS `angkas_booking_id`, 
   `ab`.`angkas_booking_reference` AS `angkas_booking_reference`, 
@@ -125,7 +125,7 @@ GROUP BY
   `ab`.`booking_status`, 
   `ab`.`payment_status`;
 -- --------------------------------------------------------
-CREATE VIEW `shop_booking_header_view` AS 
+CREATE OR REPLACE VIEW `shop_booking_header_view` AS 
 SELECT 
   `so`.`shop_order_ref_num` AS `shop_order_reference_number`, 
   `ab`.`angkas_booking_reference` AS `angkas_booking_reference`, 
@@ -298,7 +298,7 @@ GROUP BY
     coalesce(`ri`.`user_firstname`, '')
   );
 -- --------------------------------------------------------
-CREATE VIEW `shop_item_merchant_view` AS 
+CREATE OR REPLACE VIEW `shop_item_merchant_view` AS 
 SELECT 
   `so`.`shop_order_ref_num` AS `shop_order_ref_num`, 
   `si`.`item_name` AS `item_name`, 
@@ -320,7 +320,7 @@ FROM
 WHERE 
   `so`.`order_state_ind` <> 'C';
 -- --------------------------------------------------------
-CREATE VIEW `view_angkas_bookings` AS 
+CREATE OR REPLACE VIEW `view_angkas_bookings` AS 
 SELECT 
   `ab`.`transaction_category_id` AS `transaction_category_id`, 
   `tc`.`txn_prefix` AS `txn_prefix`, 
