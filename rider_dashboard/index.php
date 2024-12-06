@@ -123,7 +123,7 @@ query("DELETE FROM angkas_bookings WHERE date_booked < (NOW() - INTERVAL 2 HOUR)
                                                                 placeholder="GCASH Account Number">
                                                             <input name="GCashAccountName" type="text" class="form-control mb-3"
                                                                 placeholder="GCASH Account Name">
-                                                            <button class="btn btn-primary">Submit Request
+                                                            <button class="btn btn-primary btnCashOut">Submit Request
                                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                                                     fill="currentColor" class="bi bi-rocket-takeoff"
                                                                     viewBox="0 0 16 16">
