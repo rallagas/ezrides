@@ -55,20 +55,27 @@ $transactionHistory = query(
 
         <!-- Display Current Balance -->
         <div class="card mt-3">
-            <div class="card-body">
-                <span class="card-title text-secondary">Current Wallet Balance</span>
-                <p class="walletbalance card-text display-4">$<?php echo number_format($balance, 2); ?></p>
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#topUpModal">Top-Up</button>
+            
+              <div class="card-body">
+                <span class="card-title text-secondary">EZ Wallet 
+                     <button class="btn btn-link text-decoration-none" data-bs-toggle="modal" data-bs-target="#topUpModal">
+                        CASH IN
+                     </button>
+                </span>
+                <p class="walletbalance card-text display-4 pt-0"> <small class="small fs-6 align-top">PHP</small><?php echo number_format($balance, 2); ?></p>
+                
             </div>
         </div>
+        
+        
 
         <!-- Transaction History Table -->
         <div class="card mt-4">
-            <div class="card-header">
+            <div class="card-header bg-purple text-light">
                 Transaction History
             </div>
-            <div class="card-body">
-                <table id="transactionHistoryTable" class="table table-bordered table-responsive">
+            <div class="card-body p-0">
+                <table id="transactionHistoryTable" class="table table-hover table-responsive m-0">
                     <thead class="table-dark">
                         <tr>
                             <th>Amount (Php)</th>
@@ -77,7 +84,7 @@ $transactionHistory = query(
                             <th>Status</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="overflow-scroll">
                         <!-- Transactions will be loaded here -->
                     </tbody>
                 </table>
