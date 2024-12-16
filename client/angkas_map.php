@@ -90,7 +90,7 @@ include_once "../_sql_utility.php";
         </div>
 
         <div class="commutes-map row" aria-label="Map">
-            <div class="map-view col-12"></div>
+            <div id="map" class="map-view col-12"></div>
         </div>
     </main>
 
@@ -251,49 +251,34 @@ include_once "../_sql_utility.php";
     <script>
     // Configuration object
     const CONFIGURATION = {
-        defaultTravelMode: "DRIVING",
-        distanceMeasurementType: "METRIC",
-        mapOptions: {
-            fullscreenControl: true,
-            mapTypeControl: false,
-            streetViewControl: false,
-            zoom: 15,
-            zoomControl: true,
-            maxZoom: 20,
-            mapId: "",
-            center: null, // Center will be dynamically updated
+    defaultTravelMode: "DRIVING",
+    distanceMeasurementType: "METRIC",
+    mapOptions: {
+        fullscreenControl: true,
+        mapTypeControl: false,
+        streetViewControl: false,
+        zoom: 15,
+        zoomControl: true,
+        maxZoom: 20,
+        mapId: "b3394d825c3c2f44",
+        center: null, // Center will be dynamically updated
+        restriction: {
+            latLngBounds: {
+                // Adjusted boundaries for Albay and Sorsogon with a 1km offset
+                north: 13.618, // Northernmost latitude with offset
+                south: 12.580, // Southernmost latitude with offset
+                east: 124.348, // Easternmost longitude with offset
+                west: 123.400, // Westernmost longitude with offset
+            },
+            strictBounds: true, // Enforce strict boundary limits
         },
-        mapsApiKey: "AIzaSyDB4tE_5d8sQVRR1x2KMTFbQbCpUYWXx8A",
-        currentAddressTxt: null, // Current address will be dynamically updated
-        curLocCoor: null, // Current coordinates will be dynamically updated
-    };
+    },
+    mapsApiKey: "AIzaSyDB4tE_5d8sQVRR1x2KMTFbQbCpUYWXx8A",
+    currentAddressTxt: null, // Current address will be dynamically updated
+    curLocCoor: null, // Current coordinates will be dynamically updated
+};
 
-    /**
-     * Retrieves the user's current location coordinates using the Geolocation API.
-     * @returns {Promise<{lat: number, lng: number}>} - A Promise resolving to an object with latitude and longitude.
-     */
-    // async function getCurrentLocation() {
-    //     if (!navigator.geolocation) {
-    //         throw new Error("Geolocation is not supported by this browser.");
-    //     }
-    //     return new Promise((resolve, reject) => {
-    //         navigator.geolocation.getCurrentPosition(
-    //             (position) => {
-    //                 const {
-    //                     latitude,
-    //                     longitude
-    //                 } = position.coords;
-    //                 resolve({
-    //                     lat: latitude,
-    //                     lng: longitude
-    //                 });
-    //             },
-    //             (error) => {
-    //                 reject(new Error("Geolocation failed. Ensure location services are enabled."));
-    //             }
-    //         );
-    //     });
-    // }
+
     async function getCurrentLocation() {
     if (!navigator.geolocation) {
         throw new Error("Geolocation is not supported by this browser.");
@@ -305,34 +290,6 @@ include_once "../_sql_utility.php";
         );
     });
 }
-    /**
-     * Converts geographic coordinates into a readable address using the Google Maps Geocoder.
-     * @param {{lat: number, lng: number}} coordinates - The latitude and longitude to geocode.
-     * @returns {Promise<{status: string, address: string | null}>} - A Promise resolving to an address object.
-     */
-    // async function getReadableAddress(coordinates) {
-    //     const geocoder = new google.maps.Geocoder();
-    //     const latLng = {
-    //         lat: coordinates.lat,
-    //         lng: coordinates.lng
-    //     };
-
-    //     return new Promise((resolve, reject) => {
-    //         geocoder.geocode({
-    //             location: latLng
-    //         }, (results, status) => {
-    //             if (status === google.maps.GeocoderStatus.OK) {
-    //                 const address = results[0]?.formatted_address || null;
-    //                 resolve({
-    //                     status: "OK",
-    //                     address
-    //                 });
-    //             } else {
-    //                 reject(new Error(`Geocoder failed due to: ${status}`));
-    //             }
-    //         });
-    //     });
-    // }
     async function getReadableAddress(location) {
     try {
         const geocoder = new google.maps.Geocoder();
@@ -377,6 +334,7 @@ function setInputValues() {
         // Fetch current location
         const location = await getCurrentLocation();
         CONFIGURATION.curLocCoor = `${location.lat},${location.lng}`;
+        
         console.log("User's Current Location:", CONFIGURATION.curLocCoor);
 
         // Fetch readable address
@@ -384,14 +342,30 @@ function setInputValues() {
         CONFIGURATION.currentAddressTxt = addressData.address;
         console.log("User's Current Address:", CONFIGURATION.currentAddressTxt);
 
+        // Update input values
+        ensureInputsExistAndSetValues();
+
+            // Validate location against Region V bounds
+        const { lat, lng } = location;
+        const bounds = CONFIGURATION.mapOptions.restriction.latLngBounds;
+        if (
+            lat >= bounds.north ||
+            lat <= bounds.south ||
+            lng >= bounds.east ||
+            lng <= bounds.west
+        ) {
+            showModal("EZ Rides Services is not available in your current location.");
+            throw new Error("Location is outside the allowed boundaries.");
+        }
+
         // Update map options
         CONFIGURATION.mapOptions.center = location;
 
         // Initialize the map with the updated configuration
         new Commutes(CONFIGURATION);
 
-        // Update input values
-        ensureInputsExistAndSetValues();
+
+        
 
     } catch (error) {
         console.error('Error initializing map or fetching location data:', error);
@@ -399,6 +373,38 @@ function setInputValues() {
         CONFIGURATION.currentAddressTxt = "Unknown Address";
         ensureInputsExistAndSetValues();
     }
+}
+
+
+// Function to show a modal
+function showModal(message) {
+    // Create modal elements
+    const modal = document.createElement("div");
+    modal.style.position = "fixed";
+    modal.style.top = "0";
+    modal.style.left = "0";
+    modal.style.width = "100%";
+    modal.style.height = "100%";
+    modal.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
+    modal.style.display = "flex";
+    modal.style.justifyContent = "center";
+    modal.style.alignItems = "center";
+    modal.style.zIndex = "1000";
+
+    const modalContent = document.createElement("div");
+    modalContent.style.backgroundColor = "#fff";
+    modalContent.style.padding = "20px";
+    modalContent.style.borderRadius = "8px";
+    modalContent.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.2)";
+    modalContent.style.textAlign = "center";
+
+    const modalText = document.createElement("p");
+    modalText.textContent = message;
+    modalText.style.margin = "0 0 20px";
+
+    modalContent.appendChild(modalText);
+    modal.appendChild(modalContent);
+    document.body.appendChild(modal);
 }
 
 function ensureInputsExistAndSetValues() {

@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * Element selectors for commutes widget.
  */
@@ -965,46 +963,6 @@ function Commutes(configuration) {
         lastActiveEl = document.activeElement;
         showElement(commutesEl.modal, destinationModalEl.destinationInput);
     }
-
-    function centerMapOnCurrentLocation() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function(position) {
-                const currentLocation = {
-                    lat: position.coords.latitude,
-                    lng: position.coords.longitude
-                };
-    
-                // Center the map to the current location
-                commutesMap.setCenter(currentLocation);
-    
-                // Optionally, zoom in a bit
-                commutesMap.setZoom(14); // Adjust zoom level as needed
-            }, function(error) {
-                console.error('Error getting current location:', error);
-                alert('Unable to get your location');
-            });
-        } else {
-            alert('Geolocation is not supported by this browser.');
-        }
-    }
-
-    const herebutton = document.createElement("button");
-    herebutton.innerHTML = `<img src="../icons/gps.png" class="img-fluid" width="50px">`;
-    herebutton.style.position = "absolute";
-    herebutton.style.bottom = "25px";
-    herebutton.style.right = "60px";
-    herebutton.style.zIndex = "1000";
-    herebutton.style.backgroundColor = "#fff";
-    herebutton.style.border = "0px solid #ccc";
-    herebutton.style.padding = "0px";
-    herebutton.style.cursor = "pointer";
-    herebutton.style.borderRadius = "50%";
-    herebutton.style.boxShadow = "0 2px 6px rgba(0, 0, 0, 0.3)";
-    herebutton.addEventListener("click", centerMapOnCurrentLocation);
-
-    document.getElementById("map").appendChild(herebutton);
-    // Attach the click event to the button
-//    document.getElementById('centerMapBtn').addEventListener('click', centerMapOnCurrentLocation);
 
     /**
    * Hides the destination modal window, setting focus to focusEl if provided.
