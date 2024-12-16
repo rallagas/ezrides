@@ -17,9 +17,10 @@ function appButton( $icon_class
                      ){ ?>
      <div class="col-lg-3 col-md-2 col-sm-2 col-3 p-0 mb-4 text-center">
             
-              <a href="../client/index.php?page=<?php echo $page_action; ?>&txn_cat=<?php echo $txn_cat?>" 
-                 class="btn btn-outline-light m-0 <?php echo $bgcolor; ?>">
-                   <i  class="fs-1 fi fi-rr-<?php echo $icon_class;?>" ></i>
+              <a href="index.php?page=<?php echo $page_action; ?>&txn_cat=<?php echo $txn_cat?>" 
+                 class="btn btn-outline-light bg-purple shadow m-0 border-0 rounded-3">
+                 <img src="../icons/<?php echo $icon_class;?>" alt="" class="img-fluid">
+                  
               </a>
                
               
@@ -28,5 +29,21 @@ function appButton( $icon_class
 
 
 
+
+function appButtonIcon( $icon_class 
+                     , $txn_cat=NULL
+                     , $page_action=NULL
+                     , $bgcolor="bg-purple"
+                     ){ ?>
+     <div class="col-lg-3 col-md-2 col-sm-2 col-3 p-0 mb-4 text-center">
+            
+              <a href="index.php?page=<?php echo $page_action; ?>&txn_cat=<?php echo $txn_cat?>" 
+                 class="btn btn-outline-light m-0 <?php echo $bgcolor; ?>">
+                   <i  class="fs-1 fi fi-rr-<?php echo $icon_class;?>" ></i>
+              </a>
+               
+              
+           </div>
+<?php } 
 ?>
           

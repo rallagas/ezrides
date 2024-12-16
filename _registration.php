@@ -1,6 +1,14 @@
 <div class="row g-1">
     <div class="col-12 pt-2">
-        <h6 class="fw-bold display-6">Customer Registration</h6>
+        <?php if(isset($_GET['regRider'])){ ?>
+
+             <h6 class="fw-bold display-6">Rider Registration</h6>
+
+        <?php } 
+        else{ ?>
+
+            <h6 class="fw-bold display-6">Customer Registration</h6>
+        <?php } ?>
         <form id="formRegistration">
             <div class="mb-2">
                 <input name="f_emailadd" id="f_emailadd" type="email" class="form-control" Placeholder="Email Address" required>
@@ -71,6 +79,8 @@
 
 
             </div>
+
+            <?php if(isset($_GET['regRider'])) { ?>
             <hr>
             <div class="form-check form-switch mb-2">
             <label class="form-check-label fw-bold" for="flexSwitchCheckDefault">    
@@ -79,7 +89,7 @@
                 </label> 
             </div>
 
-                <div class="collapse mt-2" id="riderForm">
+                <div class="collapse show mt-2" id="riderForm">
                     <div class="card card-body">
                         <div class="my-2">
                             <input id="f_r_car_brand" name="f_r_car_brand" type="text" class="form-control" Placeholder="Your Car Model">
@@ -96,7 +106,7 @@
 
                     </div>
                 </div>
-            
+            <?php } ?>
 
 
 
@@ -119,9 +129,9 @@
             </div>
 
 
-            <button type="submit" class="btn btn-warning createAcctBtn">Create Account</button>
-
             <div class="status"></div>
+
+            <button type="submit" class="btn btn-warning createAcctBtn">Create Account</button>
 
             <button class="btn btn-secondary reset-button" data-bs-toggle="collapse" data-bs-target=".multi-collapse" aria-controls="riderForm" type="Reset">Reset Fields</button>
             <a href="?page=loguser" class="btn btn-link">Login Here</a>

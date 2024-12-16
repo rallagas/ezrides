@@ -26,7 +26,8 @@ class Config {
             'main' => '/ezrides/index.php',
             'client' => '/ezrides/clients/index.php',
             'admin' => '/ezrides/admin/index.php',
-            'rider' => '/ezrides/rider_dashboard/index.php'
+            'rider' => '/ezrides/rider_dashboard/index.php',
+            'registration' => '/ezrides/index.php?registration'
         ];
     }
 }
@@ -98,6 +99,10 @@ class Redirect {
         if ( $this->isSpecialPage( $currentPage ) ) {
             return;
             // Do not redirect special pages
+        }
+
+        if ( isset($_GET['page'])){
+            return;
         }
 
         if ( !$this->sessionManager->isUserLoggedIn() && $currentPage !== $this->indexPaths['main'] && !in_array( $currentPage, $this->getFullIndexUrls() ) ) {

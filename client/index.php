@@ -21,6 +21,7 @@ include_once "../_sql_utility.php";
 <body>
 
     <?php include_once "nav-client.php";?>
+
             
     <hr class="m-0 p-0 text-dark">
     <div class="container-fluid p-1">
@@ -54,15 +55,15 @@ include_once "../_sql_utility.php";
                             <div class="col-lg-12">
                                 <?php include_once "_index_wallet.php"; ?>
                             </div>
-                            <div class="col-lg-4 col-md-12 col-sm-12 ps-5">
+                            <div class="col-lg-4 col-md-12 col-sm-12">
             
                                 <h1 class="fw-bold display-6 mt-5"> Welcome! </h1>
                                 <p class="fw-light">Going Somewhere? Craving for some Burger?</p>
 
-                                <div class="card">
+                                <div class="card border-0 p-0">
                                     <div class="card-body">
-                                        <div class="container-fluid m-0">
-                                            <div class="row">
+                                        <div class="container-fluid">
+                                            <div class="row gx-1">
                                                 <?php
                                                 $txn_cats = select_data("txn_category","txn_category_status='A'","txn_category_id",100);
 
@@ -116,6 +117,7 @@ switch($page){
 }
 else{ ?>
     <script src="_process_ajax.js"></script>
+    <script src="__animations.js"></script>
 <?php }
  ?>
 
