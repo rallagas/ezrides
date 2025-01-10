@@ -1,13 +1,13 @@
 <div class="row g-1">
-    <div class="col-12 pt-2">
+    <div class="col-12 mt-5 pt-2">
         <?php if(isset($_GET['regRider'])){ ?>
 
-             <h6 class="fw-bold display-6">Rider Registration</h6>
+             <h6 class="fw-bold display-6 mt-3">Rider Registration</h6>
 
         <?php } 
         else{ ?>
 
-            <h6 class="fw-bold display-6">Customer Registration</h6>
+            <h6 class="fw-bold display-6 mt-3">Customer Registration</h6>
         <?php } ?>
         <form id="formRegistration">
             <div class="mb-2">
@@ -80,8 +80,7 @@
 
             </div>
 
-            <?php if(isset($_GET['regRider'])) { ?>
-            <hr>
+            <?php if(isset($_GET['regRider'])){?>
             <div class="form-check form-switch mb-2">
             <label class="form-check-label fw-bold" for="flexSwitchCheckDefault">    
                 <input name="f_rider_status" id="flexSwitchCheckDefault" class="form-check-input" style="width:25px" type="checkbox" >
@@ -106,8 +105,8 @@
 
                     </div>
                 </div>
-            <?php } ?>
-
+            
+                <?php } ?>
 
 
             <div class="form-check form-switch mb-2">

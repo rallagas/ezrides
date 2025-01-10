@@ -67,17 +67,37 @@ include_once "../_sql_utility.php";
                                                 <?php
                                                 $txn_cats = select_data("txn_category","txn_category_status='A'","txn_category_id",100);
 
-                                                if($_SESSION['t_user_type'] == 'C'){
-                                                    foreach($txn_cats as $tcat){
-                                                        appButton($tcat['icon_class']
-                                                                    , $tcat['txn_category_id']
-                                                                    , $tcat['page_action']
-                                                                );
-                                                    }
-                                                }?>
-                                                </div>
-                                        </div>
-                                    </div>
+                                if ($_SESSION['t_user_type'] == 'C') {
+                                    foreach ($txn_cats as $tcat) {
+                                        appButton($tcat['icon_class'], $tcat['txn_category_id'], $tcat['page_action'], $tcat['txn_category_name']);
+                                    }
+                                } ?>
+                                <div class="col-lg-3 col-md-2 col-sm-2 col-3 p-0 text-center">
+                                    <a href="index.php?page=shop&txn_cat=6&merchant=13" class="btn btn-outline-light bg-purple shadow rounded-4 w-100">
+                                        <img src="../icons/document.png" alt="" class="img-fluid" width="80%">
+                                        <span class="fw-bold" style="font-size:10px">DOCUMENT</span>
+                                    </a>
+                                </div>
+
+                                <div class="col-lg-3 col-md-2 col-sm-2 col-3 p-0 text-center">
+                                    <a href="index.php?page=shop&txn_cat=6&merchant=11" class="btn btn-outline-light bg-purple shadow rounded-4 w-100">
+                                        <img src="../icons/rx-delivery.png" alt="" class="img-fluid" width="80%">
+                                        <span class="fw-bold" style="font-size:10px">PHARMACY</span>
+                                    </a>
+                                </div>
+
+                                <div class="col-lg-3 col-md-2 col-sm-2 col-3 p-0 text-center">
+                                    <a href="index.php?page=shop&txn_cat=6&merchant=1" class="btn btn-outline-light bg-purple shadow rounded-4 w-100">
+                                        <img src="../icons/groc-delivery.png" alt="" class="img-fluid" width="80%">
+                                        <span class=" small fw-bold" style="font-size:10px">GROCERY</span>
+                                    </a>
+                                </div>
+
+                                <div class="col-lg-3 col-md-2 col-sm-2 col-3 p-0 text-center">
+                                    <a href="index.php?page=shop&txn_cat=6&merchant=12" class="btn btn-outline-light bg-purple shadow rounded-4 w-100">
+                                        <img src="../icons/delivery-guy-icon.png" alt="" class="img-fluid" width="80%">
+                                        <span class=" small fw-bold" style="font-size:10px">FOOD</span>
+                                    </a>
                                 </div>
                             
                             </div>

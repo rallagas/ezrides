@@ -487,10 +487,10 @@ function Commutes(configuration) {
                 const updatedTemplate = await generateDestinationTemplate(destination); // Await the updated template generation
                 activeDestinationContainerEl.innerHTML = updatedTemplate;
     
-                // activeDestinationContainerEl.addEventListener('click', () => {
-                //     handleRouteClick(destination, destinationIdx);
-                // });
-                // editButtonEl = activeDestinationContainerEl.querySelector('.edit-button');
+//                 activeDestinationContainerEl.addEventListener('click', () => {
+//                     handleRouteClick(destination, destinationIdx);
+//                 });
+//                 editButtonEl = activeDestinationContainerEl.querySelector('.edit-button');
                 break;
     
             case DestinationOperation.DELETE:
@@ -966,6 +966,46 @@ function Commutes(configuration) {
         showElement(commutesEl.modal, destinationModalEl.destinationInput);
     }
 
+    function centerMapOnCurrentLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                const currentLocation = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                };
+    
+                // Center the map to the current location
+                commutesMap.setCenter(currentLocation);
+    
+                // Optionally, zoom in a bit
+                commutesMap.setZoom(14); // Adjust zoom level as needed
+            }, function(error) {
+                console.error('Error getting current location:', error);
+                alert('Unable to get your location');
+            });
+        } else {
+            alert('Geolocation is not supported by this browser.');
+        }
+    }
+
+    const herebutton = document.createElement("button");
+    herebutton.innerHTML = `<img src="../icons/gps.png" class="img-fluid" width="45px">`;
+    herebutton.style.position = "absolute";
+    herebutton.style.top = "8px";
+    herebutton.style.right = "60px";
+    herebutton.style.zIndex = "1000";
+    herebutton.style.backgroundColor = "#fff";
+    herebutton.style.border = "0px solid #ccc";
+    herebutton.style.padding = "0px";
+    herebutton.style.cursor = "pointer";
+    herebutton.style.borderRadius = "50%";
+    herebutton.style.boxShadow = "0 2px 6px rgba(0, 0, 0, 0.3)";
+    herebutton.addEventListener("click", centerMapOnCurrentLocation);
+
+    document.getElementById("map").appendChild(herebutton);
+    // Attach the click event to the button
+//    document.getElementById('centerMapBtn').addEventListener('click', centerMapOnCurrentLocation);
+
     /**
    * Hides the destination modal window, setting focus to focusEl if provided.
    * If no argument is passed, focus is restored to where it was when
@@ -1140,51 +1180,49 @@ async function generateDestinationTemplate(destination) {
         console.log("BALANCE FORM: ", wbalance);
 
             return `
+        <div class="card border-0 shadow m-0">
             <form id="formFindAngkas">
-              <div class="destination shadow">
-                <div class="mb-1">
-                    <input class="form-control form-control-sm formWalletbalance" value="${wbalance}" name="walletbalance" Placeholder="Wallet Balance" />
-                </div>
+            <div class="card-header bg-purple">
+                <h5 class="fw-bold text-light">RIDE INFO</h5>
+            </div>
+            <div class="card-body">
+              <div class="destination">
+                <input type="hidden" class="formWalletbalance" value="${wbalance}" name="walletbalance" Placeholder="Wallet Balance" />
+                
                 <div class="destination-content align-center align-middle">
-                <button type="submit" class="btn btn-warning shadow findMeARiderBTN rounded-circle px-2 position-fixed bottom-0 end-0 mb-3 me-3 z-3" style="width:45px; height: 45px">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-send-fill"
-                        viewBox="0 0 16 16">
-                        <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471z" />
-                    </svg>
+                <button type="submit" class="btn btn-warning shadow findMeARiderBTN rounded-circle position-fixed bottom-0 end-0 mb-3 me-3 z-3" style="width:60px;height:60px">
+                    <img class="img-fluid" width="60px" src="../icons/search.png">
                 </button>
-              <div class="mb-1">
-                <label class="form-label small"> Fare (Php): </label>
-                  <input type="text" name="form_Est_Cost" class="form-control form-control-sm" value="${RiderCost}" readonly>
+
+              <div class="mb-1 input-group border-0">
+                  <label class="input-group-text fw-bold"> FARE <sup>PHP</sup> </label>
+                  <input type="text" name="form_Est_Cost" class="fs-6 fw-bold form-control form-control-sm" value="${RiderCost}" readonly>
               </div>
-                <div class="mb-1">
-                    <label class="form-label small"> Origin Address: </label>
-                    <input type="text" name="form_from_dest" class="form-control form-control-sm" value="" Placeholder="Checking Current Location..." readonly>
+                <div class="mb-1 input-group border-0">
+                    <label class="fw-bold input-group-text"> FROM: </label>
+                    <input type="text" name="form_from_dest" class="fs-6 form-control form-control-sm" value="" Placeholder="Checking Current Location..." readonly>
                     <input type="hidden" name="curLocCoor" class="" value="" readonly>
                 </div>
-                <div class="mb-1">
-                <label class="form-label small"> Destination Address:  </label>
-                  <div class="input-group">
-                    <input type="text" name="form_to_dest" class="form-control form-control-sm" value="${destination.name}" readonly>
-                    <input type="hidden" id="formToDest_lat" name="formToDest_lat" class="form-control form-control-sm" value="" readonly>
-                    <input type="hidden" id="formToDest_long" name="formToDest_long" class="form-control form-control-sm" value="" readonly>
-                    <button class="edit-button btn btn-sm btn-light border border-1 border-secondary border-opacity-25" onclick="function(e){e.preventDefault;}" aria-label="Edit Destination">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                            <use href="#commutes-edit-icon"/>
-                        </svg>
-                    </button>
-                  </div>
+                <div class="mb-1 input-group border-0">
+                        <label class="fw-bold input-group-text"> TO:  </label>
+                        <input type="hidden" id="formToDest_lat" name="formToDest_lat" class="form-control form-control-sm" value="" readonly>
+                        <input type="hidden" id="formToDest_long" name="formToDest_long" class="form-control form-control-sm" value="" readonly>
+                    <input type="text" name="form_to_dest" class="fs-6 form-control form-control-sm" value="${destination.name}" readonly>
                 </div>
-                <div class="mb-1">
-                <label class="form-label small"> Distance (KM):  </label>
-                  <input type="text" name="form_TotalDistance" class="form-control form-control-sm" value="${destination.distance}" readonly>
-              </div>
-              <div class="mb-1">
-                <label class="form-label small"> Estimated Ride Duration (min): </label>
-                  <input type="text" name="form_ETA_duration" class="form-control form-control-sm" value="${parseInt(destination.duration / 60)}" readonly>
+                <div class="mb-1 input-group border-0">
+                    <label class="fw-bold input-group-text"> DISTANCE (KM):  </label>
+                    <input type="text" name="form_TotalDistance" class="fs-6 form-control form-control-sm" value="${destination.distance}" readonly>
+                </div>
+              <div class="mb-1 input-group border-0">
+                <label class="fw-bold input-group-text"> EST. TIME DURATION <sup>MIN</sup>: </label>
+                  <input type="text" name="form_ETA_duration" class="fs-6 form-control form-control-sm" value="${parseInt(destination.duration / 60)}" readonly>
               </div>
                 </div>
               </div>
-            </form>`;
+            
+            </div>
+            </form>
+        </div>`;
     } catch (error) {
         console.error("Error generating destination template:", error);
         return `<div class="error">Error loading wallet balance</div>`;

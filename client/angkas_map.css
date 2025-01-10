@@ -159,7 +159,7 @@ body {
 } */
 
 .commutes-destinations .destination {
-  height: 45vh;
+  height: 40vh;
   justify-content: space-between;
   margin-right: 8px;
   min-width: 100%;
@@ -305,7 +305,7 @@ body {
 
 .commutes-map {
   flex: 1;
-  height: 100vh;
+  height: 80vh;
   overflow: hidden;
   position: relative;
   width: 100vw;
@@ -313,7 +313,7 @@ body {
 
 .commutes-map .map-view {
   background-color: rgb(229, 227, 223);
-  height: 100vh;
+  height: 80vh;
   left: 0;
   position: absolute;
   top: 0;
