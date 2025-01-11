@@ -1,5 +1,5 @@
     .bg-purple, .text-bg-purple {
-        background-color: mediumpurple;
+        background-color: #2f007c;
     }
 
     .bg-dark-purple {
@@ -7,8 +7,17 @@
     }
 
     .text-purple {
-        color: mediumpurple;
+        color: #2f007c;
     }
+
+    .text-yellow {
+        color: #feaa12;
+    }
+
+    .bg-yellow {
+        background-color: #feaa12;
+    }
+
 
     #merchantSuggestions {
         width: 100%;

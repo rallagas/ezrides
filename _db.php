@@ -6,7 +6,6 @@ ini_set( 'display_startup_errors', 1 );
 error_reporting( E_ALL );
 
 // Define the configuration class
-
 class Config {
     const HOST = 'localhost';
     const DBNAME = 'ezride';
@@ -16,7 +15,7 @@ class Config {
 
     public static function getBaseUrl() {
         $protocol = ( !empty( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443 )
-        ? "https://" : "http://";
+            ? "https://" : "http://";
         $domain = $_SERVER['HTTP_HOST'];
         return $protocol . $domain;
     }
@@ -26,35 +25,9 @@ class Config {
             'main' => '/ezrides/index.php',
             'client' => '/ezrides/clients/index.php',
             'admin' => '/ezrides/admin/index.php',
-            'rider' => '/ezrides/rider_dashboard/index.php'
+            'rider' => '/ezrides/rider_dashboard/index.php',
+            'registration' => '/ezrides/index.php?registration'
         ];
-    }
-}
-
-// Database connection class
-
-class Database {
-    private $connection;
-
-    public function __construct() {
-        $this->connection = mysqli_connect( Config::HOST, Config::USERNAME, Config::PASSWORD, Config::DBNAME );
-
-        if ( !$this->connection ) {
-            die( json_encode( [
-                'success' => false,
-                'message' => "Database connection failed: " . mysqli_connect_error(),
-            ] ) );
-        }
-    }
-
-    public function getConnection() {
-        return $this->connection;
-    }
-
-    public function __destruct() {
-        if ( $this->connection ) {
-            mysqli_close( $this->connection );
-        }
     }
 }
 
@@ -95,9 +68,12 @@ class Redirect {
         $currentPage = $_SERVER['REQUEST_URI'];
         $mainIndexUrl = $this->baseUrl . $this->indexPaths['main'];
 
-        if ( $this->isSpecialPage( $currentPage ) ) {
+        if ( $this->isSpecialPage( $currentPage ) || $this->hasGetVariables() ) {
+            return; // Do not redirect special pages or if GET variables exist
+        }
+
+        if ( isset($_GET['page'])){
             return;
-            // Do not redirect special pages
         }
 
         if ( !$this->sessionManager->isUserLoggedIn() && $currentPage !== $this->indexPaths['main'] && !in_array( $currentPage, $this->getFullIndexUrls() ) ) {
@@ -108,6 +84,10 @@ class Redirect {
 
     private function isSpecialPage( $currentPage ) {
         return strpos( basename( $currentPage ), '_' ) === 0;
+    }
+
+    private function hasGetVariables() {
+        return !empty($_GET); // Check if there are any GET variables in the URL
     }
 
     private function getFullIndexUrls() {
@@ -162,6 +142,34 @@ function getDistanceAndETA( $fromLat, $fromLng, $toLat, $toLng, $APIKey = Config
             'error' => true,
             'message' => $e->getMessage(),
         ];
+    }
+}
+
+
+// Database connection class
+
+class Database {
+    private $connection;
+
+    public function __construct() {
+        $this->connection = mysqli_connect( Config::HOST, Config::USERNAME, Config::PASSWORD, Config::DBNAME );
+
+        if ( !$this->connection ) {
+            die( json_encode( [
+                'success' => false,
+                'message' => "Database connection failed: " . mysqli_connect_error(),
+            ] ) );
+        }
+    }
+
+    public function getConnection() {
+        return $this->connection;
+    }
+
+    public function __destruct() {
+        if ( $this->connection ) {
+            mysqli_close( $this->connection );
+        }
     }
 }
 
