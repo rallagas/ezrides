@@ -13,7 +13,7 @@ include_once "_functions.php";
     <title>EZ Rides</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-       <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style.css">
     <style>
     .bg-purple {
         background-color: #2f007c;
@@ -52,79 +52,87 @@ include_once "_functions.php";
     }
 
     .img-rider {
-    left: 10px;
-    animation: riderLoop 7s linear forwards; /* Added 'forwards' to preserve the final state */
-}
+        left: 10px;
+        animation: riderLoop 7s linear forwards;
+        /* Added 'forwards' to preserve the final state */
+    }
 
-.img-truck {
-    right: 10px;
-    animation: truckLoop 7s linear forwards; /* Added 'forwards' */
-}
+    .img-truck {
+        right: 10px;
+        animation: truckLoop 7s linear forwards;
+        /* Added 'forwards' */
+    }
 
-.img-truck2 {
-    right: 10px;
-    height: 7vh;
-    animation: truckLoop2 4s linear forwards; /* Added 'forwards' */
-}
-.banner-animation {
-    background-image: url('icons/city.png');
-    background-repeat: repeat-x;
-    background-size: 100% auto;
-    background-position: bottom;
-}
+    .img-truck2 {
+        right: 10px;
+        height: 7vh;
+        animation: truckLoop2 4s linear forwards;
+        /* Added 'forwards' */
+    }
+
+    .banner-animation {
+        background-image: url('icons/city.png');
+        background-repeat: repeat-x;
+        background-size: 100% auto;
+        background-position: bottom;
+    }
 
     /* Keyframes for animations remain the same */
- 
 
-@keyframes slideInLeft {
-    0% {
-        transform: translateX(-80vw);
-        opacity: 0;
-    }
-    100% {
-        transform: translateX(0);
-        opacity: 1;
-    }
-}
 
-@keyframes slideInRight {
-    0% {
-        transform: translateX(50vw);
-        opacity: 0;
-    }
-    100% {
-        transform: translateX(0);
-        opacity: 1;
-    }
-}
+    @keyframes slideInLeft {
+        0% {
+            transform: translateX(-80vw);
+            opacity: 0;
+        }
 
-@keyframes riderLoop {
-    0% {
-        transform: translateX(-50vw);
+        100% {
+            transform: translateX(0);
+            opacity: 1;
+        }
     }
-    100% {
-        transform: translateX(40vw);
-    }
-}
 
-@keyframes truckLoop {
-    0% {
-        transform: translateX(50vw);
-    }
-    100% {
-        transform: translateX(-10vw);
-    }
-}
+    @keyframes slideInRight {
+        0% {
+            transform: translateX(50vw);
+            opacity: 0;
+        }
 
-@keyframes truckLoop2 {
-    0% {
-        transform: translateX(50vw);
+        100% {
+            transform: translateX(0);
+            opacity: 1;
+        }
     }
-    100% {
-        transform: translateX(-50vw);
-    }
-}
 
+    @keyframes riderLoop {
+        0% {
+            transform: translateX(-50vw);
+        }
+
+        100% {
+            transform: translateX(40vw);
+        }
+    }
+
+    @keyframes truckLoop {
+        0% {
+            transform: translateX(50vw);
+        }
+
+        100% {
+            transform: translateX(-10vw);
+        }
+    }
+
+    @keyframes truckLoop2 {
+        0% {
+            transform: translateX(50vw);
+        }
+
+        100% {
+            transform: translateX(-50vw);
+        }
+    }
     </style>
 </head>
 
@@ -133,29 +141,32 @@ include_once "_functions.php";
     <nav class="navbar navbar-expand-lg fixed-top bg-dark bg-opacity-75">
         <div class="container">
             <a class="navbar-brand align-middle" href="index.php">
-                <img src="icons/ezrides-full.png" alt="" style="height:5vw"
-                    class="">
+                <img src="icons/ezrides-full.png" alt="" style="height:5vw" class="">
             </a>
             <div class="clear-fix">
-                <a class="btn bg-yellow btn-warning me-3 rounded-4 float-end" href="?page=login">
-                <span class="d-none d-lg-block d-print-inline fw-bold"> 
-                    <img class="float-start" src="icons/key.png" alt="" height="25vh">&nbsp;LOGIN</span>
-                    <span class="d-lg-none">
-                      <img src="icons/key.png" alt="" height="25vh">    
-                    </span>
-                </a>
-                <a class="btn bg-yellow btn-warning me-3 rounded-4 float-end" href="?page=register">
+                <a class="btn bg-yellow btn-warning border-2 border-dark me-3 rounded-4 float-end" href="?page=login">
                     <span class="d-none d-lg-block d-print-inline fw-bold">
-                        <img class="float-start" src="icons/travel-car-icon.png" alt="" height="25vh">&nbsp;SIGN UP</span>
+                        <img class="float-start" src="icons/key.png" alt="" height="25vh">&nbsp;LOGIN</span>
                     <span class="d-lg-none">
-                      <img src="icons/travel-car-icon.png" alt="" height="25vh">    
+                        <img src="icons/key.png" alt="" height="25vh">
                     </span>
                 </a>
-                <a class="btn bg-yellow btn-warning me-3 rounded-4 float-end" href="?page=register&regRider">
-                    <span class="d-none d-lg-block d-print-inline fw-bold"> 
-                    <img class="float-start" src="icons/ezrides-icon.png" alt="" height="25vh">&nbsp;BE A RIDER</span>
+                <a class="btn bg-yellow btn-warning border-2 border-dark me-3 rounded-4 float-end"
+                    href="?page=register">
+                    <span class="d-none d-lg-block d-print-inline fw-bold">
+                        <img class="float-start" src="icons/travel-car-icon.png" alt="" height="25vh">&nbsp;SIGN
+                        UP</span>
                     <span class="d-lg-none">
-                      <img src="icons/ezrides-icon.png" alt="" height="25vh">
+                        <img src="icons/travel-car-icon.png" alt="" height="25vh">
+                    </span>
+                </a>
+                <a class="btn bg-yellow btn-warning border-2 border-dark me-3 rounded-4 float-end"
+                    href="?page=register&regRider">
+                    <span class="d-none d-lg-block d-print-inline fw-bold">
+                        <img class="float-start" src="icons/ezrides-icon.png" alt="" height="25vh">&nbsp;BE A
+                        RIDER</span>
+                    <span class="d-lg-none">
+                        <img src="icons/ezrides-icon.png" alt="" height="25vh">
                     </span>
                 </a>
 
@@ -179,7 +190,7 @@ include_once "_functions.php";
             <div class="col-lg-6 col-8 pt-5">
                 <div class="mt-5">
                     <?php if($pageNow == 'login') { ?>
-                        <br><br>
+                    <br><br>
                     <form id="formUserLog" class="mt-5">
                         <div class="card shadow">
                             <div class="card-header bg-purple text-light">
@@ -242,8 +253,10 @@ include_once "_functions.php";
                     while($currSlide <= $slides){
                     ?>
                     <div class="carousel-item px-0 <?php echo $currSlide == 1 ? "active" : "" ; ?>">
-                        <img src="icons/sliders/<?php echo $currSlide . ".png"; ?>" class="mx-0 img-fluid vw-100 d-none d-md-block"  alt="...">
-                        <img src="icons/sliders-vertical/<?php echo $currSlide . ".png"; ?>" class="mx-0 img-fluid vw-100 d-lg-none"  alt="...">
+                        <img src="icons/sliders/<?php echo $currSlide . ".png"; ?>"
+                            class="mx-0 img-fluid vw-100 d-none d-md-block" alt="...">
+                        <img src="icons/sliders-vertical/<?php echo $currSlide . ".png"; ?>"
+                            class="mx-0 img-fluid vw-100 d-lg-none" alt="...">
                     </div>
                     <?php 
                          $currSlide++;
@@ -254,16 +267,16 @@ include_once "_functions.php";
                 <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleAutoplaying"
                     data-bs-slide="prev">
                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    
+
                 </button>
                 <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleAutoplaying"
                     data-bs-slide="next">
                     <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    
+
                 </button>
             </div>
         </div>
-<?php }
+        <?php }
 else{
     echo "default";
 } ?>
@@ -273,34 +286,41 @@ else{
             <div class=" col-12 col-lg-4 text-center pt-3">
                 <h5 class="fs-5 fw-bold">GOAL</h5>
                 <h6 class="fs-6">
-                We are determined to provide high-quality Delivery and D2D services that exceed expectations.. Let's take a look at what we have been working on and what our future plans are.
+                    We are determined to provide high-quality Delivery and D2D services that exceed expectations.. Let's
+                    take a look at what we have been working on and what our future plans are.
                 </h6>
             </div>
             <div class=" px-3 col-12 col-lg-4 text-center pt-3">
                 <h5 class="fs-5 fw-bold">
-                MISSION
+                    MISSION
                 </h5>
                 <h6 class="fs-6">
-                We empower riders to deliver top-notch online services with integrity and speed. We're committed to constant improvement, striving to make every delivery a seamless experience that earns trust and satisfaction to Customer."
-                To provide exceptional online services through dedicated riders who prioritize customer satisfaction above all else
-                And also to support and empower service providers, including riders, to learn and grow through their experiences
+                    We empower riders to deliver top-notch online services with integrity and speed. We're committed to
+                    constant improvement, striving to make every delivery a seamless experience that earns trust and
+                    satisfaction to Customer."
+                    To provide exceptional online services through dedicated riders who prioritize customer satisfaction
+                    above all else
+                    And also to support and empower service providers, including riders, to learn and grow through their
+                    experiences
                 </h6>
             </div>
             <div class=" col-12 col-lg-4 text-center pt-3">
                 <h5 class="fs-5 fw-bold">VISION</h5>
                 <h6 class="fs-6">
-                Delivering Seamless Excellence: Empowering Service Providers to Provide Quality Online Services.
+                    Delivering Seamless Excellence: Empowering Service Providers to Provide Quality Online Services.
                 </h6>
             </div>
-            
+
         </div>
         <div class="row bg-yellow">
-            <div class="col-lg-12 mb-0 banner-animation">
+            <div class="col-lg-12 mb-0 banner-animation overflow-hidden">
                 <img src="icons/truck.gif" class="img-fluid img-truck" alt="">
                 <img src="icons/rider.gif" class="img-fluid img-rider" alt="">
                 <img src="icons/orange-truck.gif" class="img-fluid img-truck2">
             </div>
         </div>
+    </div>
+
     </div>
     <div class="container-fluid">
         <div class="row">
@@ -311,8 +331,8 @@ else{
             </div>
         </div>
     </div>
-    </div>
     <div class="container">
+
         <div class="row">
 
             <div class="col-6 col-lg-4 card border-0">
@@ -380,6 +400,53 @@ else{
 
     </div>
 
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-12 col-lg-12 bg-purple text-light">
+                <h3 class="fw-bold fs-2 ms-5 py-3">
+                    TESTIMONIALS
+                </h3>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid bg-yellow px-3">
+        <div class="row">
+            <?php
+                $commentdata = query("SELECT * FROM `customerSuggestions` WHERE `approved`=1 LIMIT 6");
+                if(!empty($commentdata)){
+                    foreach($commentdata as $cd){ ?>
+            <div class="col-3">
+                <div class="my-3 card shadow">
+                    <?php
+                                if($cd['photo'] != null){?>
+                    <img src="images/comments-photo/<?php echo $cd['photo'];?>" alt="" class="card-img-top">
+                    <?php }
+                            ?>
+                    <div class="card-body text-center">
+                        <span class="fs-5 fw-bold">
+                            "<?php echo $cd['message'];?>"
+                        </span>
+                        <br>
+                        <div class="container-fluid">
+                            <?php
+                                        $starcount=1;
+                                        while($starcount <= $cd['rate']){ ?>
+                            <img class="img-fluid" style="width:30px;" src="icons/star.png" alt="1">
+                            <?php $starcount++; }
+                                    ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <?php 
+                    }
+                }
+                
+            ?>
+
+        </div>
+    </div>
+
 
     <div class="container-fluid bg-purple py-4 py-md-5 px-4 px-md-3 text-light">
         <div class="row px-4">
@@ -398,12 +465,43 @@ else{
             <div class="col-12 col-lg-7 mb-3">
                 <h5 class="fs-5">We would like to hear from you.</h5>
 
-                <form action="" id="suggestionBox">
+                <form action="_process_comments.php" id="suggestionBox" enctype="multipart/form-data">
                     <div class="mb-2">
-                        <textarea name="" id="" class="form-control"></textarea>
+                        <input type="email" class="form-control bg-yellow border-2 border-dark" name="comment_email"
+                            placeholder="Your Email" required>
                     </div>
-                    <button class="btn btn-outline-light">Submit</button>
+                    <div class="mb-2">
+                        <textarea name="comment_msg" class="form-control bg-yellow border-2 border-dark"
+                            placeholder="Your Comment"></textarea>
+                    </div>
+                    <button class="btn bg-yellow border-2 border-dark trigger-attach" type="button"
+                        aria-label="Attach file">
+                        <img src="icons/attachment.png" alt="" height="60px">
+                    </button>
+                    <input type="file" class="attach-file form-control mb-2 visually-hidden" name="comment_pic">
+
+                    <!-- Rating with clickable stars -->
+                    <div class="rating-stars mb-3">
+                        <span data-value="1" class="star"><img class="img-fluid" style="width:60px;"
+                                src="icons/empty_star.png" alt="1"></span>
+                        <span data-value="2" class="star"><img class="img-fluid" style="width:60px;"
+                                src="icons/empty_star.png" alt="2"></span>
+                        <span data-value="3" class="star"><img class="img-fluid" style="width:60px;"
+                                src="icons/empty_star.png" alt="3"></span>
+                        <span data-value="4" class="star"><img class="img-fluid" style="width:60px;"
+                                src="icons/empty_star.png" alt="4"></span>
+                        <span data-value="5" class="star"><img class="img-fluid" style="width:60px;"
+                                src="icons/empty_star.png" alt=" 5"></span>
+                        <input type="hidden" name="comment_rating" id="commentRating" value="3">
+                    </div>
+
+                    <button class="btn btn-outline-dark bg-yellow fw-bold">
+                        <span class="fs-5">SUBMIT</span> <img src="icons/airplane.png" alt="" height="30px">
+                    </button>
                 </form>
+
+                <div id="responseMessage"></div>
+
 
             </div>
 
@@ -468,6 +566,67 @@ else{
 <script>
 const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
 const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+</script>
+
+<script>
+$(document).ready(function() {
+
+    $('.trigger-attach').on('click', function() {
+        $('.attach-file').trigger('click'); // Simulate a click on the hidden file input
+    });
+
+    const starIcons = {
+        empty: 'icons/empty_star.png',
+        filled: 'icons/star.png'
+    };
+
+    $('.star').on('click', function() {
+        const rating = $(this).data('value');
+        $('#commentRating').val(rating); // Set hidden input value
+        updateStars(rating); // Update star visuals
+    });
+
+    function updateStars(rating) {
+        $('.star').each(function() {
+            const starValue = $(this).data('value');
+            const starImg = starValue <= rating ? starIcons.filled : starIcons.empty;
+            $(this).find('img').attr('src', starImg);
+        });
+    }
+
+    // Initialize with no stars selected
+    updateStars(3);
+    $('#suggestionBox').on('submit', function(e) {
+        e.preventDefault(); // Prevent the default form submission
+
+        const formData = new FormData(this); // Create a FormData object from the form
+
+        $.ajax({
+            url: '_process_comments.php', // The PHP script to process the form
+            type: 'POST',
+            data: formData,
+            processData: false, // Required for FormData
+            contentType: false, // Required for FormData
+            success: function(response) {
+                try {
+                    const jsonData = JSON.parse(response); // Parse the JSON response
+                    if (jsonData.status === 'success') {
+                        alert(jsonData.message); // Display success message
+                        $('#suggestionBox')[0].reset(); // Reset the form
+                    } else {
+                        alert('Error: ' + jsonData.message); // Display error message
+                    }
+                } catch (error) {
+                    alert('Invalid response from server.'); // Handle invalid JSON response
+                }
+            },
+            error: function() {
+                alert('An error occurred. Please try again later.'); // Handle AJAX error
+            }
+        });
+    });
+
+});
 </script>
 
 </html>
