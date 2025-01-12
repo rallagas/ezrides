@@ -19,7 +19,7 @@ require_once "../../_sql_utility.php";?>
 </head>
 <body>
         <?php 
-        include_once "profile-nav.php";
+        require "nav-client.php";
         include_once "menu.php";
         include_once "page-check.php";
 
@@ -41,11 +41,9 @@ require_once "../../_sql_utility.php";?>
                  <!-- Profile Header -->
         <div class="card">
             <div class="card-body text-center">
-                <img src="../../i" alt="Profile Picture" class="rounded-circle mb-3" style="width: 150px; height: 150px;">
+                <img src="../../icons/<?php echo $user_profile_image;?>" alt="Profile Picture" class="rounded-circle mb-3" style="width: 150px; height: 150px;">
                 <h3 class="card-title"><?php echo $user_firstname . ", " . $user_lastname . ", " . $user_mi;?></h3>
                 <p class="text-muted"><?php echo $user_email_address;?></p>
-                <button class="btn btn-primary btn-sm">Edit Profile</button>
-                <button id="userLogOut" class="btn btn-outline-danger btn-sm" id="">Logout</button>
             </div>
         </div>
 
@@ -57,9 +55,9 @@ require_once "../../_sql_utility.php";?>
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="settings-tab" data-bs-toggle="tab" data-bs-target="#settings" type="button" role="tab" aria-controls="settings" aria-selected="false">Settings</button>
             </li>
-            <li class="nav-item" role="presentation">
+            <!-- <li class="nav-item" role="presentation">
                 <button class="nav-link" id="activity-tab" data-bs-toggle="tab" data-bs-target="#activity" type="button" role="tab" aria-controls="activity" aria-selected="false">Activity</button>
-            </li>
+            </li> -->
         </ul>
 
         <!-- Tab Content -->
@@ -105,7 +103,7 @@ require_once "../../_sql_utility.php";?>
             </div>
 
             <!-- Activity Tab -->
-            <div class="tab-pane fade" id="activity" role="tabpanel" aria-labelledby="activity-tab">
+            <!-- <div class="tab-pane fade" id="activity" role="tabpanel" aria-labelledby="activity-tab">
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Recent Activity</h5>
@@ -116,7 +114,7 @@ require_once "../../_sql_utility.php";?>
                         </ul>
                     </div>
                 </div>
-            </div>
+            </div> -->
         </div>
             </div>
         </div>

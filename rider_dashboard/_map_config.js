@@ -10,6 +10,6 @@ const CONFIGURATION = {
         "maxZoom": 20,
         "mapId": "b3394d825c3c2f44"
     },
-    "mapsApiKey": "AIzaSyDB4tE_5d8sQVRR1x2KMTFbQbCpUYWXx8A"
+    "mapsApiKey": "AIzaSyBWi3uSAaNEmBLrAdLt--kMWsoN4lKm9Hs"
 };
 

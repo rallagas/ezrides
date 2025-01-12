@@ -11,7 +11,7 @@ class Config {
     const DBNAME = 'ezride';
     const USERNAME = 'root';
     const PASSWORD = '';
-    const GOOGLE_MAPS_API_KEY = 'AIzaSyAvvMQkQyQYETGeVcSN3dWLaf2a7E64NxI';
+    const GOOGLE_MAPS_API_KEY = 'AIzaSyBWi3uSAaNEmBLrAdLt--kMWsoN4lKm9Hs';
 
     public static function getBaseUrl() {
         $protocol = ( !empty( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443 )

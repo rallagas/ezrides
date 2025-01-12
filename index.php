@@ -66,7 +66,7 @@ include_once "_functions.php";
     height: 7vh;
     animation: truckLoop2 4s linear forwards; /* Added 'forwards' */
 }
-    .banner-animation {
+.banner-animation {
     background-image: url('icons/city.png');
     background-repeat: repeat-x;
     background-size: 100% auto;
@@ -78,7 +78,7 @@ include_once "_functions.php";
 
 @keyframes slideInLeft {
     0% {
-        transform: translateX(-100vw);
+        transform: translateX(-80vw);
         opacity: 0;
     }
     100% {
@@ -130,33 +130,36 @@ include_once "_functions.php";
 
 <body>
 
-    <nav class="navbar navbar-expand-lg fixed-top bg-dark bg-opacity-50">
+    <nav class="navbar navbar-expand-lg fixed-top bg-dark bg-opacity-75">
         <div class="container">
-
             <a class="navbar-brand align-middle" href="index.php">
-                <img src="icons/ezrides-full.png" alt="" style="width:10vw"
+                <img src="icons/ezrides-full.png" alt="" style="height:5vw"
                     class="">
             </a>
-
             <div class="clear-fix">
-                <a class="btn btn-sm bg-purple btn-outline-light me-3 float-end" href="?page=login">Login</a>
-                <a class="btn btn-sm btn-warning me-3 float-end fw-bold" href="?page=register">
-                    <span class="d-none d-lg-block d-print-inline fw-bold"> <img class="float-start" src="icons/travel-car-icon.png" alt="" height="25vh">&nbsp;START YOUR JOURNEY</span>
+                <a class="btn bg-yellow btn-warning me-3 rounded-4 float-end" href="?page=login">
+                <span class="d-none d-lg-block d-print-inline fw-bold"> 
+                    <img class="float-start" src="icons/key.png" alt="" height="25vh">&nbsp;LOGIN</span>
+                    <span class="d-lg-none">
+                      <img src="icons/key.png" alt="" height="25vh">    
+                    </span>
+                </a>
+                <a class="btn bg-yellow btn-warning me-3 rounded-4 float-end" href="?page=register">
+                    <span class="d-none d-lg-block d-print-inline fw-bold">
+                        <img class="float-start" src="icons/travel-car-icon.png" alt="" height="25vh">&nbsp;SIGN UP</span>
                     <span class="d-lg-none">
                       <img src="icons/travel-car-icon.png" alt="" height="25vh">    
                     </span>
                 </a>
-                <a class="btn btn-sm btn-outline-light bg-yellow me-3 float-end fw-bold" href="?page=register&regRider">
-                    <span class="d-none d-lg-block d-print-inline fw-bold"> <img class="float-start" src="icons/ezrides-icon.png" alt="" height="25vh">&nbsp;BECOME A RIDER</span>
+                <a class="btn bg-yellow btn-warning me-3 rounded-4 float-end" href="?page=register&regRider">
+                    <span class="d-none d-lg-block d-print-inline fw-bold"> 
+                    <img class="float-start" src="icons/ezrides-icon.png" alt="" height="25vh">&nbsp;BE A RIDER</span>
                     <span class="d-lg-none">
                       <img src="icons/ezrides-icon.png" alt="" height="25vh">
                     </span>
-                    
                 </a>
 
             </div>
-
-
 
         </div>
     </nav>
@@ -234,18 +237,20 @@ include_once "_functions.php";
             <div id="carouselExampleAutoplaying" class="carousel slide px-0" data-bs-ride="carousel">
                 <div class="carousel-inner px-0">
                     <?php
-                    $slides=5;
+                    $slides=4;
                     $currSlide=1;
                     while($currSlide <= $slides){
                     ?>
                     <div class="carousel-item px-0 <?php echo $currSlide == 1 ? "active" : "" ; ?>">
-                        <img src="icons/sliders/<?php echo $currSlide . ".png"; ?>" class="mx-0 ing-fluid vw-100"  alt="...">
+                        <img src="icons/sliders/<?php echo $currSlide . ".png"; ?>" class="mx-0 img-fluid vw-100 d-none d-md-block"  alt="...">
+                        <img src="icons/sliders-vertical/<?php echo $currSlide . ".png"; ?>" class="mx-0 img-fluid vw-100 d-lg-none"  alt="...">
                     </div>
                     <?php 
                          $currSlide++;
                     } 
                     ?>
                 </div>
+
                 <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleAutoplaying"
                     data-bs-slide="prev">
                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -262,17 +267,42 @@ include_once "_functions.php";
 else{
     echo "default";
 } ?>
-
-        <div class="row">
-            <div class="col-lg-12 bg-yellow mb-0 banner-animation">
+    </div>
+    <div class="container-fluid">
+        <div class="row gx-3 bg-yellow text-light">
+            <div class=" col-12 col-lg-4 text-center pt-3">
+                <h5 class="fs-5 fw-bold">GOAL</h5>
+                <h6 class="fs-6">
+                We are determined to provide high-quality Delivery and D2D services that exceed expectations.. Let's take a look at what we have been working on and what our future plans are.
+                </h6>
+            </div>
+            <div class=" px-3 col-12 col-lg-4 text-center pt-3">
+                <h5 class="fs-5 fw-bold">
+                MISSION
+                </h5>
+                <h6 class="fs-6">
+                We empower riders to deliver top-notch online services with integrity and speed. We're committed to constant improvement, striving to make every delivery a seamless experience that earns trust and satisfaction to Customer."
+                To provide exceptional online services through dedicated riders who prioritize customer satisfaction above all else
+                And also to support and empower service providers, including riders, to learn and grow through their experiences
+                </h6>
+            </div>
+            <div class=" col-12 col-lg-4 text-center pt-3">
+                <h5 class="fs-5 fw-bold">VISION</h5>
+                <h6 class="fs-6">
+                Delivering Seamless Excellence: Empowering Service Providers to Provide Quality Online Services.
+                </h6>
+            </div>
+            
+        </div>
+        <div class="row bg-yellow">
+            <div class="col-lg-12 mb-0 banner-animation">
                 <img src="icons/truck.gif" class="img-fluid img-truck" alt="">
                 <img src="icons/rider.gif" class="img-fluid img-rider" alt="">
                 <img src="icons/orange-truck.gif" class="img-fluid img-truck2">
-                
             </div>
-
         </div>
-
+    </div>
+    <div class="container-fluid">
         <div class="row">
             <div class="col-sm-12 col-lg-12 bg-purple text-light">
                 <h3 class="fw-bold fs-2 ms-5 py-3">

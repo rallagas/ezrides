@@ -2,6 +2,7 @@
 require_once "../_db.php";
 include_once "../_functions.php";
 include_once "../_sql_utility.php";
+include_once "button-functions.php";
 ?>
 <!DOCTYPE html>
 <html>
@@ -18,28 +19,31 @@ include_once "../_sql_utility.php";
         href='https://cdn-uicons.flaticon.com/2.6.0/uicons-regular-rounded/css/uicons-regular-rounded.css'>
     <link rel="stylesheet" href="../css/style.css">
     <style>
-    .modal {
+    .modal-img {
         display: none;
         position: fixed;
         z-index: 1000;
         left: 0;
         top: 0;
-        width: 100%;
-        height: 100%;
+        width: 100vw;
+        height: 100vh;
         overflow: auto;
         background-color: rgba(0, 0, 0, 0.8);
     }
 
-    .modal-content {
-        margin-top: 25%;
+    .modal-img-content {
+        margin-top: 15%;
+        margin-left: 10%;
         display: block;
-        max-width: 90%;
-        max-height: 80%;
+        max-width: 80vw;
+        max-height: 100%;
+        width: 80vh;
+
     }
 
     .close {
         position: absolute;
-        top: 15px;
+        top: 10%;
         right: 25px;
         color: #fff;
         font-size: 30px;
@@ -76,8 +80,8 @@ include_once "../_sql_utility.php";
 </head>
 
 <body>
-    <?php include_once "nav-client.php";?>
-    <hr class="m-0 p-0 text-dark">
+<?php include_once "nav-client.php";?>
+
     <div class="container-fluid p-1">
         <div class="row px-5" id="queryresult"></div>
         <div class="row px-4">
@@ -102,7 +106,7 @@ include_once "../_sql_utility.php";
 
                 if (!isset($_GET['page']) || (isset($_GET['page']) && $_GET['page'] == 'home')) { ?>
 
-            <div class="col-lg-12">
+            <div class="col-lg-6">
                 <?php include_once "_index_wallet.php"; ?>
             </div>
             <!-- <div class="col-lg-12 col-md-12 col-sm-12">
@@ -113,8 +117,7 @@ include_once "../_sql_utility.php";
 
             <div class="col-12 col-lg-12">
                 <div class="container-fluid">
-                    <div class="row">
-
+                    <div class="row gx-1 gy-1">
                         <?php
                                     $txn_cats = select_data("txn_category", "txn_category_status='A'", "txn_category_id", 100);
 
@@ -122,39 +125,17 @@ include_once "../_sql_utility.php";
                                         foreach ($txn_cats as $tcat) {
                                             appButton($tcat['icon_class'], $tcat['txn_category_id'], $tcat['page_action'], $tcat['txn_category_name']);
                                         }
+
+                                        appButton('document.png','6','shop','DOCUMENT');
+                                        appButton('groc-delivery.png','6','shop','GROCERY');
+                                        appButton('rx-delivery.png','6','shop','PHARMACY');
+                                        appButton('delivery-guy-icon.png','6','shop','FOOD');
                                     } ?>
-
-
-                        <div class="col col-lg-1 text-center">
-                            <a href="index.php?page=shop&txn_cat=6&merchant=13"
-                                class="btn btn-outline-light bg-yellow shadow rounded-4">
-                                <img src="../icons/document.png" alt="" class="quick-links img-fluid" width="80%">
-                                <span class="fw-bold" style="font-size:10px">DOCUMENT</span>
-                            </a>
-                        </div>
-
-                        <div class="col col-lg-1  text-center">
-                            <a href="index.php?page=shop&txn_cat=6&merchant=11"
-                                class="btn btn-outline-light  bg-yellow shadow rounded-4">
-                                <img src="../icons/rx-delivery.png" alt="" class="quick-links img-fluid" width="80%">
-                                <span class="fw-bold" style="font-size:10px">PHARMACY</span>
-                            </a>
-                        </div>
-
-                        <div class="col col-lg-1  text-center">
-                            <a href="index.php?page=shop&txn_cat=6&merchant=1"
-                                class="btn btn-outline-light bg-yellow shadow rounded-4">
-                                <img src="../icons/groc-delivery.png" alt="" class="quick-links img-fluid" width="80%">
-                                <span class=" small fw-bold" style="font-size:10px">GROCERY</span>
-                            </a>
-                        </div>
-
-                        <div class="col col-lg-1  text-center">
-                            <a href="index.php?page=shop&txn_cat=6&merchant=12"
-                                class="btn btn-outline-light bg-yellow shadow rounded-4">
-                                <img src="../icons/delivery-guy-icon.png" alt="" class="quick-links img-fluid"
-                                    width="80%">
-                                <span class=" small fw-bold" style="font-size:10px">FOOD</span>
+                        <div class="col-4 col-lg-1 col-md-3 col-sm-4 text-center">
+                            <a href="./_profile/" class="btn btn-outline-light bg-yellow shadow rounded-4 w-100">
+                                <img src="../icons/settings.png" alt="" class="quick-links img-fluid" style="height:7vh;">
+                                <br>
+                                <span class="small fw-bold" style="font-size:10px">ACCOUNT</span>
                             </a>
                         </div>
 
@@ -162,8 +143,8 @@ include_once "../_sql_utility.php";
 
                     <div class="row gx-2">
                         <div class="col-12 col-lg-6">
-                            <div class="card mt-2 mb-2">
-                                <div class="card-header">
+                            <div class="card mt-2 mb-2 shadow-lg">
+                                <div class="card-header bg-purple text-light">
                                     <span class="fs-4 fw-bold">TRIPS</span>
                                 </div>
                                 <div class="card-body">
@@ -188,14 +169,14 @@ include_once "../_sql_utility.php";
                             </div>
                         </div>
                         <!-- modal for the image preview -->
-                        <div id="imageModal" class="modal" style="display: none;">
+                        <div id="imageModal" class="modal modal-img" style="display: none;">
                             <span class="close">&times;</span>
-                            <img class="modal-content" id="modalImage">
+                            <img class="modal-img-content">
                         </div>
 
                         <div class="col-12 col-lg-6">
                             <div class="card mt-2 mb-2">
-                                <div class="card-header">
+                                <div class="card-header bg-purple text-light">
                                     <span class="fs-4 fw-bold">DELIVERIES</span>
                                 </div>
                                 <div class="card-body">
@@ -244,22 +225,65 @@ include_once "../_sql_utility.php";
                                                     style="width:15%;display:inline-block">
                                             </a>
                                             <?php }
+                                            $current_progress=null;
+                                            $stat1 = "btn-secondary";
+                                            $stat2 = "btn-secondary";
+                                            $stat3 = "btn-secondary";
+                                            switch($ps['booking_status']){
+                                                case 'P': $current_progress= '0%';
+                                                            $stat1 = "btn-warning";
+                                                            $stat2 = "btn-secondary";
+                                                            $stat3 = "btn-secondary"; 
+                                                        break;
+
+                                                case 'A': $current_progress= '50%';
+                                                $stat1 = "btn-success";
+                                                $stat2 = "btn-warning";
+                                                $stat3 = "btn-secondary"; 
+                                                    break;
+                                                
+                                                case 'R': $current_progress= '50%';
+                                                    $stat1 = "btn-success";
+                                                    $stat2 = "btn-success";
+                                                    $stat3 = "btn-secondary"; 
+                                                        break;
+
+                                                case 'I': $current_progress= '100%';
+                                                $stat1 = "btn-success";
+                                                $stat2 = "btn-success";
+                                                $stat3 = "btn-warning"; 
+                                                    break;
+
+                                                case 'C': $current_progress= '100%';
+                                                $stat1 = "btn-success";
+                                                $stat2 = "btn-success";
+                                                $stat3 = "btn-success"; 
+                                                    break;
+                                                
+                                                default: $current_progress= '0%';
+                                                $stat1 = "btn-secondary";
+                                                $stat2 = "btn-secondary";
+                                                $stat3 = "btn-secondary"; 
+                                                    
+                                            }
                                                             ?>
+
                                         </div>
                                         <div class="position-relative m-4">
                                             <div class="progress" role="progressbar" aria-label="Progress"
                                                 aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"
                                                 style="height: 1px;">
-                                                <div class="progress-bar" style="width: 50%"></div>
+                                                <div class="progress-bar"
+                                                    style="width: <?php echo $current_progress;?>"></div>
                                             </div>
                                             <button type="button"
-                                                class="position-absolute top-0 start-0 translate-middle btn btn-sm btn-primary rounded-pill"
+                                                class="position-absolute top-0 start-0 translate-middle btn btn-sm <?php echo $stat1; ?> rounded-pill"
                                                 style="width: 2rem; height:2rem;">1</button>
                                             <button type="button"
-                                                class="position-absolute top-0 start-50 translate-middle btn btn-sm btn-primary rounded-pill"
+                                                class="position-absolute top-0 start-50 translate-middle btn btn-sm <?php echo $stat2; ?> rounded-pill"
                                                 style="width: 2rem; height:2rem;">2</button>
                                             <button type="button"
-                                                class="position-absolute top-0 start-100 translate-middle btn btn-sm btn-secondary rounded-pill"
+                                                class="position-absolute top-0 start-100 translate-middle btn btn-sm <?php echo $stat3; ?> rounded-pill"
                                                 style="width: 2rem; height:2rem;">3</button>
                                         </div>
 
@@ -277,15 +301,8 @@ include_once "../_sql_utility.php";
         <?php } ?>
 
 
+       
     </div>
-    <div class="container fixed-bottom d-lg-none d-md-none" style="background-color: rgba(47, 0, 124, 0.75);">
-        <div class="row pt-1" style="height: 10vh;">
-            <?php include "menu.php"; ?>
-        </div>
-    </div>
-
-
-
 
 </body>
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"
@@ -308,20 +325,20 @@ $(document).ready(function() {
         event.preventDefault(); // Prevent default link behavior
 
         const imageUrl = $(this).find('img').attr('src'); // Get the image URL
-        $('#modalImage').attr('src', imageUrl); // Set the modal image source
+        $('.modal-img-content').attr('src', imageUrl); // Set the modal image source
 
-        $('#imageModal').fadeIn(); // Show the modal
+        $('.modal-img').fadeIn(); // Show the modal
     });
 
     // Close the modal when 'x' is clicked
     $('.close').on('click', function() {
-        $('#imageModal').fadeOut();
+        $('.modal-img').fadeOut();
     });
 
     // Close the modal when clicking outside the image
     $(window).on('click', function(event) {
-        if ($(event.target).is('#imageModal')) {
-            $('#imageModal').fadeOut();
+        if ($(event.target).is('.modal-img')) {
+            $('.modal-img').fadeOut();
         }
     });
 

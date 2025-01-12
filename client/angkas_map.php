@@ -16,8 +16,9 @@ include_once "../_sql_utility.php";
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel='stylesheet'
         href='https://cdn-uicons.flaticon.com/2.6.0/uicons-regular-rounded/css/uicons-regular-rounded.css'>
-    <link rel="stylesheet" href="../css/style.css">
-    <link rel="stylesheet" href="angkas_map.css">
+        <link rel="stylesheet" href="angkas_map.css">
+        <link rel="stylesheet" href="../css/style.css">
+    
 
 </head>
 
@@ -273,7 +274,7 @@ include_once "../_sql_utility.php";
             strictBounds: true, // Enforce strict boundary limits
         },
     },
-    mapsApiKey: "AIzaSyDB4tE_5d8sQVRR1x2KMTFbQbCpUYWXx8A",
+    mapsApiKey: "AIzaSyBWi3uSAaNEmBLrAdLt--kMWsoN4lKm9Hs",
     currentAddressTxt: null, // Current address will be dynamically updated
     curLocCoor: null, // Current coordinates will be dynamically updated
 };
@@ -435,7 +436,7 @@ function ensureInputsExistAndSetValues() {
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDB4tE_5d8sQVRR1x2KMTFbQbCpUYWXx8A&callback=initializeApp&libraries=places,geometry&solution_channel=GMP_QB_commutes_v3_c&loading=async" async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBWi3uSAaNEmBLrAdLt--kMWsoN4lKm9Hs&callback=initializeApp&libraries=places,geometry&solution_channel=GMP_QB_commutes_v3_c&loading=async" async defer></script>
 
 </body>
 

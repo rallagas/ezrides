@@ -26,8 +26,11 @@ $transactionHistory = query(
 </head>
 
 <body>
-    <div class="container-fluid">
 
+    <!-- Top-Up Modal -->
+    <?php include_once "../top_up_modal.php";?>
+  
+    <div class="container-fluid">
         <!-- Display Current Balance -->
         <div class="card mb-2">
             <div class="card-body">
@@ -41,11 +44,7 @@ $transactionHistory = query(
             </div>
         </div>
 
-
     </div>
-    <!-- Top-Up Modal -->
-     <?php include_once "../top_up_modal.php";?>
-  
     <!-- Bootstrap JS (Assuming CDN included) -->
 
 </body>
