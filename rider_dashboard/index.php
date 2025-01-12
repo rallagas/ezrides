@@ -229,7 +229,7 @@ query("DELETE FROM angkas_bookings WHERE date_booked < (NOW() - INTERVAL 2 HOUR)
 <script src="rider_process.js"></script>
 <script src="../_multipurpose_ajax.js"></script>
 <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDB4tE_5d8sQVRR1x2KMTFbQbCpUYWXx8A&libraries=places,geometry&loading=async">
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBWi3uSAaNEmBLrAdLt--kMWsoN4lKm9Hs&libraries=places,geometry&loading=async">
 </script>
 
 

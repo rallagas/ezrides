@@ -98,7 +98,7 @@
       const CONFIGURATION = {
         "ctaTitle": "Find",
         "mapOptions": {"center":{"lat":37.4221,"lng":-122.0841},"fullscreenControl":true,"mapTypeControl":false,"streetViewControl":true,"zoom":11,"zoomControl":true,"maxZoom":22,"mapId":""},
-        "mapsApiKey": "AIzaSyDB4tE_5d8sQVRR1x2KMTFbQbCpUYWXx8A",
+        "mapsApiKey": "AIzaSyBWi3uSAaNEmBLrAdLt--kMWsoN4lKm9Hs",
         "capabilities": {"addressAutocompleteControl":true,"mapDisplayControl":true,"ctaControl":true}
       };
 
@@ -183,7 +183,7 @@
     </script>
   </head>
   <body>
-    <gmpx-api-loader key="AIzaSyDB4tE_5d8sQVRR1x2KMTFbQbCpUYWXx8A" solution-channel="GMP_QB_addressselection_v3_cABC">
+    <gmpx-api-loader key="AIzaSyBWi3uSAaNEmBLrAdLt--kMWsoN4lKm9Hs" solution-channel="GMP_QB_addressselection_v3_cABC">
     </gmpx-api-loader>
     <gmpx-split-layout row-layout-min-width="600">
       <div class="panel card" slot="fixed">

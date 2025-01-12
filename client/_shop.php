@@ -25,7 +25,7 @@ if (!empty($_SESSION['user_profile'])) {
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="../css/style.css">
     <script
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDB4tE_5d8sQVRR1x2KMTFbQbCpUYWXx8A&libraries=places&loading=async">
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBWi3uSAaNEmBLrAdLt--kMWsoN4lKm9Hs&libraries=places&loading=async">
     </script>
 
     <script type="module">
@@ -149,12 +149,8 @@ if (!empty($_SESSION['user_profile'])) {
 
 
 <body>
-    <?php //include_once "nav-client.php"; ?>
-
     <?php
-    if(isset($_GET['order_history'])){
         include_once "_transaction_history.php";
-    }
     ?>
 
 
@@ -190,52 +186,6 @@ if (!empty($_SESSION['user_profile'])) {
             // Slice the products array to get the items for the current page
             $currentProducts = array_slice($products, $startIndex, $itemsPerPage);  ?>
 
-    <div class="bg-dark bg-opacity-75 py-2 position-fixed bottom-0 end-0 d-inline-block z-3">
-        <!-- Button to Show Cart Items -->
-
-
-        <button
-            class="d-none shadow btn btn-warning border-2 border-light btn-lg position-relative mx-1 btn-checkout float-end"
-            data-bs-toggle="tooltip" data-bs-title="Check Out" data-bs-placement="left">
-
-            <span>Check Out </span>
-
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                class="bi bi-cart-check-fill" viewBox="0 0 16 16">
-                <path
-                    d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0m7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0m-1.646-7.646-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L8 8.293l2.646-2.647a.5.5 0 0 1 .708.708" />
-            </svg>
-        </button>
-        <button id="ShowCartItems" class="shadow btn btn-warning btn-lg position-relative float-end mx-1"
-            data-bs-toggle="collapse" data-bs-target="#CartItems" aria-expanded="false" aria-controls="CartItems">
-            <span id="cartCountBadge"
-                class="position-absolute z-3 top-0 start-100 translate-middle badge rounded-pill bg-danger"></span>
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart"
-                viewBox="0 0 16 16">
-                <path
-                    d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5M3.102 4l1.313 7h8.17l1.313-7zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4m7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4m-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2m7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2" />
-            </svg>
-        </button>
-        <button
-            class="HideOrderHistory toggleBtnOrderHist d-none shadow btn btn-lg btn-primary position-relative mx-1 float-end">
-            <span class="position-absolute  z-3 top-0 start-100 translate-middle badge rounded-pill bg-danger"></span>
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box2"
-                viewBox="0 0 16 16">
-                <path
-                    d="M2.95.4a1 1 0 0 1 .8-.4h8.5a1 1 0 0 1 .8.4l2.85 3.8a.5.5 0 0 1 .1.3V15a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1V4.5a.5.5 0 0 1 .1-.3zM7.5 1H3.75L1.5 4h6zm1 0v3h6l-2.25-3zM15 5H1v10h14z" />
-            </svg>
-        </button>
-        <button
-            class="ShowOrderHistory toggleBtnOrderHist shadow btn btn-lg btn-primary position-relative mx-1 float-end">
-            <span
-                class="MyShopListCountBadge position-absolute  z-3 top-0 start-100 translate-middle badge rounded-pill bg-danger"></span>
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-seam"
-                viewBox="0 0 16 16">
-                <path
-                    d="M8.186 1.113a.5.5 0 0 0-.372 0L1.846 3.5l2.404.961L10.404 2zm3.564 1.426L5.596 5 8 5.961 14.154 3.5zm3.25 1.7-6.5 2.6v7.922l6.5-2.6V4.24zM7.5 14.762V6.838L1 4.239v7.923zM7.443.184a1.5 1.5 0 0 1 1.114 0l7.129 2.852A.5.5 0 0 1 16 3.5v8.662a1 1 0 0 1-.629.928l-7.185 2.874a.5.5 0 0 1-.372 0L.63 13.09a1 1 0 0 1-.63-.928V3.5a.5.5 0 0 1 .314-.464z" />
-            </svg>
-        </button>
-    </div>
     <!-- Main Shop -->
     <div class="container-fluid" id="MainShop">
         <div class="row  gx-1">

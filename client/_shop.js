@@ -233,7 +233,7 @@ function clearVoucherInfo() {
 
 async function getDistanceAndETAProxy(fromLat, fromLng, toLat, toLng) {
     const proxyUrl = 'proxy.php'; // Update this with the actual path to your PHP script
-    const apiKey = 'AIzaSyAvvMQkQyQYETGeVcSN3dWLaf2a7E64NxI';
+    const apiKey = 'AIzaSyBWi3uSAaNEmBLrAdLt--kMWsoN4lKm9Hs';
     const url = `${proxyUrl}?origins=${fromLat},${fromLng}&destinations=${toLat},${toLng}&key=${apiKey}`;
 
     try {
@@ -274,7 +274,7 @@ async function getDistanceAndETAProxy(fromLat, fromLng, toLat, toLng) {
 }
 
 
-// async function getDistanceAndETA(fromLat, fromLng, toLat, toLng, apiKey = 'AIzaSyAvvMQkQyQYETGeVcSN3dWLaf2a7E64NxI') {
+// async function getDistanceAndETA(fromLat, fromLng, toLat, toLng, apiKey = 'AIzaSyBWi3uSAaNEmBLrAdLt--kMWsoN4lKm9Hs') {
 //     const url = `https://maps.googleapis.com/maps/api/distancematrix/json?units=metric` +
 //         `&origins=${fromLat},${fromLng}` +
 //         `&destinations=${toLat},${toLng}` +
@@ -790,8 +790,6 @@ $(document).on("click", "button.deleteCartItem", function () {
 });
 
 $(document).ready(function() {
-
-
         // Event listener for 'ShowOrderHistory' button
         $(".ShowOrderHistory").on("click", async function (e) {
             e.preventDefault(); // Prevent default action

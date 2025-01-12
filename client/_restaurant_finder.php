@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
     <link href="_restaurant_finder.css" rel="stylesheet">
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDB4tE_5d8sQVRR1x2KMTFbQbCpUYWXx8A&callback=initMap&libraries=places,geometry&solution_channel=GMP_QB_neighborhooddiscovery_v3_cADEF&loading=async" async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBWi3uSAaNEmBLrAdLt--kMWsoN4lKm9Hs&callback=initMap&libraries=places,geometry&solution_channel=GMP_QB_neighborhooddiscovery_v3_cADEF&loading=async" async defer></script>
 
     <script src="https://ajax.googleapis.com/ajax/libs/handlebars/4.7.7/handlebars.min.js"></script>
     <script src="_restaurant_finder.js"></script>
@@ -36,7 +36,7 @@
                 "maxZoom": 20,
                 "mapId": ""
             },
-            "mapsApiKey": "AIzaSyDB4tE_5d8sQVRR1x2KMTFbQbCpUYWXx8A"
+            "mapsApiKey": "AIzaSyBWi3uSAaNEmBLrAdLt--kMWsoN4lKm9Hs"
         };
 
         let map, service;

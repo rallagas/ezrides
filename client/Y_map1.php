@@ -13,7 +13,7 @@
   <button id="calculate_button">Calculate Directions</button>
 </body>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAvvMQkQyQYETGeVcSN3dWLaf2a7E64NxI&libraries=places,routes,directions,drawing,marker&map_ids=f8a5e937724a0990" async defer></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBWi3uSAaNEmBLrAdLt--kMWsoN4lKm9Hs&libraries=places,routes,directions,drawing,marker&map_ids=f8a5e937724a0990" async defer></script>
 <script>
   $(document).ready(async function() {
       

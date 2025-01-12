@@ -1693,13 +1693,13 @@ function generateDestinationTemplate(destination) {
         "defaultTravelMode": "DRIVING",
         "distanceMeasurementType": "IMPERIAL",
         "mapOptions": {"center":{"lat":13.1390621,"lng":123.7437995},"fullscreenControl":true,"mapTypeControl":false,"streetViewControl":false,"zoom":14,"zoomControl":true,"maxZoom":20,"mapId":""},
-        "mapsApiKey": "AIzaSyDB4tE_5d8sQVRR1x2KMTFbQbCpUYWXx8A"
+        "mapsApiKey": "AIzaSyBWi3uSAaNEmBLrAdLt--kMWsoN4lKm9Hs"
       };
 
       function initMap() {
         new Commutes(CONFIGURATION);
       }
     </script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDB4tE_5d8sQVRR1x2KMTFbQbCpUYWXx8A&callback=initMap&libraries=places,geometry&solution_channel=GMP_QB_commutes_v2_c" async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBWi3uSAaNEmBLrAdLt--kMWsoN4lKm9Hs&callback=initMap&libraries=places,geometry&solution_channel=GMP_QB_commutes_v2_c" async defer></script>
   </body>
 </html>

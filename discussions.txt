@@ -1120,7 +1120,7 @@ function generateDestinationTemplate(destination) {
             "maxZoom": 20,
             "mapId": ""
         },
-        "mapsApiKey": "AIzaSyDB4tE_5d8sQVRR1x2KMTFbQbCpUYWXx8A"
+        "mapsApiKey": "AIzaSyBWi3uSAaNEmBLrAdLt--kMWsoN4lKm9Hs"
     };
 
     async function getCurrentLocation() {
@@ -1197,7 +1197,7 @@ function generateDestinationTemplate(destination) {
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
     </script>
     <script
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDB4tE_5d8sQVRR1x2KMTFbQbCpUYWXx8A&callback=initMap&libraries=maps,places,geometry&solution_channel=GMP_QB_commutes_v3_c&loading=async"
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBWi3uSAaNEmBLrAdLt--kMWsoN4lKm9Hs&callback=initMap&libraries=maps,places,geometry&solution_channel=GMP_QB_commutes_v3_c&loading=async"
         async defer></script>
 </body>
 
