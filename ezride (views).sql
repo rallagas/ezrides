@@ -1,19 +1,3 @@
--- phpMyAdmin SQL Dump
--- version 5.2.0
--- https://www.phpmyadmin.net/
---
--- Host: localhost
--- Generation Time: Nov 27, 2024 at 09:57 AM
--- Server version: 10.4.21-MariaDB
--- PHP Version: 8.1.6
-
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-START TRANSACTION;
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
 
 CREATE OR REPLACE VIEW `booking_shop_combined` AS 
 SELECT 
@@ -81,7 +65,8 @@ FROM
     ) 
     left join `user_profile` `up` on(`u`.`user_id` = `up`.`user_id`)
   );
--- --------------------------------------------------------
+
+
 CREATE OR REPLACE VIEW `booking_shop_header_view` AS 
 SELECT 
   `ab`.`angkas_booking_id` AS `angkas_booking_id`, 
@@ -124,7 +109,8 @@ GROUP BY
   `up`.`user_lastname`, 
   `ab`.`booking_status`, 
   `ab`.`payment_status`;
--- --------------------------------------------------------
+
+
 CREATE OR REPLACE VIEW `shop_booking_header_view` AS 
 SELECT 
   `so`.`shop_order_ref_num` AS `shop_order_reference_number`, 
@@ -297,7 +283,8 @@ GROUP BY
     ', ', 
     coalesce(`ri`.`user_firstname`, '')
   );
--- --------------------------------------------------------
+
+
 CREATE OR REPLACE VIEW `shop_item_merchant_view` AS 
 SELECT 
   `so`.`shop_order_ref_num` AS `shop_order_ref_num`, 
@@ -374,7 +361,3 @@ ORDER BY
   `ab`.`angkas_booking_id` ASC;
 
 COMMIT;
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
