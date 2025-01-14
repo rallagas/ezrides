@@ -251,7 +251,7 @@ include_once "../_sql_utility.php";
     <script src="_process_ajax.js"></script>
     <script>
     // Configuration object
-    const CONFIGURATION = {
+const CONFIGURATION = {
     defaultTravelMode: "DRIVING",
     distanceMeasurementType: "METRIC",
     mapOptions: {

@@ -66,4 +66,41 @@ if (isset($_GET['approveCashout'])) {
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 <script src="_loader.js"></script>
+<script>
+$(document).ready(function() {
+    // Trigger file selection
+    $('.attach-file').on('click', function() {
+        $(this).siblings('.form-file').click();
+    });
+
+    // Submit the form data
+    $('form').on('submit', function(e) {
+        e.preventDefault(); // Prevent default form submission
+
+        // Collect form data
+        let formData = new FormData(this);
+
+        $.ajax({
+            url: '_process_vehicle.php',  // Server-side script
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(response) {
+                let res = JSON.parse(response);
+                if (res.success) {
+                    alert('Vehicle registered successfully.');
+                    $('form')[0].reset();
+                } else {
+                    alert('Error: ' + res.message);
+                }
+            },
+            error: function() {
+                alert('An error occurred while processing your request.');
+            }
+        });
+    });
+});
+
+</script>
 </html>
