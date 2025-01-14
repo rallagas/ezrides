@@ -25,7 +25,7 @@ if (!empty($_SESSION['user_profile'])) {
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="../css/style.css">
     <script
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBWi3uSAaNEmBLrAdLt--kMWsoN4lKm9Hs&libraries=places&loading=async">
+        src="https://maps.googleapis.com/maps/api/js?key=<?php echo Config::GOOGLE_MAPS_API_KEY; ?>&libraries=places&loading=async">
     </script>
 
     <script type="module">

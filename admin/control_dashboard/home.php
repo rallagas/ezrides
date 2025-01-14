@@ -61,7 +61,9 @@ $pendingTopupList = query($sql_top_up_approval);
                         <h6 class="card-title fw-bold">INCOME <small
                                 class="small fs-6 fw-light text-success">PHP</small> </h6>
                         <h1 class="display-4"><?php echo number_format($sales,2);?></h1>
-                        <sup class="text-secondary"> <?php echo ($wallet_pool > 0) ? number_format(($sales/$wallet_pool)*100,2) : 0.00 ;?>% OF WALLET POOL </sup>
+                        <sup class="text-secondary">
+                            <?php echo ($wallet_pool > 0) ? number_format(($sales/$wallet_pool)*100,2) : 0.00 ;?>% OF
+                            WALLET POOL </sup>
                     </div>
                 </div>
             </div>
@@ -159,9 +161,11 @@ $pendingTopupList = query($sql_top_up_approval);
                                 <td>
                                     <a href="#" class="img-preview btn btn-outline-secondary"
                                         data-imgsrc="../../_upload_gcash_receipts/<?php echo $gcash_attachment; ?>">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-paperclip" viewBox="0 0 16 16">
-                                             <path d="M4.5 3a2.5 2.5 0 0 1 5 0v9a1.5 1.5 0 0 1-3 0V5a.5.5 0 0 1 1 0v7a.5.5 0 0 0 1 0V3a1.5 1.5 0 1 0-3 0v9a2.5 2.5 0 0 0 5 0V5a.5.5 0 0 1 1 0v7a3.5 3.5 0 1 1-7 0z"/>
-                                            </svg>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                            fill="currentColor" class="bi bi-paperclip" viewBox="0 0 16 16">
+                                            <path
+                                                d="M4.5 3a2.5 2.5 0 0 1 5 0v9a1.5 1.5 0 0 1-3 0V5a.5.5 0 0 1 1 0v7a.5.5 0 0 0 1 0V3a1.5 1.5 0 1 0-3 0v9a2.5 2.5 0 0 0 5 0V5a.5.5 0 0 1 1 0v7a3.5 3.5 0 1 1-7 0z" />
+                                        </svg>
                                     </a>
 
                                 </td>
@@ -228,6 +232,83 @@ $pendingTopupList = query($sql_top_up_approval);
                             else{ ?>
                             <a href="index.php" class="btn btn-link text-decoration-none small">PENDING APPROVALS</a>
                             <?php } ?>
+
+                            <a href="?regCarRental" class="btn btn-link text-decoration-none small">REGISTER CAR FOR
+                                RENT +</a>
+                            <?php
+                                if(isset($_GET['regCarRental'])){ ?>
+                            <div class="card">
+                                <div class="card-header bg-purple">
+                                    <span class="card-title text-light">CAR RENTAL REGISTRATION FORM</span>
+                                </div>
+                                <div class="card-body">
+                                    <form action="" enctype="multipart/form-data">
+                                        <div class="mb-3">
+                                            <input type="text" name="ownername" placeholder="Owner Name"
+                                                class="form-control">
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <input type="text" name="owneraddress" placeholder="Owner Address"
+                                                class="form-control">
+                                        </div>
+                                        <div class="mb-3">
+                                            <input type="text" name="carmodel" placeholder="Car Model"
+                                                class="form-control">
+                                        </div>
+                                        <div class="mb-3">
+                                            <input type="text" name="carcolor" placeholder="Car Color"
+                                                class="form-control">
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <select name="vehicleType" id="" class="form-select">
+                                                <option>--Vehicle Type--</option>
+                                                <option value="0005">SEDAN (4-5 Seater)</option>
+                                                <option value="0006">SUV (6-7 Seater)</option>
+                                                <option value="0002">MOTORCYCLE (2 Seater)</option>
+                                            </select>
+
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <input type="text" name="platenumber" placeholder="Plate Number"
+                                                class="form-control">
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <input type="text" name="rateperhr" placeholder="Rate Per Hour"
+                                                class="form-control">
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <input type="text" name="rateperday" placeholder="Rate Per Day"
+                                                class="form-control">
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <input type="text" name="rateperkm" placeholder="Rate Per KM"
+                                                class="form-control">
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <button class="btn btn-outline-secondary attach-file" type="button">
+                                                Attach Photo of your Vehicle
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                    fill="currentColor" class="bi bi-paperclip" viewBox="0 0 16 16">
+                                                    <path d="M4.5 3a2.5 2.5 0 0 1 5 0v9a1.5 1.5 0 0 1-3 0V5a.5.5 0 0 1 1 0v7a.5.5 0 0 0 1 0V3a1.5 1.5 0 1 0-3 0v9a2.5 2.5 0 0 0 5 0V5a.5.5 0 0 1 1 0v7a3.5 3.5 0 1 1-7 0z" />
+                                                </svg>
+                                            </button>
+                                            <input type="file" name="carphoto" class="form-file visually-hidden form-control">
+                                        </div>
+
+                                        <input type="submit" class="btn btn-primary border-dark border-2 bg-purple text-light">
+                                    </form>
+                                    <!-- end of form -->
+                                </div>
+                            </div>
+                            <?php }
+                            ?>
                         </h6>
                     </div>
                     <div class="card-body">
@@ -270,7 +351,8 @@ $pendingTopupList = query($sql_top_up_approval);
 
                         <table class="table table-striped table-responsive overflow-y-scroll" style="height:10vh">
                             <thead>
-                              <?php if(!isset($_GET['rentalHist'])){ ?>  <th>User Balance <br><sup>PHP</sup></th> <?php } ?>
+                                <?php if(!isset($_GET['rentalHist'])){ ?> <th>User Balance <br><sup>PHP</sup></th>
+                                <?php } ?>
                                 <th>Name</th>
                                 <th>Contact</th>
                                 <th>Plate No.</th>
@@ -291,7 +373,7 @@ $pendingTopupList = query($sql_top_up_approval);
                             $car = explode(':',$item_description);
                             ?>
                             <tr>
-                               <?php if(!isset($_GET['rentalHist'])){ ?> <td
+                                <?php if(!isset($_GET['rentalHist'])){ ?> <td
                                     class="align-middle <?php echo ($userWallet < $amount_to_pay) ? "text-danger":"text-success" ; ?>">
                                     <?php echo $userWallet;?></td>
                                 <?php } ?>
@@ -328,7 +410,8 @@ $pendingTopupList = query($sql_top_up_approval);
                                         data-apptxnid="<?php echo $app_txn_id;?>">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                             fill="currentColor" class="bi bi-hand-thumbs-up" viewBox="0 0 16 16">
-                                            <path d="M8.864.046C7.908-.193 7.02.53 6.956 1.466c-.072 1.051-.23 2.016-.428 2.59-.125.36-.479 1.013-1.04 1.639-.557.623-1.282 1.178-2.131 1.41C2.685 7.288 2 7.87 2 8.72v4.001c0 .845.682 1.464 1.448 1.545 1.07.114 1.564.415 2.068.723l.048.03c.272.165.578.348.97.484.397.136.861.217 1.466.217h3.5c.937 0 1.599-.477 1.934-1.064a1.86 1.86 0 0 0 .254-.912c0-.152-.023-.312-.077-.464.201-.263.38-.578.488-.901.11-.33.172-.762.004-1.149.069-.13.12-.269.159-.403.077-.27.113-.568.113-.857 0-.288-.036-.585-.113-.856a2 2 0 0 0-.138-.362 1.9 1.9 0 0 0 .234-1.734c-.206-.592-.682-1.1-1.2-1.272-.847-.282-1.803-.276-2.516-.211a10 10 0 0 0-.443.05 9.4 9.4 0 0 0-.062-4.509A1.38 1.38 0 0 0 9.125.111zM11.5 14.721H8c-.51 0-.863-.069-1.14-.164-.281-.097-.506-.228-.776-.393l-.04-.024c-.555-.339-1.198-.731-2.49-.868-.333-.036-.554-.29-.554-.55V8.72c0-.254.226-.543.62-.65 1.095-.3 1.977-.996 2.614-1.708.635-.71 1.064-1.475 1.238-1.978.243-.7.407-1.768.482-2.85.025-.362.36-.594.667-.518l.262.066c.16.04.258.143.288.255a8.34 8.34 0 0 1-.145 4.725.5.5 0 0 0 .595.644l.003-.001.014-.003.058-.014a9 9 0 0 1 1.036-.157c.663-.06 1.457-.054 2.11.164.175.058.45.3.57.65.107.308.087.67-.266 1.022l-.353.353.353.354c.043.043.105.141.154.315.048.167.075.37.075.581 0 .212-.027.414-.075.582-.05.174-.111.272-.154.315l-.353.353.353.354c.047.047.109.177.005.488a2.2 2.2 0 0 1-.505.805l-.353.353.353.354c.006.005.041.05.041.17a.9.9 0 0 1-.121.416c-.165.288-.503.56-1.066.56z" />
+                                            <path
+                                                d="M8.864.046C7.908-.193 7.02.53 6.956 1.466c-.072 1.051-.23 2.016-.428 2.59-.125.36-.479 1.013-1.04 1.639-.557.623-1.282 1.178-2.131 1.41C2.685 7.288 2 7.87 2 8.72v4.001c0 .845.682 1.464 1.448 1.545 1.07.114 1.564.415 2.068.723l.048.03c.272.165.578.348.97.484.397.136.861.217 1.466.217h3.5c.937 0 1.599-.477 1.934-1.064a1.86 1.86 0 0 0 .254-.912c0-.152-.023-.312-.077-.464.201-.263.38-.578.488-.901.11-.33.172-.762.004-1.149.069-.13.12-.269.159-.403.077-.27.113-.568.113-.857 0-.288-.036-.585-.113-.856a2 2 0 0 0-.138-.362 1.9 1.9 0 0 0 .234-1.734c-.206-.592-.682-1.1-1.2-1.272-.847-.282-1.803-.276-2.516-.211a10 10 0 0 0-.443.05 9.4 9.4 0 0 0-.062-4.509A1.38 1.38 0 0 0 9.125.111zM11.5 14.721H8c-.51 0-.863-.069-1.14-.164-.281-.097-.506-.228-.776-.393l-.04-.024c-.555-.339-1.198-.731-2.49-.868-.333-.036-.554-.29-.554-.55V8.72c0-.254.226-.543.62-.65 1.095-.3 1.977-.996 2.614-1.708.635-.71 1.064-1.475 1.238-1.978.243-.7.407-1.768.482-2.85.025-.362.36-.594.667-.518l.262.066c.16.04.258.143.288.255a8.34 8.34 0 0 1-.145 4.725.5.5 0 0 0 .595.644l.003-.001.014-.003.058-.014a9 9 0 0 1 1.036-.157c.663-.06 1.457-.054 2.11.164.175.058.45.3.57.65.107.308.087.67-.266 1.022l-.353.353.353.354c.043.043.105.141.154.315.048.167.075.37.075.581 0 .212-.027.414-.075.582-.05.174-.111.272-.154.315l-.353.353.353.354c.047.047.109.177.005.488a2.2 2.2 0 0 1-.505.805l-.353.353.353.354c.006.005.041.05.041.17a.9.9 0 0 1-.121.416c-.165.288-.503.56-1.066.56z" />
                                         </svg>
                                     </a>
                                 </td>
@@ -338,7 +421,8 @@ $pendingTopupList = query($sql_top_up_approval);
                                         data-apptxnid="<?php echo $app_txn_id;?>">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                             fill="currentColor" class="bi bi-hand-thumbs-down" viewBox="0 0 16 16">
-                                            <path d="M8.864 15.674c-.956.24-1.843-.484-1.908-1.42-.072-1.05-.23-2.015-.428-2.59-.125-.36-.479-1.012-1.04-1.638-.557-.624-1.282-1.179-2.131-1.41C2.685 8.432 2 7.85 2 7V3c0-.845.682-1.464 1.448-1.546 1.07-.113 1.564-.415 2.068-.723l.048-.029c.272-.166.578-.349.97-.484C6.931.08 7.395 0 8 0h3.5c.937 0 1.599.478 1.934 1.064.164.287.254.607.254.913 0 .152-.023.312-.077.464.201.262.38.577.488.9.11.33.172.762.004 1.15.069.13.12.268.159.403.077.27.113.567.113.856s-.036.586-.113.856c-.035.12-.08.244-.138.363.394.571.418 1.2.234 1.733-.206.592-.682 1.1-1.2 1.272-.847.283-1.803.276-2.516.211a10 10 0 0 1-.443-.05 9.36 9.36 0 0 1-.062 4.51c-.138.508-.55.848-1.012.964zM11.5 1H8c-.51 0-.863.068-1.14.163-.281.097-.506.229-.776.393l-.04.025c-.555.338-1.198.73-2.49.868-.333.035-.554.29-.554.55V7c0 .255.226.543.62.65 1.095.3 1.977.997 2.614 1.709.635.71 1.064 1.475 1.238 1.977.243.7.407 1.768.482 2.85.025.362.36.595.667.518l.262-.065c.16-.04.258-.144.288-.255a8.34 8.34 0 0 0-.145-4.726.5.5 0 0 1 .595-.643h.003l.014.004.058.013a9 9 0 0 0 1.036.157c.663.06 1.457.054 2.11-.163.175-.059.45-.301.57-.651.107-.308.087-.67-.266-1.021L12.793 7l.353-.354c.043-.042.105-.14.154-.315.048-.167.075-.37.075-.581s-.027-.414-.075-.581c-.05-.174-.111-.273-.154-.315l-.353-.354.353-.354c.047-.047.109-.176.005-.488a2.2 2.2 0 0 0-.505-.804l-.353-.354.353-.354c.006-.005.041-.05.041-.17a.9.9 0 0 0-.121-.415C12.4 1.272 12.063 1 11.5 1" />
+                                            <path
+                                                d="M8.864 15.674c-.956.24-1.843-.484-1.908-1.42-.072-1.05-.23-2.015-.428-2.59-.125-.36-.479-1.012-1.04-1.638-.557-.624-1.282-1.179-2.131-1.41C2.685 8.432 2 7.85 2 7V3c0-.845.682-1.464 1.448-1.546 1.07-.113 1.564-.415 2.068-.723l.048-.029c.272-.166.578-.349.97-.484C6.931.08 7.395 0 8 0h3.5c.937 0 1.599.478 1.934 1.064.164.287.254.607.254.913 0 .152-.023.312-.077.464.201.262.38.577.488.9.11.33.172.762.004 1.15.069.13.12.268.159.403.077.27.113.567.113.856s-.036.586-.113.856c-.035.12-.08.244-.138.363.394.571.418 1.2.234 1.733-.206.592-.682 1.1-1.2 1.272-.847.283-1.803.276-2.516.211a10 10 0 0 1-.443-.05 9.36 9.36 0 0 1-.062 4.51c-.138.508-.55.848-1.012.964zM11.5 1H8c-.51 0-.863.068-1.14.163-.281.097-.506.229-.776.393l-.04.025c-.555.338-1.198.73-2.49.868-.333.035-.554.29-.554.55V7c0 .255.226.543.62.65 1.095.3 1.977.997 2.614 1.709.635.71 1.064 1.475 1.238 1.977.243.7.407 1.768.482 2.85.025.362.36.595.667.518l.262-.065c.16-.04.258-.144.288-.255a8.34 8.34 0 0 0-.145-4.726.5.5 0 0 1 .595-.643h.003l.014.004.058.013a9 9 0 0 0 1.036.157c.663.06 1.457.054 2.11-.163.175-.059.45-.301.57-.651.107-.308.087-.67-.266-1.021L12.793 7l.353-.354c.043-.042.105-.14.154-.315.048-.167.075-.37.075-.581s-.027-.414-.075-.581c-.05-.174-.111-.273-.154-.315l-.353-.354.353-.354c.047-.047.109-.176.005-.488a2.2 2.2 0 0 0-.505-.804l-.353-.354.353-.354c.006-.005.041-.05.041-.17a.9.9 0 0 0-.121-.415C12.4 1.272 12.063 1 11.5 1" />
                                         </svg>
                                     </a>
                                 </td>
@@ -354,14 +438,14 @@ $pendingTopupList = query($sql_top_up_approval);
             </div>
 
             <div class="col-lg-12">
-                        <div class="card shadow border-0">
-                            <div class="card-header">
-                                <h6 class="fs-6 fw-bold">CASH OUT APPROVAL</h6>
-                                <sup>SEND THEM THE CASHOUT AMOUNT VIA GCASH BEFORE APPROVING</sup>
-                            </div>
-                            <div class="card-body">
-                                <table class="table table-striped">
-                                <?php
+                <div class="card shadow border-0">
+                    <div class="card-header">
+                        <h6 class="fs-6 fw-bold">CASH OUT APPROVAL</h6>
+                        <sup>SEND THEM THE CASHOUT AMOUNT VIA GCASH BEFORE APPROVING</sup>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-striped">
+                            <?php
                             
 
                                 $sql_CashOutRequest = "SELECT uw.user_wallet_id
@@ -384,37 +468,38 @@ $pendingTopupList = query($sql_top_up_approval);
                                 if(!empty($CashOutRequest)){
                                     foreach($CashOutRequest as $cr){
                                         extract($cr); ?>
-                                        <tr>
-                                        <td class="d-none d-md-block">
-                                            <?php echo $user_lastname . ", " . $user_firstname . "," . $user_mi; ?>
-                                        </td>
-                                        <td><span
-                                                class="d-none d-md-block d-lg-block small">PHP</span><?php echo number_format($wallet_txn_amt * -1 ?? 0.00 ,2); ?>
-                                        </td>
-                                        <td><?php echo $gcash_account_number; ?></td>
-                                        <td><?php echo $gcash_account_name; ?></td>
-                                        <td><?php echo $gcash_reference_number; ?></td>
-                                        <td>
-                                        <?php
+                            <tr>
+                                <td class="d-none d-md-block">
+                                    <?php echo $user_lastname . ", " . $user_firstname . "," . $user_mi; ?>
+                                </td>
+                                <td><span
+                                        class="d-none d-md-block d-lg-block small">PHP</span><?php echo number_format($wallet_txn_amt * -1 ?? 0.00 ,2); ?>
+                                </td>
+                                <td><?php echo $gcash_account_number; ?></td>
+                                <td><?php echo $gcash_account_name; ?></td>
+                                <td><?php echo $gcash_reference_number; ?></td>
+                                <td>
+                                    <?php
                                         // Encode wallet ID in Base64
                                         $encoded_wallet_id = base64_encode($user_wallet_id);
                                         ?>
-                                        <a href="?approveCashout&walletid=<?php echo $encoded_wallet_id; ?>" class="btn btn-success approveCashOut">Approve</a>
+                                    <a href="?approveCashout&walletid=<?php echo $encoded_wallet_id; ?>"
+                                        class="btn btn-success approveCashOut">Approve</a>
 
-                                        </td>
-                                        </tr>
-                                    <?php }
+                                </td>
+                            </tr>
+                            <?php }
                                 }
                                 else{ ?>
-                                    <tr>
-                                        <td colspan='12'>No Pending Cash out Request</td>
-                                    </tr>
-                                <?php }
+                            <tr>
+                                <td colspan='12'>No Pending Cash out Request</td>
+                            </tr>
+                            <?php }
                                 ?>
-                                </table>
-                                
-                            </div>
-                        </div>
+                        </table>
+
+                    </div>
+                </div>
             </div>
         </div>
     </div>

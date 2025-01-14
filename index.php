@@ -248,7 +248,7 @@ include_once "_functions.php";
             <div id="carouselExampleAutoplaying" class="carousel slide px-0" data-bs-ride="carousel">
                 <div class="carousel-inner px-0">
                     <?php
-                    $slides=4;
+                    $slides=5;
                     $currSlide=1;
                     while($currSlide <= $slides){
                     ?>

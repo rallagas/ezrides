@@ -1,164 +1,131 @@
 <?php
-
 // Enable error reporting for development purposes
-ini_set( 'display_errors', 1 );
-ini_set( 'display_startup_errors', 1 );
-error_reporting( E_ALL );
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
-// Define the configuration class
+// Configuration class for constants and reusable methods
 class Config {
     const HOST = 'localhost';
     const DBNAME = 'ezride';
     const USERNAME = 'root';
     const PASSWORD = '';
     const GOOGLE_MAPS_API_KEY = 'AIzaSyBWi3uSAaNEmBLrAdLt--kMWsoN4lKm9Hs';
+    const SECRET_KEY = 'ezrides';
+    const SECRET_IV = 'ezrides123456789';
+    const GCASH_ADMIN_ACCOUNT = "09985518206";
+    const GCASH_ADMIN_NAME = NULL;
 
     public static function getBaseUrl() {
-        $protocol = ( !empty( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443 )
-            ? "https://" : "http://";
-        $domain = $_SERVER['HTTP_HOST'];
-        return $protocol . $domain;
-    }
-
-    public static function getIndexPaths() {
-        return [
-            'main' => '/ezrides/index.php',
-            'client' => '/ezrides/clients/index.php',
-            'admin' => '/ezrides/admin/index.php',
-            'rider' => '/ezrides/rider_dashboard/index.php',
-            'registration' => '/ezrides/index.php?registration'
-        ];
+        $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
+        return $protocol . $_SERVER['HTTP_HOST'];
     }
 }
 
-// Session management class
-
+// Session manager to handle session initialization and login status
 class SessionManager {
     public function __construct() {
-        if ( session_status() === PHP_SESSION_NONE ) {
+        if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
-
-        if ( $this->isUserLoggedIn() ) {
-            if ( !defined( 'USER_LOGGED' ) ) {
-                define( 'USER_LOGGED', $_SESSION['user_id'] );
-            }
+        if ($this->isUserLoggedIn()) {
+            define('USER_LOGGED', $_SESSION['user_id'] ?? null);
         }
     }
 
     public function isUserLoggedIn() {
-        return isset( $_SESSION['user_id'] );
+        return isset($_SESSION['user_id']);
     }
 }
 
-// Redirection class
-
+// Redirect class with user type-based access control
 class Redirect {
     private $sessionManager;
     private $baseUrl;
-    private $indexPaths;
 
-    public function __construct( SessionManager $sessionManager ) {
+    public function __construct(SessionManager $sessionManager) {
         $this->sessionManager = $sessionManager;
         $this->baseUrl = Config::getBaseUrl();
-        $this->indexPaths = Config::getIndexPaths();
     }
 
     public function checkAndRedirect() {
+        if (!$this->sessionManager->isUserLoggedIn()) {
+            $this->redirectToHome();
+        }
+
+        $userType = $_SESSION['t_user_type'] ?? null;
         $currentPage = $_SERVER['REQUEST_URI'];
-        $mainIndexUrl = $this->baseUrl . $this->indexPaths['main'];
 
-        if ( $this->isSpecialPage( $currentPage ) || $this->hasGetVariables() ) {
-            return; // Do not redirect special pages or if GET variables exist
+        if ($userType === 'A' || $this->isAuthorizedPage($userType, $currentPage)) {
+            return; // Allow access
         }
 
-        if ( isset($_GET['page'])){
-            return;
+        $this->redirectToUnauthorized();
+    }
+
+    private function isAuthorizedPage($userType, $page) {
+        return ($userType === 'C' && !$this->isRestrictedPage($page, ['/admin/', '/rider_dashboard/'])) ||
+               ($userType === 'R' && strpos($page, '/rider_dashboard/') !== false);
+    }
+
+    private function isRestrictedPage($page, $restrictedPaths) {
+        foreach ($restrictedPaths as $path) {
+            if (strpos($page, $path) !== false) {
+                return true;
+            }
         }
-
-        if ( !$this->sessionManager->isUserLoggedIn() && $currentPage !== $this->indexPaths['main'] && !in_array( $currentPage, $this->getFullIndexUrls() ) ) {
-            header( "Location: " . $mainIndexUrl );
-            exit();
-        }
+        return false;
     }
 
-    private function isSpecialPage( $currentPage ) {
-        return strpos( basename( $currentPage ), '_' ) === 0;
+    private function redirectToHome() {
+        header("Location: " . $this->baseUrl . "/index.php");
+        exit();
     }
 
-    private function hasGetVariables() {
-        return !empty($_GET); // Check if there are any GET variables in the URL
-    }
-
-    private function getFullIndexUrls() {
-        return array_map( fn( $path ) => $this->baseUrl . $path, $this->indexPaths );
+    private function redirectToUnauthorized() {
+        header("Location: " . $this->baseUrl . "/unauthorized.php");
+        exit();
     }
 }
 
-// Function to get distance and ETA from Google Distance Matrix API
-
-function getDistanceAndETA( $fromLat, $fromLng, $toLat, $toLng, $APIKey = Config::GOOGLE_MAPS_API_KEY ) {
-    $apiKey = $APIKey;
+// Google Distance Matrix API helper function
+function getDistanceAndETA($fromLat, $fromLng, $toLat, $toLng) {
     $url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=metric"
-    . "&origins={$fromLat},{$fromLng}"
-    . "&destinations={$toLat},{$toLng}"
-    . "&key={$apiKey}";
+         . "&origins={$fromLat},{$fromLng}"
+         . "&destinations={$toLat},{$toLng}"
+         . "&key=" . Config::GOOGLE_MAPS_API_KEY;
 
     try {
-        $context = stream_context_create( ['http' => ['timeout' => 10]] );
-        $response = @file_get_contents( $url, false, $context );
-
-        if ( $response === false ) {
-            throw new Exception( "Failed to fetch data from Google Distance Matrix API." );
-        }
-
-        $data = json_decode( $response, true );
-
-        if ( json_last_error() !== JSON_ERROR_NONE ) {
-            throw new Exception( "Invalid JSON response from API." );
-        }
-
-        if ( $data['status'] !== 'OK' ) {
-            throw new Exception( "API Error: " . ( $data['error_message'] ?? 'Unknown error' ) );
+        $response = @file_get_contents($url, false, stream_context_create(['http' => ['timeout' => 10]]));
+        if ($response === false) throw new Exception("Failed to fetch data from Google API.");
+        
+        $data = json_decode($response, true);
+        if (json_last_error() !== JSON_ERROR_NONE || $data['status'] !== 'OK') {
+            throw new Exception("API Error: " . ($data['error_message'] ?? 'Unknown error'));
         }
 
         $element = $data['rows'][0]['elements'][0] ?? null;
-
-        if ( $element['status'] !== 'OK' ) {
-            throw new Exception( "Unable to calculate distance and ETA: " . ( $element['status'] ?? 'Unknown error' ) );
-        }
+        if ($element['status'] !== 'OK') throw new Exception("Unable to calculate distance and ETA.");
 
         return [
             'success' => true,
-            'distance_km' => $element['distance']['value'] / 1000, // Convert meters to km
-            'eta_minutes' => ceil( $element['duration']['value'] / 60 ), // Convert seconds to minutes
+            'distance_km' => $element['distance']['value'] / 1000,
+            'eta_minutes' => ceil($element['duration']['value'] / 60)
         ];
-    } catch ( Exception $e ) {
-        error_log( "Error in getDistanceAndETA: " . $e->getMessage() );
-        return [
-            'success' => false,
-            'distance_km' => 3, // Default fallback
-            'eta_minutes' => 15, // Default fallback
-            'error' => true,
-            'message' => $e->getMessage(),
-        ];
+    } catch (Exception $e) {
+        error_log("Error in getDistanceAndETA: " . $e->getMessage());
+        return ['success' => false, 'distance_km' => 3, 'eta_minutes' => 15, 'error' => true, 'message' => $e->getMessage()];
     }
 }
 
-
 // Database connection class
-
 class Database {
     private $connection;
 
     public function __construct() {
-        $this->connection = mysqli_connect( Config::HOST, Config::USERNAME, Config::PASSWORD, Config::DBNAME );
-
-        if ( !$this->connection ) {
-            die( json_encode( [
-                'success' => false,
-                'message' => "Database connection failed: " . mysqli_connect_error(),
-            ] ) );
+        $this->connection = mysqli_connect(Config::HOST, Config::USERNAME, Config::PASSWORD, Config::DBNAME);
+        if (!$this->connection) {
+            die(json_encode(['success' => false, 'message' => "Database connection failed: " . mysqli_connect_error()]));
         }
     }
 
@@ -167,28 +134,23 @@ class Database {
     }
 
     public function __destruct() {
-        if ( $this->connection ) {
-            mysqli_close( $this->connection );
+        if ($this->connection) {
+            mysqli_close($this->connection);
         }
     }
 }
 
-function isCONN( $conn ) {
-    return $conn ? true : false;
-}
-
-// Initialize classes
+// Initialize key classes
 $db = new Database();
-define( 'CONN', $db->getConnection() );
-define('SECRET_KEY', 'ezrides'); // Use a secure, random key
-define('SECRET_IV', 'ezrides123456789');   // Use a secure, random IV
-define('GCASH_ADMIN_ACCOUNT',"09985518206");
-define('GCASH_ADMIN_NAME',NULL);
+define('CONN', $db->getConnection());
 include_once "_sql_utility.php";
 
+define('SECRET_KEY', Config::SECRET_KEY); // Use a secure, random key
+define('SECRET_IV', Config::SECRET_IV);   // Use a secure, random IV
+define('GCASH_ADMIN_ACCOUNT',Config::GCASH_ADMIN_ACCOUNT);
+define('GCASH_ADMIN_NAME', Config::GCASH_ADMIN_NAME);
 
 $sessionManager = new SessionManager();
-$redirect = new Redirect( $sessionManager );
+$redirect = new Redirect($sessionManager);
 $redirect->checkAndRedirect();
-
 ?>
