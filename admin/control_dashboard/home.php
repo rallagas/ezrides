@@ -2,6 +2,8 @@
     <?php
 
 include_once "../_class_userWallet.php";
+
+
 $sql = null;
 $sql = " SELECT SUM(x.wallet) as income from (
     SELECT case WHEN payment_type = 'A' then wallet_txn_amt *  -1 else wallet_txn_amt end as wallet
@@ -225,14 +227,15 @@ $pendingTopupList = query($sql_top_up_approval);
             <div class="col-lg-12">
                 <div class="card border-0 shadow">
                     <div class="card-header">
-                        <h6 class="card-title fw-bold">CAR RENTAL APPROVAL
+                        <h6 class="card-title fw-bold"  id="carrentallist">CAR RENTALS
                             <?php if(!isset($_GET['rentalHist'])){?>
                             <a href="?rentalHist" class="btn btn-link text-decoration-none small">HISTORICAL</a>
                             <?php } 
                             else{ ?>
                             <a href="index.php" class="btn btn-link text-decoration-none small">PENDING APPROVALS</a>
                             <?php } ?>
-
+                            
+                            <a href="?CarRentalList" class="btn btn-link text-decoration-none small">CARS FOR RENT</a>
                             <a href="?regCarRental" class="btn btn-link text-decoration-none small">REGISTER CAR FOR
                                 RENT +</a>
                             <?php
@@ -242,7 +245,7 @@ $pendingTopupList = query($sql_top_up_approval);
                                     <span class="card-title text-light">CAR RENTAL REGISTRATION FORM</span>
                                 </div>
                                 <div class="card-body">
-                                    <form action="" enctype="multipart/form-data">
+                                    <form id="newvehicle" action="" enctype="multipart/form-data">
                                         <div class="mb-3">
                                             <input type="text" name="ownername" placeholder="Owner Name"
                                                 class="form-control">
@@ -310,10 +313,145 @@ $pendingTopupList = query($sql_top_up_approval);
                             <?php }
                             ?>
                         </h6>
+                        <?php
+                        if(isset($_GET['archiveCar']) && isset($_GET['btnaction'])){
+                            $action=$_GET['btnaction'];
+                            $vehicleid=$_GET['archiveCar'];
+                            $sqlupdatevehicle = "UPDATE vehicle SET vehicle_txn_type = ? WHERE vehicle_id = ?";
+                            $update = query($sqlupdatevehicle,[$action,$vehicleid]);
+                            ?>
+                                <div class="alert alert-success">
+                                    Vehicle Updated.
+                                </div>
+                            <?php 
+                        }
+                        ?>
                     </div>
                     <div class="card-body">
 
                         <?php
+
+                        if(isset($_POST['vehicleid'])){
+                            $vowner=$_POST['vehicleowner'];
+                            $vaddress=$_POST['vehicleowneraddress'];
+                            $vcolor=$_POST['vehiclecolor'];
+                            $vratehr=$_POST['vehiclerateperhour'];
+                            $vrateday=$_POST['vehiclerateperday'];
+                            $vratekm=$_POST['vehiclerateperkm'];
+                            $vid=$_POST['vehicleid'];
+                        
+                            $queryupdatevehicleinfo="UPDATE vehicle 
+                                                        SET vehicle_owner_name = ?
+                                                          , vehicle_owner_address = ?
+                                                          , vehicle_color = ?
+                                                          , vehicle_price_rate_per_hr = ?
+                                                          , vehicle_price_rate_per_day = ?
+                                                          , vehicle_price_rate_per_km = ?
+                                                    WHERE vehicle_id = ?";
+                            $updateVehicleInfo = query($queryupdatevehicleinfo,[$vowner,$vaddress,$vcolor,$vratehr,$vrateday,$vratekm,$vid]);
+                            ?>
+                            <div class="alert alert-success">Vehicle Info Updated.</div>
+                            <?php
+                        }
+          
+                        
+
+                        if(isset($_GET['updateCar'])){
+                            $sqlgetCarInfo = "SELECT * FROM vehicle WHERE vehicle_id = ?";
+                            $getInfo = query($sqlgetCarInfo,[$_GET['updateCar']]);
+                            foreach($getInfo as $c){
+                            ?>
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">Update Car Info</h3>
+                                </div>
+                                <div class="card-body">
+                                    <form action="./" method="POST">
+                                        <input type="text" hidden name="vehicleid" value="<?php echo $c['vehicle_id'];?>">
+                                        <div class="mb-2">
+                                            <label for="" class="form-label">Vehicle Owner</label>
+                                            <input type="text" name="vehicleowner" class="form-control" value="<?php echo $c['vehicle_owner_name'];?>" />
+                                        </div>
+
+                                        <div class="mb-2">
+                                            <label for="" class="form-label">Vehicle Owner Address</label>
+                                            <input type="text" name="vehicleowneraddress" class="form-control" value="<?php echo $c['vehicle_owner_address'];?>" />
+                                        </div>
+
+                                        <div class="mb-2">
+                                            <label for="" class="form-label">Vehicle Color</label>
+                                            <input type="text" name="vehiclecolor" class="form-control" value="<?php echo $c['vehicle_color']?>">
+                                        </div>
+
+                                        <div class="mb-2">
+                                            <label for="" class="form-label">Vehicle Rate Per Hour</label>
+                                            <input type="text" name="vehiclerateperhour" class="form-control" value="<?php echo $c['vehicle_price_rate_per_hr']?>">
+                                        </div>
+                                        <div class="mb-2">
+                                            <label for="" class="form-label">Vehicle Rate Per Day</label>
+                                            <input type="text" name="vehiclerateperday" class="form-control" value="<?php echo $c['vehicle_price_rate_per_day']?>">
+                                        </div>
+                                        <div class="mb-2">
+                                            <label for="" class="form-label">Vehicle Rate Per KM</label>
+                                            <input type="text" name="vehiclerateperkm" class="form-control" value="<?php echo $c['vehicle_price_rate_per_km']?>">
+                                        </div>
+
+                                       <input type="submit" class="btn btn-primary">
+                                    </form>
+                                </div>
+                            </div>
+                        <?php }
+                        }
+
+                        if(isset($_GET['CarRentalList'])){
+                            $sql_for_rent="SELECT * FROM `vehicle`";
+                            $CarRentData=query($sql_for_rent); ?>
+                            <table class="table table-responsive table-striped">
+                                <thead>
+                                    <th>Vehicle Type</th>
+                                    <th>Plate No.</th>
+                                    <th colspan="2" class="text-center">Owner</th>
+                                    <th>Vehicle Model</th>
+                                    <th>Vehicle Color</th>
+                                    <th>Vehicle Rate per Hour</th>
+                                    <th>Vehicle Rate per Day</th>
+                                    <th>Vehicle Rate per KM</th>
+                                </thead>
+                                <?php
+                                $vt = null;
+                                foreach($CarRentData as $car){
+                                        switch($car['vehicle_type']){
+                                            case '0005': $vt = "Sedan";
+                                            break;
+                                            case '0007': $vt = "SUV";
+                                            break;
+                                            case '02': $vt = "Motorcycle";
+                                            break;
+                                            default: $vt = "Sedan";
+
+                                        }            
+                                    ?>
+                                        <tr>
+                                            <td><?php echo $vt;?></td>
+                                            <td><?php echo $car['vehicle_plate_no'];?></td>
+                                            <td><?php echo $car['vehicle_owner_name'];?></td>
+                                            <td><?php echo $car['vehicle_owner_address'];?></td>
+                                            <td><?php echo $car['vehicle_model'];?></td>
+                                            <td><?php echo $car['vehicle_color'];?></td>
+                                            <td><?php echo $car['vehicle_price_rate_per_hr'];?></td>
+                                            <td><?php echo $car['vehicle_price_rate_per_day'];?></td>
+                                            <td><?php echo $car['vehicle_price_rate_per_km'];?></td>
+                                            <td> <a href="?CarRentalList&archiveCar=<?php echo $car['vehicle_id'];?>&btnaction=<?php echo ($car['vehicle_txn_type'] == 2) ? 1:2; ?>#carrentallist" class="btn btn-link text-decoration-none"><?php echo ($car['vehicle_txn_type'] == 2) ? 'REACTIVATE':'ARCHIVE'; ?></a> </td>
+                                            <td> <a href="?updateCar=<?php echo $car['vehicle_id'];?>" class="btn btn-link text-decoration-none">EDIT</a> </td>
+                                        </tr>
+                                <?php } ?>
+                                
+                            </table>
+                        
+<!-- end of car rental list -->
+                        <?php }
+
+
                         $sql_rental = "SELECT  a.app_txn_id,
                                             a.amount_to_pay,
                                             a.user_id as user,
@@ -348,7 +486,7 @@ $pendingTopupList = query($sql_top_up_approval);
                             $sql_rental = $sql_rental . " WHERE a.txn_status = 'P'";
                         }
                         $sql_rental_query = query($sql_rental); ?>
-
+                        <span class="fw-bold fs-5">CAR RENTALS CUSTOMER APPROVALS</span>
                         <table class="table table-striped table-responsive overflow-y-scroll" style="height:10vh">
                             <thead>
                                 <?php if(!isset($_GET['rentalHist'])){ ?> <th>User Balance <br><sup>PHP</sup></th>

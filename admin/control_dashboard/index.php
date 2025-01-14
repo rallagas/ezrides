@@ -74,7 +74,7 @@ $(document).ready(function() {
     });
 
     // Submit the form data
-    $('form').on('submit', function(e) {
+    $('form#newvehicle').on('submit', function(e) {
         e.preventDefault(); // Prevent default form submission
 
         // Collect form data
