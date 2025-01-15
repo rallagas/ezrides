@@ -444,8 +444,10 @@ $(document).on("click",".get-curr-loc", function(){
             $('input[name=curLocCoor]').val( $("span.currloc").text() );
         }    
     }, 500);
-    
- 
+
+    setTimeout(() => {
+        $("#curlocationinfo").addClass("visually-hidden");
+    }, 15000);
 });
     </script>
     <script>

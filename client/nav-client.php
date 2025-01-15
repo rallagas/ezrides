@@ -14,7 +14,7 @@
                 <img src="../icons/menu.png" alt="" class="quick-links img-fluid" style="width:4vh;">
             </button>
 
-            <div class="alert alert-warning float-start py-2 rounded-4 mx-2">
+            <div class="alert alert-warning float-start py-2 rounded-4 mx-2" id="curlocationinfo">
                  Coordinates: <span class="fw-bold currloc">Loading...</span>
                  Address: <span class="fw-bold currAddress">Loading...</span>
             </div>
