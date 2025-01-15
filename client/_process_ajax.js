@@ -320,7 +320,7 @@ function chkBookingStatus() {
                     console.log("Start count down to update booking info.");
                     setTimeout(() => {
                         chkBooking(elements)
-                    }, 10000);
+                    }, 5000);
                     // Show payment button if not paid
                     if (paymentStatusText !== 'Paid' && bookingStatusText !== 'Waiting for Driver') {
                         $('#btnPayRider').removeClass('d-none');

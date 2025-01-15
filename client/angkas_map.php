@@ -313,38 +313,41 @@ const CONFIGURATION = {
     /**
      * Updates the values of input fields with the user's current address and coordinates.
      */
-function setInputValues() {
-    const addressInput = $('input[name=form_from_dest]');
-    const coordinatesInput = $('input[name=curLocCoor]');
+// function setInputValues() {
+//     const addressInput = $('input[name=form_from_dest]');
+//     const coordinatesInput = $('input[name=curLocCoor]');
 
-    if (addressInput.length > 0 && coordinatesInput.length > 0) {
-        addressInput.val(CONFIGURATION.currentAddressTxt || 'Unknown Address');
-        coordinatesInput.val(CONFIGURATION.curLocCoor || 'Unknown');
-        console.log('Input fields updated:', {
-            curLocAddressTxt: CONFIGURATION.currentAddressTxt,
-            curLocCoor: CONFIGURATION.curLocCoor,
-        });
-    }
-}
+//     if (addressInput.length > 0 && coordinatesInput.length > 0) {
+//         addressInput.val(CONFIGURATION.currentAddressTxt || 'Unknown Address');
+//         coordinatesInput.val(CONFIGURATION.curLocCoor || 'Unknown');
+//         console.log('Input fields updated:', {
+//             curLocAddressTxt: CONFIGURATION.currentAddressTxt,
+//             curLocCoor: CONFIGURATION.curLocCoor,
+//         });
+//     }
+// }
 
     /**
      * Initializes the map, fetches the current location and address, and updates the configuration.
      */
     async function initMap() {
+        
     try {
         // Fetch current location
         const location = await getCurrentLocation();
         CONFIGURATION.curLocCoor = `${location.lat},${location.lng}`;
         
         console.log("User's Current Location:", CONFIGURATION.curLocCoor);
+        $("span.currloc").text(CONFIGURATION.curLocCoor);
 
         // Fetch readable address
         const addressData = await getReadableAddress(location);
         CONFIGURATION.currentAddressTxt = addressData.address;
         console.log("User's Current Address:", CONFIGURATION.currentAddressTxt);
+        $("span.currAddress").text(CONFIGURATION.currentAddressTxt);
 
         // Update input values
-        ensureInputsExistAndSetValues();
+        //ensureInputsExistAndSetValues();
 
             // Validate location against Region V bounds
         const { lat, lng } = location;
@@ -370,9 +373,9 @@ function setInputValues() {
 
     } catch (error) {
         console.error('Error initializing map or fetching location data:', error);
-        CONFIGURATION.curLocCoor = "Unknown";
-        CONFIGURATION.currentAddressTxt = "Unknown Address";
-        ensureInputsExistAndSetValues();
+        CONFIGURATION.curLocCoor = "";
+        CONFIGURATION.currentAddressTxt = "";
+        //ensureInputsExistAndSetValues();
     }
 }
 
@@ -408,30 +411,45 @@ function showModal(message) {
     document.body.appendChild(modal);
 }
 
-function ensureInputsExistAndSetValues() {
-    const addressInput = $('input[name=form_from_dest]');
-    const coordinatesInput = $('input[name=curLocCoor]');
+// function ensureInputsExistAndSetValues() {
+//     const addressInput = $('input[name=form_from_dest]');
+//     const coordinatesInput = $('input[name=curLocCoor]');
 
-    if (addressInput.length > 0 && coordinatesInput.length > 0) {
-        setInputValues();
-    } else {
-        console.log("Waiting for input fields to render...");
-        setTimeout(ensureInputsExistAndSetValues, 500); // Retry every 500ms
-    }
+//     if (addressInput.length > 0 && coordinatesInput.length > 0) {
+//         if (!addressInput.val() || !coordinatesInput.val()) {
+//             setInputValues();
+//         }
+//     } else {
+//         console.log("Waiting for input fields to render...");
+//         setTimeout(ensureInputsExistAndSetValues, 500); // Retry every 500ms
+//     }
+// }
+
+
+async function initializeApp() {
+    await initMap(); // Ensure the map is initialized and CONFIGURATION is populated
+    
+    chkBooking(); // Assuming this function needs to be called here
+    // ensureInputsExistAndSetValues(); // This will handle the input updates when ready
+    const wallet = '.walletbalance';
+    fetchAndAssignWalletBalance(wallet);
 }
 
-    async function initializeApp() {
-        await initMap(); // Ensure the map is initialized and CONFIGURATION is populated
-        
-        chkBooking();
-        
-        setInputValues(); // Safely call after CONFIGURATION is updated
-        
-        
-        const wallet = '.walletbalance';
-        fetchAndAssignWalletBalance(wallet);
 
-    }
+$(document).on("click",".get-curr-loc", function(){
+    setInterval(() => {
+        if($('input[name=form_from_dest]').length > 0 && $('input[name=curLocCoor]').length > 0 ){
+
+            $('input[name=form_from_dest]').val( $("span.currAddress").text() );
+            $('input[name=curLocCoor]').val( $("span.currloc").text() );
+        }    
+    }, 500);
+    
+ 
+});
+    </script>
+    <script>
+
 
     </script>
 
