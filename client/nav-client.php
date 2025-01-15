@@ -2,7 +2,9 @@
     <div class="container-fluid clear-fix">
 
 
-        <div class="position-fixed top-0 end-0 m-2" style="z-index:1000">
+        <div class="position-fixed top-0 end-0 m-2 d-inline-block" style="z-index:1000">
+     
+
             <a href="index.php" class="btn btn-outline-warning bg-warning shadow rounded-4">
                 <img src="../icons/house.png" alt="" class="quick-links img-fluid" style="width:4vh;">
             </a>
@@ -11,6 +13,11 @@
                 data-bs-toggle="offcanvas" data-bs-target="#appMenu" aria-controls="appMenu">
                 <img src="../icons/menu.png" alt="" class="quick-links img-fluid" style="width:4vh;">
             </button>
+
+            <div class="alert alert-warning float-start py-2 rounded-4 mx-2">
+                 Coordinates: <span class="fw-bold currloc">Loading...</span>
+                 Address: <span class="fw-bold currAddress">Loading...</span>
+            </div>
 
             <?php
             if(isset($_GET['page'])){

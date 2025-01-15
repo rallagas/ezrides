@@ -58,17 +58,17 @@ query("DELETE FROM angkas_bookings WHERE date_booked < (NOW() - INTERVAL 2 HOUR)
                             aria-selected="true">Wallet</button>
                     </li>
 
-                    <li class="nav-item" role="presentation">
+                    <!-- <li class="nav-item" role="presentation">
                         <button class="nav-link" id="bookings-tab" data-bs-toggle="tab"
                             data-bs-target="#bookings-tab-pane" type="button" role="tab"
                             aria-controls="bookings-tab-pane" aria-selected="false">Bookings</button>
-                    </li>
-
+                    </li> -->
+<!-- 
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history-tab-pane"
                             type="button" role="tab" aria-controls="history-tab-pane"
                             aria-selected="false">History</button>
-                    </li>
+                    </li> -->
 
 
                 </ul>
@@ -189,8 +189,7 @@ query("DELETE FROM angkas_bookings WHERE date_booked < (NOW() - INTERVAL 2 HOUR)
                         </div>
                     </div>
 
-                    <div class="tab-pane fade" id="bookings-tab-pane" role="tabpanel" aria-labelledby="bookings-tab"
-                        tabindex="0">
+                    <div class="" id="bookings-tab-pane" role="" aria-labelledby="">
                         <div id="availableBookings" >
                                         <div class="card p-3">
                                             <div class="card-body">
@@ -202,9 +201,14 @@ query("DELETE FROM angkas_bookings WHERE date_booked < (NOW() - INTERVAL 2 HOUR)
                         </div>
 
                     </div>
-                    <div class="tab-pane fade" id="history-tab-pane" role="tabpanel" aria-labelledby="history-tab"
+                    <div class="" id="history-tab-pane" role="" aria-labelledby="history-tab"
                         tabindex="0">
-                        <div id="rideHistory"></div>
+                        <div class="card p-3" id="rideHistory">
+                                            <div class="card-body">
+                                                
+                                            <h3 class="fs-4">No Customers at the moment.</h3>
+                                            </div>
+                                        </div>
 
                     </div>
 

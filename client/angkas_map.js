@@ -1382,7 +1382,7 @@ async function generateDestinationTemplate(destination) {
                 <div class="mb-1">
                     <label class="form-label small"> Origin Address: </label>
                     <input type="text" name="form_from_dest" class="form-control form-control-sm" value="" Placeholder="Checking Current Location..." readonly>
-                    <input type="hidden" name="curLocCoor" class="" value="" readonly>
+                    <input type="text" name="curLocCoor" class="" value="" readonly>
                 </div>
                 <div class="mb-1">
                 <label class="form-label small"> Destination Address:  </label>
@@ -1390,7 +1390,7 @@ async function generateDestinationTemplate(destination) {
                     <input type="text" name="form_to_dest" class="form-control form-control-sm" value="${destination.name}" readonly>
                     <input type="hidden" id="formToDest_lat" name="formToDest_lat" class="form-control form-control-sm" value="" readonly>
                     <input type="hidden" id="formToDest_long" name="formToDest_long" class="form-control form-control-sm" value="" readonly>
-                    <button class="edit-button btn btn-sm btn-light border border-1 border-secondary border-opacity-25" onclick="function(e){e.preventDefault;}" aria-label="Edit Destination">
+                    <button class="edit-button btn btn-sm btn-light border border-1 border-secondary border-opacity-25" onclick="" aria-label="Edit Destination">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                             <use href="#commutes-edit-icon"/>
                         </svg>
