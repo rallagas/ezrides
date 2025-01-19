@@ -13,11 +13,17 @@
                 data-bs-toggle="offcanvas" data-bs-target="#appMenu" aria-controls="appMenu">
                 <img src="../icons/menu.png" alt="" class="quick-links img-fluid" style="width:4vh;">
             </button>
-
-            <div class="alert alert-warning float-start py-2 rounded-4 mx-2" id="curlocationinfo">
-                 Coordinates: <span class="fw-bold currloc">Loading...</span>
-                 Address: <span class="fw-bold currAddress">Loading...</span>
-            </div>
+                        <?php
+            $current_page = basename($_SERVER['PHP_SELF']); // Get the current page name
+            if ($current_page === 'angkas_map.php') {
+            ?>
+                <div class="alert alert-warning float-start py-2 rounded-4 mx-2" id="curlocationinfo">
+                    <span class="fw-bold currloc visually-hidden">Loading...</span>
+                    Current Address: <span class="fw-bold currAddress">Loading...</span>
+                </div>
+            <?php
+            }
+            ?>
 
             <?php
             if(isset($_GET['page'])){

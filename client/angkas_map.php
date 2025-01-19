@@ -49,18 +49,18 @@ include_once "../_sql_utility.php";
 
     <main class="commutes container-fluid clear-fix">
 
-        <div class="commutes-info row bg-light bg-opacity-75 position-fixed bottom-0 z-1 mb-1">
+        <div class="commutes-info row bg-warning position-fixed bottom-0 z-1 mb-1">
 
             <div class="commutes-initial-state border-0">
                 <svg aria-label="Directions Icon" width="53" height="53" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <use href="#commutes-initial-icon" />
                 </svg>
-                <div class="description">
-                    Wallet Balance: <span class="walletbalance badge text-bg-warning"></span>
-                    <h1 class="heading">Book your EZ Rides</h1>
+                <div class="description fw-bold">
+                    Wallet Balance: <span class="walletbalance fw-bold"></span>
+                    <h1 class="heading fs-2">Book your EZ Rides</h1>
                     <p>See your Travel Time in Real Time</p>
                 </div>
-                <button class="add-button btn btn-primary shadow" autofocus>
+                <button class="add-button btn text-light shadow" autofocus>
                     <svg aria-label="Add Icon" width="24px" height="24px" xmlns="http://www.w3.org/2000/svg">
                         <use href="#commutes-add-icon" />
                     </svg>
@@ -280,17 +280,36 @@ const CONFIGURATION = {
 };
 
 
-    async function getCurrentLocation() {
+async function getCurrentLocation() {
     if (!navigator.geolocation) {
         throw new Error("Geolocation is not supported by this browser.");
     }
     return new Promise((resolve, reject) => {
         navigator.geolocation.getCurrentPosition(
             (position) => resolve({ lat: position.coords.latitude, lng: position.coords.longitude }),
-            (error) => reject(new Error("Geolocation failed. Enable location services."))
+            (error) => {
+                let message = "Geolocation failed.";
+                switch (error.code) {
+                    case error.PERMISSION_DENIED:
+                        message = "User denied the request for Geolocation.";
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        message = "Location information is unavailable.";
+                        break;
+                    case error.TIMEOUT:
+                        message = "The request to get user location timed out.";
+                        break;
+                    case error.UNKNOWN_ERROR:
+                        message = "An unknown error occurred.";
+                        break;
+                }
+                reject(new Error(message));
+            },
+            { timeout: 10000, maximumAge: 0, enableHighAccuracy: true }
         );
     });
 }
+
     async function getReadableAddress(location) {
     try {
         const geocoder = new google.maps.Geocoder();
@@ -445,6 +464,10 @@ $(document).on("click",".get-curr-loc", function(){
         }    
     }, 500);
 
+
+});
+
+$(document).ready(function(){
     setTimeout(() => {
         $("#curlocationinfo").addClass("visually-hidden");
     }, 15000);
