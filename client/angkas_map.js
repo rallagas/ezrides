@@ -1361,53 +1361,50 @@ async function generateDestinationTemplate(destination) {
         const wallet = await getWalletBalanceForm(); // Wait for wallet balance to be fetched
         const wbalance = wallet.balance;
         console.log("BALANCE FORM: ", wbalance);
-
-            return `
+         return `
             <form id="formFindAngkas">
-              <div class="destination shadow">
-                <div class="mb-1">
-                    <input class="form-control form-control-sm formWalletbalance" value="${wbalance}" name="walletbalance" Placeholder="Wallet Balance" />
-                </div>
-                <div class="destination-content align-center align-middle">
-                <button type="submit" class="btn btn-warning shadow findMeARiderBTN rounded-circle px-2 position-fixed bottom-0 end-0 mb-3 me-3 z-3" style="width:45px; height: 45px">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-send-fill"
-                        viewBox="0 0 16 16">
-                        <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471z" />
-                    </svg>
-                </button>
-              <div class="mb-1">
-                <label class="form-label small"> Fare (Php): </label>
-                  <input type="text" name="form_Est_Cost" class="form-control form-control-sm" value="${RiderCost}" readonly>
-              </div>
-                <div class="mb-1">
-                    <label class="form-label small"> Origin Address: </label>
-                    <input type="text" name="form_from_dest" class="form-control form-control-sm" value="" Placeholder="Checking Current Location..." readonly>
-                    <input type="text" name="curLocCoor" class="" value="" readonly>
-                </div>
-                <div class="mb-1">
-                <label class="form-label small"> Destination Address:  </label>
-                  <div class="input-group">
-                    <input type="text" name="form_to_dest" class="form-control form-control-sm" value="${destination.name}" readonly>
-                    <input type="hidden" id="formToDest_lat" name="formToDest_lat" class="form-control form-control-sm" value="" readonly>
-                    <input type="hidden" id="formToDest_long" name="formToDest_long" class="form-control form-control-sm" value="" readonly>
-                    <button class="edit-button btn btn-sm btn-light border border-1 border-secondary border-opacity-25" onclick="" aria-label="Edit Destination">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                            <use href="#commutes-edit-icon"/>
-                        </svg>
-                    </button>
-                  </div>
-                </div>
-                <div class="mb-1">
-                <label class="form-label small"> Distance (KM):  </label>
-                  <input type="text" name="form_TotalDistance" class="form-control form-control-sm" value="${destination.distance}" readonly>
-              </div>
-              <div class="mb-1">
-                <label class="form-label small"> Estimated Ride Duration (min): </label>
-                  <input type="text" name="form_ETA_duration" class="form-control form-control-sm" value="${parseInt(destination.duration / 60)}" readonly>
-              </div>
-                </div>
-              </div>
-            </form>`;
+    <div class="destination border border-bottom-0 border-end-0 border-start-0  border-5 border-warning">
+        <input hidden class="form-control form-control-sm formWalletbalance" value="${wbalance}" name="walletbalance"
+            Placeholder="Wallet Balance" />
+        <div class="destination-content align-center align-middle">
+            <button type="submit"
+                class="btn btn-warning shadow findMeARiderBTN rounded-circle px-2 position-fixed bottom-0 end-0 mb-3 me-3 z-3"
+                style="width:60px; height: 60px">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                    class="bi bi-send-fill" viewBox="0 0 16 16">
+                    <path
+                        d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471z" />
+                </svg>
+            </button>
+            <div class="mb-1 input-group">
+                <span class="input-group-text fw-bold">Php</span>
+                <input type="text" name="form_Est_Cost" class="form-control" value="${RiderCost}" readonly />
+            </div>
+            <div class="mb-1 input-group">
+                <span class="input-group-text fw-bold"> From: </span>
+                <input type="text" name="form_from_dest" class="form-control" value="" Placeholder="Checking Current Location..." readonly>
+                <input type="hidden" name="curLocCoor" class="" value="" readonly>
+            </div>
+            <div class="mb-1 input-group">
+                <span class="input-group-text fw-bold"> To: </span>
+                <input type="text" name="form_to_dest" class="form-control" value="${destination.name}" readonly>
+                    <input type="hidden" id="formToDest_lat" name="formToDest_lat"  value="" readonly />
+                    <input type="hidden" id="formToDest_long" name="formToDest_long" value="" readonly />
+                
+            </div>
+            <div class="mb-1 input-group">
+                <span class="input-group-text fw-bold"> Distance (KM): </span>
+                <input type="text" name="form_TotalDistance" class="form-control form-control-sm"
+                    value="${destination.distance}" readonly>
+            </div>
+            <div class="mb-1 input-group">
+                <span class="input-group-text fw-bold"> Estimated Ride Duration (min): </span>
+                <input type="text" name="form_ETA_duration" class="form-control form-control-sm"
+                    value="${parseInt(destination.duration / 60)}" readonly>
+            </div>
+        </div>
+    </div>
+</form>`;
     } catch (error) {
         console.error("Error generating destination template:", error);
         return `<div class="error">Error loading wallet balance</div>`;

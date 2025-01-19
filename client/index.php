@@ -126,10 +126,10 @@ include_once "button-functions.php";
                                             appButton($tcat['icon_class'], $tcat['txn_category_id'], $tcat['page_action'], $tcat['txn_category_name']);
                                         }
 
-                                        appButton('document.png','6','shop','DOCUMENT');
-                                        appButton('groc-delivery.png','6','shop','GROCERY');
-                                        appButton('rx-delivery.png','6','shop','PHARMACY');
-                                        appButton('delivery-guy-icon.png','6','shop','FOOD');
+                                        appButton('document.png','6','shop','DOCUMENT','&merchant=13');
+                                        appButton('groc-delivery.png','6','shop','GROCERY','&merchant=1');
+                                        appButton('rx-delivery.png','6','shop','PHARMACY','&merchant=11');
+                                        appButton('delivery-guy-icon.png','6','shop','FOOD','&merchant=12');
                                     } ?>
                         <div class="col-4 col-lg-1 col-md-3 col-sm-4 text-center">
                             <a href="./_profile/" class="btn btn-outline-light bg-yellow shadow rounded-4 w-100">
