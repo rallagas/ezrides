@@ -442,8 +442,8 @@ else{
             <div class="col-3">
                 <div class="my-3 card shadow">
                     <?php
-                    if($cd['photo'] != null){ ?>
-                        <img src="images/comments-photo/<?php echo $cd['photo'];?>" alt="" class="card-img-top">
+                    if($cd['photo'] != null){?>
+                    <img src="images/comments-photo/<?php echo $cd['photo'];?>" alt="" class="card-img-top">
                     <?php }
                             ?>
                     <div class="card-body text-center">
