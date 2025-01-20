@@ -110,7 +110,7 @@ include_once "_functions.php";
         }
 
         100% {
-            transform: translateX(40vw);
+            transform: translateX(20vw);
         }
     }
 
@@ -144,25 +144,25 @@ include_once "_functions.php";
                 <img src="icons/ezrides-full.png" alt="" style="height:5vw" class="">
             </a>
             <div class="clear-fix">
-                <a class="btn bg-yellow btn-warning border-2 border-dark me-3 rounded-4 float-end" href="?page=login">
-                    <span class="d-none d-lg-block d-print-inline fw-bold">
+                <a class="btn bg-yellow btn-warning border-2 border-light me-3 rounded-4 float-end" href="?page=login">
+                    <span class="d-none d-lg-block d-print-inline fw-bold text-light">
                         <img class="float-start" src="icons/key.png" alt="" height="25vh">&nbsp;LOGIN</span>
                     <span class="d-lg-none">
                         <img src="icons/key.png" alt="" height="25vh">
                     </span>
                 </a>
-                <a class="btn bg-yellow btn-warning border-2 border-dark me-3 rounded-4 float-end"
+                <a class="btn bg-yellow btn-warning border-2 border-light me-3 rounded-4 float-end"
                     href="?page=register">
-                    <span class="d-none d-lg-block d-print-inline fw-bold">
+                    <span class="d-none d-lg-block d-print-inline fw-bold text-light">
                         <img class="float-start" src="icons/travel-car-icon.png" alt="" height="25vh">&nbsp;SIGN
                         UP</span>
                     <span class="d-lg-none">
                         <img src="icons/travel-car-icon.png" alt="" height="25vh">
                     </span>
                 </a>
-                <a class="btn bg-yellow btn-warning border-2 border-dark me-3 rounded-4 float-end"
+                <a class="btn bg-yellow btn-warning border-2 border-light me-3 rounded-4 float-end"
                     href="?page=register&regRider">
-                    <span class="d-none d-lg-block d-print-inline fw-bold">
+                    <span class="d-none d-lg-block d-print-inline fw-bold text-light">
                         <img class="float-start" src="icons/ezrides-icon.png" alt="" height="25vh">&nbsp;BE A
                         RIDER</span>
                     <span class="d-lg-none">
@@ -284,32 +284,56 @@ else{
     <div class="container-fluid">
         <div class="row gx-3 bg-yellow text-light">
             <div class=" col-12 col-lg-4 text-center pt-3">
-                <h5 class="fs-5 fw-bold">GOAL</h5>
-                <h6 class="fs-6">
-                    We are determined to provide high-quality Delivery and D2D services that exceed expectations.. Let's
-                    take a look at what we have been working on and what our future plans are.
-                </h6>
+            <div class="card shadow border-0">
+                <div class="card-header bg-purple">
+                    <h5 class="fs-5 mb-0 text-light card-title fw-bold">GOAL</h5>
+                </div>
+                <div class="card-body">
+                
+                    <h6 class="fs-6">
+                        We are determined to provide high-quality Delivery and D2D services that exceed expectations.. Let's
+                        take a look at what we have been working on and what our future plans are.
+                    </h6>
+                </div>
+             </div>
             </div>
             <div class=" px-3 col-12 col-lg-4 text-center pt-3">
-                <h5 class="fs-5 fw-bold">
-                    MISSION
-                </h5>
-                <h6 class="fs-6">
-                    We empower riders to deliver top-notch online services with integrity and speed. We're committed to
-                    constant improvement, striving to make every delivery a seamless experience that earns trust and
-                    satisfaction to Customer."
-                    To provide exceptional online services through dedicated riders who prioritize customer satisfaction
-                    above all else
-                    And also to support and empower service providers, including riders, to learn and grow through their
-                    experiences
-                </h6>
+                <div class="card shadow border-0">
+                    <div class="card-header bg-purple">
+                        <h5 class="fs-5 mb-0 text-light card-title fw-bold">
+                            MISSION
+                        </h5> 
+                    </div>
+                <div class=" card-body">
+                    
+                    <h6 class="fs-6">
+                        We empower riders to deliver top-notch online services with integrity and speed. We're committed to
+                        constant improvement, striving to make every delivery a seamless experience that earns trust and
+                        satisfaction to Customer."
+                        To provide exceptional online services through dedicated riders who prioritize customer satisfaction
+                        above all else
+                        And also to support and empower service providers, including riders, to learn and grow through their
+                        experiences
+                    </h6>
+                </div>
+                </div>
             </div>
-            <div class=" col-12 col-lg-4 text-center pt-3">
-                <h5 class="fs-5 fw-bold">VISION</h5>
-                <h6 class="fs-6">
+            <div class=" px-3 col-12 col-lg-4 text-center pt-3">
+                <div class="card shadow border-0">
+                    <div class="card-header bg-purple">
+                        <h5 class="fs-5 mb-0 text-light card-title fw-bold">
+                            VISION
+                        </h5> 
+                    </div>
+                <div class=" card-body">
+                    
+                    <h6 class="fs-6">
                     Delivering Seamless Excellence: Empowering Service Providers to Provide Quality Online Services.
-                </h6>
+                    </h6>
+                </div>
+                </div>
             </div>
+
 
         </div>
         <div class="row bg-yellow">
@@ -418,7 +442,7 @@ else{
             <div class="col-3">
                 <div class="my-3 card shadow">
                     <?php
-                                if($cd['photo'] != null){?>
+                    if($cd['photo'] != null){?>
                     <img src="images/comments-photo/<?php echo $cd['photo'];?>" alt="" class="card-img-top">
                     <?php }
                             ?>
