@@ -227,14 +227,14 @@ $pendingTopupList = query($sql_top_up_approval);
             <div class="col-lg-12">
                 <div class="card border-0 shadow">
                     <div class="card-header">
-                        <h6 class="card-title fw-bold"  id="carrentallist">CAR RENTALS
+                        <h6 class="card-title fw-bold" id="carrentallist">CAR RENTALS
                             <?php if(!isset($_GET['rentalHist'])){?>
                             <a href="?rentalHist" class="btn btn-link text-decoration-none small">HISTORICAL</a>
                             <?php } 
                             else{ ?>
                             <a href="index.php" class="btn btn-link text-decoration-none small">PENDING APPROVALS</a>
                             <?php } ?>
-                            
+
                             <a href="?CarRentalList" class="btn btn-link text-decoration-none small">CARS FOR RENT</a>
                             <a href="?regCarRental" class="btn btn-link text-decoration-none small">REGISTER CAR FOR
                                 RENT +</a>
@@ -299,13 +299,16 @@ $pendingTopupList = query($sql_top_up_approval);
                                                 Attach Photo of your Vehicle
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                                     fill="currentColor" class="bi bi-paperclip" viewBox="0 0 16 16">
-                                                    <path d="M4.5 3a2.5 2.5 0 0 1 5 0v9a1.5 1.5 0 0 1-3 0V5a.5.5 0 0 1 1 0v7a.5.5 0 0 0 1 0V3a1.5 1.5 0 1 0-3 0v9a2.5 2.5 0 0 0 5 0V5a.5.5 0 0 1 1 0v7a3.5 3.5 0 1 1-7 0z" />
+                                                    <path
+                                                        d="M4.5 3a2.5 2.5 0 0 1 5 0v9a1.5 1.5 0 0 1-3 0V5a.5.5 0 0 1 1 0v7a.5.5 0 0 0 1 0V3a1.5 1.5 0 1 0-3 0v9a2.5 2.5 0 0 0 5 0V5a.5.5 0 0 1 1 0v7a3.5 3.5 0 1 1-7 0z" />
                                                 </svg>
                                             </button>
-                                            <input type="file" name="carphoto" class="form-file visually-hidden form-control">
+                                            <input type="file" name="carphoto"
+                                                class="form-file visually-hidden form-control">
                                         </div>
 
-                                        <input type="submit" class="btn btn-primary border-dark border-2 bg-purple text-light">
+                                        <input type="submit"
+                                            class="btn btn-primary border-dark border-2 bg-purple text-light">
                                     </form>
                                     <!-- end of form -->
                                 </div>
@@ -320,10 +323,10 @@ $pendingTopupList = query($sql_top_up_approval);
                             $sqlupdatevehicle = "UPDATE vehicle SET vehicle_txn_type = ? WHERE vehicle_id = ?";
                             $update = query($sqlupdatevehicle,[$action,$vehicleid]);
                             ?>
-                                <div class="alert alert-success">
-                                    Vehicle Updated.
-                                </div>
-                            <?php 
+                        <div class="alert alert-success">
+                            Vehicle Updated.
+                        </div>
+                        <?php 
                         }
                         ?>
                     </div>
@@ -350,8 +353,8 @@ $pendingTopupList = query($sql_top_up_approval);
                                                     WHERE vehicle_id = ?";
                             $updateVehicleInfo = query($queryupdatevehicleinfo,[$vowner,$vaddress,$vcolor,$vratehr,$vrateday,$vratekm,$vid]);
                             ?>
-                            <div class="alert alert-success">Vehicle Info Updated.</div>
-                            <?php
+                        <div class="alert alert-success">Vehicle Info Updated.</div>
+                        <?php
                         }
           
                         
@@ -361,63 +364,69 @@ $pendingTopupList = query($sql_top_up_approval);
                             $getInfo = query($sqlgetCarInfo,[$_GET['updateCar']]);
                             foreach($getInfo as $c){
                             ?>
-                            <div class="card">
-                                <div class="card-header">
-                                    <h3 class="card-title">Update Car Info</h3>
-                                </div>
-                                <div class="card-body">
-                                    <form action="./" method="POST">
-                                        <input type="text" hidden name="vehicleid" value="<?php echo $c['vehicle_id'];?>">
-                                        <div class="mb-2">
-                                            <label for="" class="form-label">Vehicle Owner</label>
-                                            <input type="text" name="vehicleowner" class="form-control" value="<?php echo $c['vehicle_owner_name'];?>" />
-                                        </div>
-
-                                        <div class="mb-2">
-                                            <label for="" class="form-label">Vehicle Owner Address</label>
-                                            <input type="text" name="vehicleowneraddress" class="form-control" value="<?php echo $c['vehicle_owner_address'];?>" />
-                                        </div>
-
-                                        <div class="mb-2">
-                                            <label for="" class="form-label">Vehicle Color</label>
-                                            <input type="text" name="vehiclecolor" class="form-control" value="<?php echo $c['vehicle_color']?>">
-                                        </div>
-
-                                        <div class="mb-2">
-                                            <label for="" class="form-label">Vehicle Rate Per Hour</label>
-                                            <input type="text" name="vehiclerateperhour" class="form-control" value="<?php echo $c['vehicle_price_rate_per_hr']?>">
-                                        </div>
-                                        <div class="mb-2">
-                                            <label for="" class="form-label">Vehicle Rate Per Day</label>
-                                            <input type="text" name="vehiclerateperday" class="form-control" value="<?php echo $c['vehicle_price_rate_per_day']?>">
-                                        </div>
-                                        <div class="mb-2">
-                                            <label for="" class="form-label">Vehicle Rate Per KM</label>
-                                            <input type="text" name="vehiclerateperkm" class="form-control" value="<?php echo $c['vehicle_price_rate_per_km']?>">
-                                        </div>
-
-                                       <input type="submit" class="btn btn-primary">
-                                    </form>
-                                </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Update Car Info</h3>
                             </div>
+                            <div class="card-body">
+                                <form action="./" method="POST">
+                                    <input type="text" hidden name="vehicleid" value="<?php echo $c['vehicle_id'];?>">
+                                    <div class="mb-2">
+                                        <label for="" class="form-label">Vehicle Owner</label>
+                                        <input type="text" name="vehicleowner" class="form-control"
+                                            value="<?php echo $c['vehicle_owner_name'];?>" />
+                                    </div>
+
+                                    <div class="mb-2">
+                                        <label for="" class="form-label">Vehicle Owner Address</label>
+                                        <input type="text" name="vehicleowneraddress" class="form-control"
+                                            value="<?php echo $c['vehicle_owner_address'];?>" />
+                                    </div>
+
+                                    <div class="mb-2">
+                                        <label for="" class="form-label">Vehicle Color</label>
+                                        <input type="text" name="vehiclecolor" class="form-control"
+                                            value="<?php echo $c['vehicle_color']?>">
+                                    </div>
+
+                                    <div class="mb-2">
+                                        <label for="" class="form-label">Vehicle Rate Per Hour</label>
+                                        <input type="text" name="vehiclerateperhour" class="form-control"
+                                            value="<?php echo $c['vehicle_price_rate_per_hr']?>">
+                                    </div>
+                                    <div class="mb-2">
+                                        <label for="" class="form-label">Vehicle Rate Per Day</label>
+                                        <input type="text" name="vehiclerateperday" class="form-control"
+                                            value="<?php echo $c['vehicle_price_rate_per_day']?>">
+                                    </div>
+                                    <div class="mb-2">
+                                        <label for="" class="form-label">Vehicle Rate Per KM</label>
+                                        <input type="text" name="vehiclerateperkm" class="form-control"
+                                            value="<?php echo $c['vehicle_price_rate_per_km']?>">
+                                    </div>
+
+                                    <input type="submit" class="btn btn-primary">
+                                </form>
+                            </div>
+                        </div>
                         <?php }
                         }
 
                         if(isset($_GET['CarRentalList'])){
                             $sql_for_rent="SELECT * FROM `vehicle`";
                             $CarRentData=query($sql_for_rent); ?>
-                            <table class="table table-responsive table-striped">
-                                <thead>
-                                    <th>Vehicle Type</th>
-                                    <th>Plate No.</th>
-                                    <th colspan="2" class="text-center">Owner</th>
-                                    <th>Vehicle Model</th>
-                                    <th>Vehicle Color</th>
-                                    <th>Vehicle Rate per Hour</th>
-                                    <th>Vehicle Rate per Day</th>
-                                    <th>Vehicle Rate per KM</th>
-                                </thead>
-                                <?php
+                        <table class="table table-responsive table-striped">
+                            <thead>
+                                <th>Vehicle Type</th>
+                                <th>Plate No.</th>
+                                <th colspan="2" class="text-center">Owner</th>
+                                <th>Vehicle Model</th>
+                                <th>Vehicle Color</th>
+                                <th>Vehicle Rate per Hour</th>
+                                <th>Vehicle Rate per Day</th>
+                                <th>Vehicle Rate per KM</th>
+                            </thead>
+                            <?php
                                 $vt = null;
                                 foreach($CarRentData as $car){
                                         switch($car['vehicle_type']){
@@ -431,24 +440,27 @@ $pendingTopupList = query($sql_top_up_approval);
 
                                         }            
                                     ?>
-                                        <tr>
-                                            <td><?php echo $vt;?></td>
-                                            <td><?php echo $car['vehicle_plate_no'];?></td>
-                                            <td><?php echo $car['vehicle_owner_name'];?></td>
-                                            <td><?php echo $car['vehicle_owner_address'];?></td>
-                                            <td><?php echo $car['vehicle_model'];?></td>
-                                            <td><?php echo $car['vehicle_color'];?></td>
-                                            <td><?php echo $car['vehicle_price_rate_per_hr'];?></td>
-                                            <td><?php echo $car['vehicle_price_rate_per_day'];?></td>
-                                            <td><?php echo $car['vehicle_price_rate_per_km'];?></td>
-                                            <td> <a href="?CarRentalList&archiveCar=<?php echo $car['vehicle_id'];?>&btnaction=<?php echo ($car['vehicle_txn_type'] == 2) ? 1:2; ?>#carrentallist" class="btn btn-link text-decoration-none"><?php echo ($car['vehicle_txn_type'] == 2) ? 'REACTIVATE':'ARCHIVE'; ?></a> </td>
-                                            <td> <a href="?updateCar=<?php echo $car['vehicle_id'];?>" class="btn btn-link text-decoration-none">EDIT</a> </td>
-                                        </tr>
-                                <?php } ?>
-                                
-                            </table>
-                        
-<!-- end of car rental list -->
+                            <tr>
+                                <td><?php echo $vt;?></td>
+                                <td><?php echo $car['vehicle_plate_no'];?></td>
+                                <td><?php echo $car['vehicle_owner_name'];?></td>
+                                <td><?php echo $car['vehicle_owner_address'];?></td>
+                                <td><?php echo $car['vehicle_model'];?></td>
+                                <td><?php echo $car['vehicle_color'];?></td>
+                                <td><?php echo $car['vehicle_price_rate_per_hr'];?></td>
+                                <td><?php echo $car['vehicle_price_rate_per_day'];?></td>
+                                <td><?php echo $car['vehicle_price_rate_per_km'];?></td>
+                                <td> <a href="?CarRentalList&archiveCar=<?php echo $car['vehicle_id'];?>&btnaction=<?php echo ($car['vehicle_txn_type'] == 2) ? 1:2; ?>#carrentallist"
+                                        class="btn btn-link text-decoration-none"><?php echo ($car['vehicle_txn_type'] == 2) ? 'REACTIVATE':'ARCHIVE'; ?></a>
+                                </td>
+                                <td> <a href="?updateCar=<?php echo $car['vehicle_id'];?>"
+                                        class="btn btn-link text-decoration-none">EDIT</a> </td>
+                            </tr>
+                            <?php } ?>
+
+                        </table>
+
+                        <!-- end of car rental list -->
                         <?php }
 
 
@@ -632,13 +644,109 @@ $pendingTopupList = query($sql_top_up_approval);
                             <tr>
                                 <td colspan='12'>No Pending Cash out Request</td>
                             </tr>
-                            <?php }
-                                ?>
+                            <?php }  ?>
                         </table>
 
                     </div>
                 </div>
             </div>
+            <!-- Comments -->
+
+
+            <div class="col-lg-12">
+                <div class="card shadow border-0">
+                    <div class="card-header">
+                        <h6 class="fs-6 fw-bold">COMMENTS AND SUGGESTIONS</h6>
+                    </div>
+                    <div class="card-body">
+                        <?php
+                if(isset($_GET['approvecomment'])){
+                    $commentid = $_GET['approvecomment'];
+                    $sqlupdatecomment = query("UPDATE CustomerSuggestions SET approved = 1 WHERE cs_id = ?",[$commentid]); ?>
+                        <div class="alert alert-success">Comment Approved.</div>
+                        <?php }
+                if(isset($_GET['disapprovecomment'])){
+                    $commentid = $_GET['disapprovecomment'];
+                    $sqlupdatecomment = query("UPDATE CustomerSuggestions SET approved = 0 WHERE cs_id = ?",[$commentid]); ?>
+                        <div class="alert alert-warning">Comment Dispproved.</div>
+                        <?php
+                }
+                 ?>
+                        <table class="table table-responsive">
+                            <tr class="row fw-bold">
+                                <th class="col-1">STATUS</th>
+                                <th class="col-1">EMAIL ADDRESS</th>
+                                <th class="col-5">COMMENT</th>
+                                <th class="col-2">RATING</th>
+                                <th class="col-2">PHOTO</th>
+                                <th class="col-1">ACTION</th>
+                            </tr>
+                            <?php
+                                $rate = 0;
+                                $sqlSuggestions = query("SELECT * FROM CustomerSuggestions");
+                                foreach($sqlSuggestions as $com) { ?>
+                            <tr class="row" id="comment<?php echo $com['cs_id'];?>">
+                                <td class="col-1"><?php echo $com['approved'] == 1 ? "SHOWN" : "HIDDEN"; ?></td>
+                                <td class="col-1"><?php echo $com['emailadd'];?></td>
+                                <td class="col-5"><?php echo $com['message'];?></td>
+                                <td class="col-2"><?php $rate=$com['rate'];
+                                                  $maxrate = 5;
+                                                    $s = 1;
+                                                    while ($s <= $rate){
+                                                        ?>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                        class="bi bi-star-fill text-warning" viewBox="0 0 16 16">
+                                        <path
+                                            d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
+                                    </svg>
+                                    <?php 
+                                                        $s++;
+                                                    }
+                                                    while ($s <= $maxrate){ ?>
+
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                        class="bi bi-star" viewBox="0 0 16 16">
+                                        <path
+                                            d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.56.56 0 0 0-.163-.505L1.71 6.745l4.052-.576a.53.53 0 0 0 .393-.288L8 2.223l1.847 3.658a.53.53 0 0 0 .393.288l4.052.575-2.906 2.77a.56.56 0 0 0-.163.506l.694 3.957-3.686-1.894a.5.5 0 0 0-.461 0z" />
+                                    </svg>
+                                    <?php 
+                                                    $s++;
+                                                    }
+                                                        ?>
+                                </td>
+                                <td class="col-2"><img src="../../images/comments-photo/<?php echo $com['photo'];?>"
+                                        width="100px" alt=""></td>
+                                <td class="col-1">
+                                    <?php if($com['approved'] == 0) { ?>
+                                    <a href="?approvecomment=<?php echo $com['cs_id'];?>#comment<?php echo $com['cs_id'];?>"
+                                        class="btn btn-success text-decoration-none">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                            fill="currentColor" class="bi bi-hand-thumbs-up-fill" viewBox="0 0 16 16">
+                                            <path
+                                                d="M6.956 1.745C7.021.81 7.908.087 8.864.325l.261.066c.463.116.874.456 1.012.965.22.816.533 2.511.062 4.51a10 10 0 0 1 .443-.051c.713-.065 1.669-.072 2.516.21.518.173.994.681 1.2 1.273.184.532.16 1.162-.234 1.733q.086.18.138.363c.077.27.113.567.113.856s-.036.586-.113.856c-.039.135-.09.273-.16.404.169.387.107.819-.003 1.148a3.2 3.2 0 0 1-.488.901c.054.152.076.312.076.465 0 .305-.089.625-.253.912C13.1 15.522 12.437 16 11.5 16H8c-.605 0-1.07-.081-1.466-.218a4.8 4.8 0 0 1-.97-.484l-.048-.03c-.504-.307-.999-.609-2.068-.722C2.682 14.464 2 13.846 2 13V9c0-.85.685-1.432 1.357-1.615.849-.232 1.574-.787 2.132-1.41.56-.627.914-1.28 1.039-1.639.199-.575.356-1.539.428-2.59z" />
+                                        </svg>
+
+                                    </a>
+                                    <?php } else { ?>
+                                    <a href="?disapprovecomment=<?php echo $com['cs_id'];?>#comment<?php echo $com['cs_id'];?>"
+                                        class="btn btn-danger text-decoration-none">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                            fill="currentColor" class="bi bi-hand-thumbs-down-fill" viewBox="0 0 16 16">
+                                            <path
+                                                d="M6.956 14.534c.065.936.952 1.659 1.908 1.42l.261-.065a1.38 1.38 0 0 0 1.012-.965c.22-.816.533-2.512.062-4.51q.205.03.443.051c.713.065 1.669.071 2.516-.211.518-.173.994-.68 1.2-1.272a1.9 1.9 0 0 0-.234-1.734c.058-.118.103-.242.138-.362.077-.27.113-.568.113-.856 0-.29-.036-.586-.113-.857a2 2 0 0 0-.16-.403c.169-.387.107-.82-.003-1.149a3.2 3.2 0 0 0-.488-.9c.054-.153.076-.313.076-.465a1.86 1.86 0 0 0-.253-.912C13.1.757 12.437.28 11.5.28H8c-.605 0-1.07.08-1.466.217a4.8 4.8 0 0 0-.97.485l-.048.029c-.504.308-.999.61-2.068.723C2.682 1.815 2 2.434 2 3.279v4c0 .851.685 1.433 1.357 1.616.849.232 1.574.787 2.132 1.41.56.626.914 1.28 1.039 1.638.199.575.356 1.54.428 2.591" />
+                                        </svg>
+                                    </a>
+                                    <?php } ?>
+                                </td>
+                            </tr>
+                            <?php }
+                            ?>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+            <!-- Comments -->
         </div>
     </div>
 

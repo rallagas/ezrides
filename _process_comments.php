@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $photoPath = null;
 
         if ($photo && $photo['error'] === UPLOAD_ERR_OK) {
-            $uploadDir = './images/comments-photo/';
+            $uploadDir = 'images/comments-photo/';
             $photoName = uniqid('comment_', true) . '.' . pathinfo($photo['name'], PATHINFO_EXTENSION);
             $photoPath = $uploadDir . $photoName;
 
@@ -24,8 +24,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
-        $stmt = CONN->prepare('INSERT INTO customerSuggestions (emailadd, message, rate, photo) VALUES (NULL, ?, ?, ?)');
-        $stmt->bind_param('ssis',$email, $message, $rating, $photoPath);
+        $stmt = CONN->prepare('INSERT INTO customerSuggestions (emailadd, message, rate, photo) VALUES (?, ?, ?, ?)');
+        $stmt->bind_param('ssis',$email, $message, $rating, $photoName);
 
         if ($stmt->execute()) {
             $response = ['status' => 'success', 'message' => 'Thank you for your suggestion!'];
