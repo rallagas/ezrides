@@ -96,8 +96,77 @@ include_once "button-functions.php";
                         if ($cat['page_action'] == $page && $cat['txn_category_id'] == $categ) {
                             $txnlink = $cat['txn_link'];
                             ?>
-            <div class="col-12 p-0" id="">
-                <?php include_once $txnlink; ?>
+             <div class="col-12 p-0" id="">
+                <?php include_once $txnlink; 
+                    if($merchant_id == 13 ) //document processing
+                    { ?>
+              <!-- Button trigger modal -->
+<button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#docuTerms" id="openDocuTerms">
+  Document Terms
+</button>
+
+<!-- Modal -->
+<div class="modal fade" style="height:95vh;" id="docuTerms" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="docuTermsLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content overflow-y">
+      <div class="modal-header bg-yellow text-light">
+        <h1 class="modal-title fs-5 fw-bold" id="docuTermsLabel">EZRides Document Processing Service Terms</h1>
+        <button type="button" class="btn btn-close text-light" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+<div class="">
+
+<div class="mb-3">
+    <h2 class="h6">1. What We Deliver</h2>
+    <p>Official, Legal, Business, and personal documents available from this Merchant<br>No cash, valuables, or hazardous items.</p>
+</div>
+
+<div class="mb-3">
+    <h2 class="h6">2. Service Area</h2>
+    <p>Only within our operational region.<br>Covers specific offices and businesses.</p>
+</div>
+
+<div class="mb-3">
+    <h2 class="h6">3. Handling & Security</h2>
+    <p>We respect your privacy; documents stay sealed.<br>Use secure packaging for sensitive items.</p>
+</div>
+
+<div class="mb-3">
+    <h2 class="h6">4. Limits</h2>
+    <p>Max number: 10 Documents.
+</div>
+
+<div class="mb-3">
+    <h2 class="h6">5. Delivery Time</h2>
+    <p>Standard: Within 2-3 Business Days.</p>
+</div>
+
+<div class="mb-3">
+    <h2 class="h6">6. Identification</h2>
+    <p>Show valid ID for pickup and delivery.<br>Signature required on delivery.</p>
+</div>
+
+<div class="mb-3">
+    <h2 class="h6">7. Changes & Cancellations</h2>
+    <p>No Cancellation.</p>
+</div>
+
+<div class="mb-3">
+    <h2 class="h6">9. Liability</h2>
+    <p>Limited coverage for loss or damage.
+</div>
+
+</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-warning" data-bs-dismiss="modal">Understood</button>
+        
+      </div>
+    </div>
+  </div>
+</div>
+                    <?php }
+                ?>
             </div>
             <?php }
                     }
@@ -320,6 +389,16 @@ const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstra
 
 <script>
 $(document).ready(function() {
+
+    // Get the current URL parameters
+const urlParams = new URLSearchParams(window.location.search);
+const merchant = urlParams.get('merchant');
+
+// Check if merchant parameter equals 13
+if (merchant === '13') {
+  document.getElementById("openDocuTerms").click();
+}
+
     // When image link is clicked
     $('a[data-bs-toggle="tooltip"]').on('click', function(event) {
         event.preventDefault(); // Prevent default link behavior

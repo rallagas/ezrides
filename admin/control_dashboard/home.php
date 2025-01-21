@@ -662,12 +662,12 @@ $pendingTopupList = query($sql_top_up_approval);
                         <?php
                 if(isset($_GET['approvecomment'])){
                     $commentid = $_GET['approvecomment'];
-                    $sqlupdatecomment = query("UPDATE CustomerSuggestions SET approved = 1 WHERE cs_id = ?",[$commentid]); ?>
+                    $sqlupdatecomment = query("UPDATE customerSuggestions SET approved = 1 WHERE cs_id = ?",[$commentid]); ?>
                         <div class="alert alert-success">Comment Approved.</div>
                         <?php }
                 if(isset($_GET['disapprovecomment'])){
                     $commentid = $_GET['disapprovecomment'];
-                    $sqlupdatecomment = query("UPDATE CustomerSuggestions SET approved = 0 WHERE cs_id = ?",[$commentid]); ?>
+                    $sqlupdatecomment = query("UPDATE customerSuggestions SET approved = 0 WHERE cs_id = ?",[$commentid]); ?>
                         <div class="alert alert-warning">Comment Dispproved.</div>
                         <?php
                 }
@@ -683,7 +683,7 @@ $pendingTopupList = query($sql_top_up_approval);
                             </tr>
                             <?php
                                 $rate = 0;
-                                $sqlSuggestions = query("SELECT * FROM CustomerSuggestions");
+                                $sqlSuggestions = query("SELECT * FROM customerSuggestions");
                                 foreach($sqlSuggestions as $com) { ?>
                             <tr class="row" id="comment<?php echo $com['cs_id'];?>">
                                 <td class="col-1"><?php echo $com['approved'] == 1 ? "SHOWN" : "HIDDEN"; ?></td>
