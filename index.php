@@ -439,7 +439,7 @@ else{
                 $commentdata = query("SELECT * FROM `customerSuggestions` WHERE `approved`=1 LIMIT 6");
                 if(!empty($commentdata)){
                     foreach($commentdata as $cd){ ?>
-            <div class="col-3">
+            <div class="col-6 col-md-4 col-lg-3">
                 <div class="my-3 card shadow">
                     <?php
                     if($cd['photo'] != null){?>

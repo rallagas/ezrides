@@ -158,7 +158,10 @@ if (!empty($_SESSION['user_profile'])) {
 
     <?php
     if(isset($_GET['merchant'])) {
-    $merchant_id = $_GET['merchant'];    
+    $merchant_id = $_GET['merchant'];   
+    
+
+    
     try {
         // Fetch all products for the specified merchant ID
         $products = Product::fetchByMerchantId($merchant_id);
@@ -221,8 +224,7 @@ if (!empty($_SESSION['user_profile'])) {
         </div>
         <div class="row gx-1">
             <div class="col-12">
-                <div class="collapse CartItems row gx-1 py-1 ps-2 bg-success small border border-5 border-start-0 border-end-0 border-bottom-0 border-success bg-opacity-75"
-                    id="CartItems">
+                <div class="collapse CartItems row gx-1 py-1 ps-2 bg-yellow small" id="CartItems">
                     No Cart Items
                 </div>
             </div>
@@ -244,6 +246,7 @@ if (!empty($_SESSION['user_profile'])) {
                                         class="form-control">
                                     <hr class="p-0 m-0">
                                     <table class="table table-sm" id="CheckOutItems"></table>
+                                    
                                     <!-- Order Summary Items go here -->
                                     <!-- Shipping Details -->
                                     <div class="mt-3">
@@ -251,7 +254,6 @@ if (!empty($_SESSION['user_profile'])) {
                                             class="card rounded-0 border-info border-5 border-top-0 border-bottom-0 border-end-0 border-start-5">
                                             <div class="card-body bg-info opacity-75 text-tertiary-body"
                                                 id="MerchantInfo">
-                                                <small class="small fw-bold">Shop in </small>
                                                 <small class="small fw-bold" id="MerchantName"></small> <br>
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                                     fill="currentColor" class="bi bi-geo-alt" viewBox="0 0 16 16">
@@ -311,12 +313,21 @@ if (!empty($_SESSION['user_profile'])) {
                                             <Input type="text" class="border-0 form-control form-control-sm"
                                                 id="formEstimatedCost" required />
                                         </div>
+                                        <div class="mb-2 border-opacity-50">
+                                            <textarea name="" id="additionaNotes" class="form-control">Additional Notes</textarea>
+                                        </div>
 
                                     </div>
                                 </div>
                                 <div class="modal-footer">
                                     <div class="d-inline-block AlertStatus"></div>
-                                    <!--                                    <button id="placeOrderBtn" class="btn btn-outline-secondary fw-bold text-secondary bg-purple">Book <span class="text-purple fw-bolder">EZ</span>Pabili</button>-->
+
+                                    <input type="file" id="additionalFileAttachment" class="visually-hidden">
+                                    <button class="float-start btn btn-light"> Attach Files
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-paperclip" viewBox="0 0 16 16">
+                                        <path d="M4.5 3a2.5 2.5 0 0 1 5 0v9a1.5 1.5 0 0 1-3 0V5a.5.5 0 0 1 1 0v7a.5.5 0 0 0 1 0V3a1.5 1.5 0 1 0-3 0v9a2.5 2.5 0 0 0 5 0V5a.5.5 0 0 1 1 0v7a3.5 3.5 0 1 1-7 0z"/>
+                                        </svg>
+                                    </button>
                                     <button id="placeOrderBtn" type="submit" class="btn btn-primary"
                                         data-bs-target="#PaymentModal" data-bs-toggle="modal">Place Order</button>
                                 </div>
@@ -575,6 +586,7 @@ if (!empty($_SESSION['user_profile'])) {
             </div>
             <?php }
                 }
+              
             } else { ?>
             <div class="col-12">
                 <p class="text-center">No merchants found.</p>
@@ -588,7 +600,12 @@ if (!empty($_SESSION['user_profile'])) {
             <?php } ?>
         </div>
     </div>
-    <?php } ?>
+    <?php } 
+    
+    
+?>
+
+
 
 </body>
 
