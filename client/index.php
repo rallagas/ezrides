@@ -469,4 +469,6 @@ if (isset($_GET['page'])) {
 <script src="_process_ajax.js"></script>
 <?php } ?>
 
+<script src="../_multipurpose_ajax.js"></script>
+
 </html>

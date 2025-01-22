@@ -75,6 +75,7 @@ class User {
         $_SESSION['t_username'] = $user['t_username'];
         $_SESSION['t_user_type'] = $user['t_user_type'];
         $_SESSION['t_rider_status'] = $user['t_rider_status'];
+        
 
         // Load profile data
         $profile = $this->getUserProfile($user['user_id']);

@@ -49,7 +49,7 @@ try {
                                 'payFrom' => $user_id,
                                 'wallet_txn_amt' => -$amount_to_pay,
                                 'txn_type_id' => '1',
-                                'wallet_action' => "Made Payment for $rental_reference",
+                                'wallet_action' => "Payment for $rental_reference",
                                 'payment_type' => 'A',
                                 'reference_number' => $rental_reference,
                                 'wallet_txn_status' => 'C'

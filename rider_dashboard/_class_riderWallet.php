@@ -78,6 +78,36 @@ class UserWallet {
     
         return true;
     }
+public function convertEarnings($amt = 0.00){
+    $amount = $amt;
+    if ($amount <= 0 || $amount > 9999999999.99) {
+        throw new InvalidArgumentException("Top-up amount must be between 0.01 and 9999999999.99.");
+    }
+
+    $refNumber = gen_book_ref_num(8, "CON");
+    $txn_type_id = 69; //convert coins
+
+    $data = [
+        'user_id' => $this->userId,
+        'wallet_txn_status' => 'C',
+        'wallet_txn_amt' => number_format($amount, 2, '.', ''),
+        'txn_type_id' => $txn_type_id,
+        'wallet_action' => 'Convert Earnings to Coins',
+        'payment_type' => 'X',
+        'reference_number' => $refNumber,
+        
+    ];
+
+    // Attempt to insert data into the database
+    $result = insert_data('user_wallet', $data);
+
+    if (!$result) {
+        error_log("Failed to insert data: " . print_r($data, true)); // Log the data being inserted
+        return false;
+    }
+
+    return true;
+}
 
 public function getEarnings($user = null) {
     if($user != null){
@@ -86,16 +116,19 @@ public function getEarnings($user = null) {
     else{
         $userId = $this->userId;
     }
-        $sql = "SELECT SUM(CASE WHEN payment_type = 'R' AND payTo = ? THEN  wallet_txn_amt 
-                             WHEN payment_type = 'S' AND payFrom = ? THEN abs(wallet_txn_amt) * -1 
-                             WHEN payment_type = 'C' THEN wallet_txn_amt
-                             ELSE wallet_txn_amt
-                            END ) AS earnings 
-                   FROM user_wallet 
-                  WHERE (payTo = ? or (payment_type = 'C' and user_id = ?) )
-                    AND (wallet_txn_status = 'C' OR (payment_type = 'C' and wallet_txn_status = 'P') )
+        $sql = "SELECT SUM(CASE WHEN uw.payment_type = 'T' AND uw.user_id = ? THEN uw.wallet_txn_amt
+           WHEN uw.payment_type = 'R' AND uw.payTo = ? THEN uw.wallet_txn_amt
+           WHEN uw.payment_type = 'C' THEN ABS(uw.wallet_txn_amt) * -1
+           WHEN uw.payment_type = 'S' AND uw.payTo = ? THEN uw.wallet_txn_amt * -1
+           WHEN uw.payment_type = 'X' THEN uw.wallet_txn_amt * -1
+           ELSE 0
+         END ) AS earnings
+   FROM user_wallet uw
+  WHERE (uw.payTo = ? or (uw.payment_type = 'C' and uw.user_id = ?) )
+    AND (uw.wallet_txn_status = 'C' OR (uw.payment_type = 'C' and uw.wallet_txn_status = 'P')) 
+    OR (uw.payment_type = 'X' AND uw.user_id = ?);
                     ";
-            $result = query($sql,[$userId,$userId,$userId, $userId]);
+            $result = query($sql,[$userId,$userId,$userId, $userId, $userId,$userId]);
 
 
         return (float) $result[0]['earnings'] ?? 0;
@@ -108,30 +141,31 @@ public function getEarnings($user = null) {
      * @return float - Total balance.
      */
     public function getBalance($user = null) {
-    if($user != null){
-        $userId = $user;
-    }
-    else{
-        $userId = $this->userId;
-    }
-        $sql = "SELECT SUM(CASE WHEN payment_type = 'R' AND payTo = ? THEN  wallet_txn_amt 
-                             WHEN payment_type = 'R' AND payFrom = ? THEN  wallet_txn_amt
-                             WHEN payment_type = 'S' AND payFrom = ? THEN abs(wallet_txn_amt) * -1 
-                             WHEN payment_type = 'T' THEN wallet_txn_amt
-                             ELSE wallet_txn_amt
-                            END ) AS balance 
-                   FROM user_wallet 
-                  WHERE (user_id = ? or payTo = ? or payFrom = ?)
-                    AND (wallet_txn_status = 'C'
-                     OR (payment_type = 'C' and wallet_txn_status = 'P')
-                     )
-                    ";
-            $result = query($sql,[$userId,$userId,$userId,$userId,$userId,$userId]);
+     //   if ($user == null) {
 
+            $result = query("SELECT SUM( CASE WHEN payFrom = ? THEN ABS(wallet_txn_amt) * -1
+                                              WHEN payment_type = 'T' THEN wallet_txn_amt
+                                              WHEN payment_type = 'X' THEN wallet_txn_amt
+                                              ELSE 0
+                                         END 
+                   ) AS balance 
+                   FROM user_wallet
+                  WHERE (user_id = ? or payTo = ?)
+                    AND wallet_txn_status = 'C'",
+                [$this->userId, $this->userId, $this->userId]
+            );
 
-        return (float) $result[0]['balance'] ?? 0;
+        // }
+        // else{
+
+        // $result = query(
+        //     "SELECT SUM(wallet_txn_amt) AS balance FROM user_wallet WHERE user_id = ? AND wallet_txn_status = 'C'",
+        //     [$user]
+        // );
+
+        // }
+        return $result[0]['balance'] ?? 0;
     }
-
     /**
      * Make a payment using the user's wallet balance.
      * Inserts a negative transaction record to represent the payment.
@@ -143,13 +177,13 @@ public function getEarnings($user = null) {
      * @return array
      * @throws Exception if balance is insufficient.
      */
-    public function getPaymentToRider($amount, $payFrom = null, $payTo = null, $refNumber = null, $paymentType = null, $wallet_action = "Made Payment") {
+    public function getPaymentToRider($amount, $payFrom = null, $payTo = null, $refNumber = null, $paymentType = null, $wallet_action = "Payment") {
         $response = ["success" => false, "message" => null];
         $refNum = $refNumber;
         $payType = $paymentType;
         $payTo = $payTo ?? -99;
         $payFrom = $payFrom ?? USER_LOGGED; 
-        $walletAction = $wallet_action ?? "Made Payment";
+        $walletAction = $wallet_action ?? "Payment";
     
         try {
             if ($amount <= 0 || $amount > 9999999999.99) {

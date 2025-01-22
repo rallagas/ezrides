@@ -6,14 +6,19 @@ const loginCheck = `<span class="text-light"><svg xmlns="http://www.w3.org/2000/
 const loadingIcon = "<span class='spinner-border spinner-border-sm'></span>";
 
 
-$(document).on('click','#btnUserLogout',function(){
+$(document).on('click','#userLogOut',function(){
     console.log("Logout button clicked");
     $.ajax({
-        url: '_action_logout_user.php',
+        url: '../_action_logout_user.php',
         type: 'POST',
         success: function (response) {
             console.log('Session ended successfully:', response);
-            window.location.href = '../index.php?page=loguser';
+
+            $('body').html(loadingIcon + " Heading Out so Soon?").addClass('text-center mt-5');
+            setTimeout(() => {
+                    window.location.href = '../index.php?page=login';
+            }, 3000);
+            
         },
         error: function (xhr, status, error) {
             console.error('Failed to end session:', error);
@@ -250,21 +255,13 @@ $(document).ready(function () {
             $loginButton.html(loginCheck).addClass("text-light bg-success");
              $("#loginStat").addClass("alert alert-success").text(response.message);
              setTimeout(() => {
-                $("#loginStat").append(" Loading your page.");
+                $("#loginStat").html(loadingIcon + "Loading your travel app.");
              }, 1000);
             setTimeout(() => {
                 location.assign(response.redirect); // Redirect after a short delay
             }, 2500);
         } else if(response.status === "error") {
             $("#loginStat").html("<div class='alert alert-danger'>" + response.message + "</div>");
-            // $loginButton
-            //     .removeClass("btn-secondary btn-success")
-            //     .addClass("btn-danger")
-            //     .html("Login Failed");
-            // $("div.status")
-            //     .removeClass("alert-success")
-            //     .addClass("alert alert-danger")
-            //     .html(response.message);
         }
         else{
             alert("No User Found.");

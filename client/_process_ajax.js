@@ -885,13 +885,13 @@ $(document).ready(function () {
   
   
 
-    elements.userLogOut.click(() => {
-        const grower = CreateHtml.loadingGrower;
-        $("body").html(`<center>${grower}</center>`);
-        setTimeout(() => {
-            window.location.assign("../index.php?logout");
-        }, 1200);
-    });
+    // elements.userLogOut.click(() => {
+    //     const grower = CreateHtml.loadingGrower;
+    //     $("body").html(`<center>${grower}</center>`);
+    //     setTimeout(() => {
+    //         window.location.assign("../index.php?logout");
+    //     }, 1200);
+    // });
 
 
 

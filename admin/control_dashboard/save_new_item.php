@@ -1,6 +1,5 @@
 <?php
 include_once '../../_db.php';
-
 $response = ['success' => false];
 
 try {

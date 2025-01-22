@@ -86,63 +86,63 @@ public function CashOut($amount, $gcashData = []) {
      * @return float - Total balance.
      */
 
-     public function getEarnings($user = null) {
-        if ($user == null) {
+    //  public function getEarnings($user = null) {
+    //     if ($user == null) {
 
-            $result = query("SELECT SUM(CASE WHEN payment_type = 'R' AND payTo = ? THEN  wallet_txn_amt 
-                             WHEN payment_type = 'S' AND payFrom = ? THEN abs(wallet_txn_amt) * -1 
-                             WHEN payment_type = 'C' THEN wallet_txn_amt
-                             ELSE wallet_txn_amt
-                            END ) AS earnings 
-                   FROM user_wallet 
-                  WHERE (payTo = ?)
-                    AND (wallet_txn_status = 'C'
-                     OR (payment_type = 'C' and wallet_txn_status = 'P')
-                     )
-                    ",
-                [$this->userId, $this->userId, $this->userId]
-            );
+    //         $result = query("SELECT SUM(CASE WHEN payment_type = 'R' AND payTo = ? THEN  wallet_txn_amt 
+    //                          WHEN payment_type = 'S' AND payFrom = ? THEN abs(wallet_txn_amt) * -1 
+    //                          WHEN payment_type = 'C' THEN wallet_txn_amt
+    //                          ELSE wallet_txn_amt
+    //                         END ) AS earnings 
+    //                FROM user_wallet 
+    //               WHERE (payTo = ?)
+    //                 AND (wallet_txn_status = 'C'
+    //                  OR (payment_type = 'C' and wallet_txn_status = 'P')
+    //                  )
+    //                 ",
+    //             [$this->userId, $this->userId, $this->userId]
+    //         );
 
-        }
-        else{
+    //     }
+    //     else{
 
-        $result = query(
-            "SELECT SUM(wallet_txn_amt) AS balance FROM user_wallet WHERE user_id = ? AND wallet_txn_status = 'C'",
-            [$user]
-        );
+    //     $result = query(
+    //         "SELECT SUM(wallet_txn_amt) AS balance FROM user_wallet WHERE user_id = ? AND wallet_txn_status = 'C'",
+    //         [$user]
+    //     );
 
-        }
-        return $result[0]['balance'] ?? 0;
-    }
-    public function getBalance($user = null) {
-        if ($user == null) {
+    //     }
+    //     return $result[0]['balance'] ?? 0;
+    // }
+    // public function getBalance($user = null) {
+    //     if ($user == null) {
 
-            $result = query("SELECT SUM( CASE WHEN ? = payTo THEN wallet_txn_amt * -1 
-                              		          WHEN payment_type = 'T' THEN wallet_txn_amt
-                                              WHEN payment_type = 'C' THEN wallet_txn_amt
-                                              ELSE wallet_txn_amt
-                                         END 
-                   ) AS balance 
-                   FROM user_wallet 
-                  WHERE (user_id = ? or payTo = ?)
-                    AND (wallet_txn_status in ('C')
-                          OR (payment_type = 'C' and wallet_txn_status = 'P')
-                           )
-                    ",
-                [$this->userId, $this->userId, $this->userId]
-            );
+    //         $result = query("SELECT SUM( CASE WHEN ? = payTo THEN wallet_txn_amt * -1 
+    //                           		          WHEN payment_type = 'T' THEN wallet_txn_amt
+    //                                           WHEN payment_type = 'C' THEN wallet_txn_amt
+    //                                           ELSE wallet_txn_amt
+    //                                      END 
+    //                ) AS balance 
+    //                FROM user_wallet 
+    //               WHERE (user_id = ? or payTo = ?)
+    //                 AND (wallet_txn_status in ('C')
+    //                       OR (payment_type = 'C' and wallet_txn_status = 'P')
+    //                        )
+    //                 ",
+    //             [$this->userId, $this->userId, $this->userId]
+    //         );
 
-        }
-        else{
+    //     }
+    //     else{
 
-        $result = query(
-            "SELECT SUM(wallet_txn_amt) AS balance FROM user_wallet WHERE user_id = ? AND wallet_txn_status = 'C'",
-            [$user]
-        );
+    //     $result = query(
+    //         "SELECT SUM(wallet_txn_amt) AS balance FROM user_wallet WHERE user_id = ? AND wallet_txn_status = 'C'",
+    //         [$user]
+    //     );
 
-        }
-        return $result[0]['balance'] ?? 0;
-    }
+    //     }
+    //     return $result[0]['balance'] ?? 0;
+    // }
 
     /**
      * Make a payment using the user's wallet balance.
@@ -155,13 +155,13 @@ public function CashOut($amount, $gcashData = []) {
      * @return array
      * @throws Exception if balance is insufficient.
      */
-    public function makePayment($amount, $payFrom = null, $payTo = null, $refNumber = null, $paymentType = null, $wallet_action = "Made Payment") {
+    public function makePayment($amount, $payFrom = null, $payTo = null, $refNumber = null, $paymentType = null, $wallet_action = "Payment") {
         $response = ["success" => false, "message" => null];
         $refNum = $refNumber;
         $payType = $paymentType;
         $payTo = $payTo ?? -99;
         $payFrom = $payFrom ?? USER_LOGGED; 
-        $walletAction = $wallet_action ?? "Made Payment";
+        $walletAction = $wallet_action ?? "Payment";
     
         try {
             if ($amount <= 0 || $amount > 9999999999.99) {
