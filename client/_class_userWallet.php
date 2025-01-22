@@ -88,8 +88,10 @@ class UserWallet {
     public function getBalance($user = null) {
         if ($user == null) {
 
-            $result = query("SELECT SUM( CASE WHEN ? = payTo THEN wallet_txn_amt * -1 
-                                              ELSE wallet_txn_amt
+            $result = query("SELECT SUM( CASE WHEN payFrom = ? THEN ABS(wallet_txn_amt) * -1
+                                              WHEN payment_type = 'T' THEN wallet_txn_amt
+                                              WHEN payment_type = 'X' THEN wallet_txn_amt
+                                              ELSE 0
                                          END 
                    ) AS balance 
                    FROM user_wallet

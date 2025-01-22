@@ -167,11 +167,11 @@ if(!empty($myBooking)){
            </div>
           
           <div class="col-12">
-                <div class="card mb-1">
+                <div class="card border-0 mb-1">
                     <div class="card-header">
                      <h5 class="fw-bold">
                          <?php echo $angkas_book_ref . "<span class='badge text-bg-success'>(+Php ".$AmountToClaim.")</span>"; ?>
-                         <button id="viewCusProfile" class="float-end btn btn-sm btn-outline-secondary"
+                         <button id="viewCusProfile" class="float-end btn btn-warning"
                                  type="button" data-bs-toggle="offcanvas" data-bs-target="#customerInfo" aria-controls="customerInfo">
                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
                               <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
@@ -180,40 +180,40 @@ if(!empty($myBooking)){
                          </button>
                      </h5>
                       <small class="fs-6 card-title"> 
-                           <span class="fw-bold">From: </span> 
+                           <span class="fw-bold">FROM: </span> 
                                 <?php echo $user_from_loc_name;?>
-                             <span class="fw-bold"> To: </span> 
+                             <span class="fw-bold"> TO: </span> 
                                 <?php echo $user_to_loc_name;?>
                       </small>
                     </div>
                     <div class="card-body p-0">
 
                       <div class="input-group border-0 rounded-0 m-0 p-0 route-info">
-                            <label class="input-group-text rounded-0">ETA:</label>
-                            <input type="text" class="form-control" id="form_ETA_duration" readonly>
-
-                            <label class="input-group-text">Total Distance (km):</label>
-                            <input type="text" class="form-control rounded-0" id="form_TotalDistance" readonly>
-                     </div>
-                    </div>
-                    <div class="card-footer">
+                         
+                  
               <?php switch($bookingStatus){ 
                        case 'A': ?>
-                          <button class="btn btn-sm btn-outline-primary float-start me-3" id="ConfirmArrivalButton">Arrived</button>
-                          <a href="?cancelBooking=<?php echo $angkas_book_ref;?>" class="btn btn-sm btn-outline-danger" onclick="confirm('Do you really want to cancel this booking?')" id="CancelBooking">Cancel</a>
-                          <button class="btn btn-sm btn-outline-success me-3 d-none"  id="DropOffCustomer">Drop Off</button>
+                          <button class="btn btn-primary float-start" id="ConfirmArrivalButton">Arrived</button>
+                          <button class="btn btn-success d-none"  id="DropOffCustomer">Drop Off</button>
                     <?php break;
                        case 'I': ?>
-                      <button class="btn btn-sm btn-outline-success me-3"  id="DropOffCustomer">Drop Off</button>
+                      <button class="btn btn-success"  id="DropOffCustomer">Drop Off</button>
                    <?php break; 
                        case 'R': ?>
-                       <button class="btn btn-sm btn-outline-success me-3"  id="DropOffCustomer">Drop Off</button>
+                       <button class="btn btn-success"  id="DropOffCustomer">Drop Off</button>
                     <?php break; 
                        default: ?> 
-                       <a href="?cancelBooking=<?php echo $angkas_book_ref;?>" class="btn btn-sm btn-outline-danger" onclick="confirm('Do you really want to cancel this booking?')" id="CancelBooking">Cancel</a>  
-                       <button class="btn btn-sm btn-outline-success me-3"  id="DropOffCustomer">Drop Off</button>
+                     
+                       <button class="btn btn-success"  id="DropOffCustomer">Drop Off</button>
               <?php } ?>
-                
+
+                            <span class="input-group-text border-0 fw-bold">ETA:</span>
+                            <input type="text" class="form-control  border-0" id="form_ETA_duration" readonly>
+
+                            <span class="input-group-text  border-0 fw-bold">DISTANCE (km):</span>
+                            <input type="text" class="form-control rounded-0  border-0" id="form_TotalDistance" readonly>
+                            <a href="?cancelBooking=<?php echo $angkas_book_ref;?>" class="btn btn-danger" onclick="confirm('Do you really want to cancel this booking?')" id="CancelBooking">Cancel</a>  
+                    </div>
                  
     
                     </div>
