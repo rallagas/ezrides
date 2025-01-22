@@ -92,7 +92,7 @@ class UserWallet {
             'user_id' => $this->userId,
             'wallet_txn_amt' => number_format(-$amount, 2, '.', ''),
             'txn_type_id' => $txn_cat,
-            'wallet_action' => "Made Payment" . ($walletAction ? " $walletAction" : ""),
+            'wallet_action' => "Payment" . ($walletAction ? " $walletAction" : ""),
             'wallet_txn_status' => 'C'
         ];
 

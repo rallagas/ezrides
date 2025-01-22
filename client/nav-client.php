@@ -8,6 +8,17 @@
             <a href="index.php" class="btn btn-outline-warning bg-warning shadow rounded-4">
                 <img src="../icons/house.png" alt="" class="quick-links img-fluid" style="width:4vh;">
             </a>
+<?php
+if(isset($_SESSION['t_rider_status'])){
+        if($_SESSION['t_rider_status'] == 1){
+        ?>
+
+            <a href="../rider_dashboard/index.php" class="btn btn-outline-warning bg-warning shadow rounded-4">
+                <img src="../icons/rider-page.png" alt="" class="quick-links img-fluid" style="width:4vh;">
+            </a>
+<?php }
+}
+?>
 
             <button id="appMenuBtn" class="btn btn-outline-warning bg-warning shadow rounded-4" type="button"
                 data-bs-toggle="offcanvas" data-bs-target="#appMenu" aria-controls="appMenu">

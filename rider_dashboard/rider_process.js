@@ -48,6 +48,7 @@ function claimStubWallet(userWalletId) {
             // Handle success response
             if (response.success) {
                 console.log('Wallet record updated successfully!');
+                fetchAndAssignWalletBalance('.walletbalance',".earnings");
             } else {
                 console.warn('Failed to update wallet record: ' + response.message);
             }
@@ -75,7 +76,10 @@ async function updateQueue() {
             console.log("Booking accepted. Fetching current bookings.");
             isBookingAccepted = true; // Set flag to true
             fetchCurrentBookings(); // Fetch the accepted booking
-        } else {
+        }else if(queueData.queue_list.length === 0){
+            console.log("No Queue listed.");
+        }
+         else {
             console.log("Looking for customers.");
         }
     } catch (error) {
@@ -142,7 +146,7 @@ function fetchCurrentBookings() {
                     $("#bookingCards").append(card);
                 });
             } else {
-                availableBookings.html('<div class="alert alert-info">No current bookings available.</div>');
+                availableBookings.html('<div class="alert alert-warning">No Current Bookings available. Checking for new Bookings ' + loadingIcon + '</div>');
             }
         },
         error: function (xhr, status, error) {
@@ -152,25 +156,32 @@ function fetchCurrentBookings() {
 }
 
 
-function fetchHistBookings() {
+function fetchHistBookings(searchkey = null) {
+    const requestData = {};
+    
+    if (searchkey !== null) {
+        requestData.searchkey = searchkey;
+    }
+
     $.ajax({
         url: "ajax_fetch_ride_history.php",
         dataType: "json",
+        data: requestData,
         success: function (data) {
-            const availableBookings = $("#rideHistory");
-            const bookingCards = $("#bookingCards");
+            const bookingHistory = $("#rideHistory");
+            const bookingCards = $("#bookingCardsHist");
 
-            availableBookings.empty();
+            bookingHistory.empty();
 
             if (data && Array.isArray(data.queue_list) && data.queue_list.length > 0) {
                 bookingCards.remove();
-                availableBookings.append('<div id="bookingCards" class="col-12"></div>');
+                bookingHistory.append('<div id="bookingCardsHist" class="col-12"></div>');
                 data.queue_list.forEach((booking) => {
                     const card = ViewBookingCard(booking, null); // Use the accepted booking card view
-                    $("#bookingCards").append(card);
+                    $("#bookingCardsHist").append(card);
                 });
             } else {
-                availableBookings.html('<div class="alert alert-info">No current bookings available.</div>');
+                bookingHistory.html('<div class="alert alert-secondary">No Booking found.</div>');
             }
         },
         error: function (xhr, status, error) {
@@ -178,6 +189,13 @@ function fetchHistBookings() {
         }
     });
 }
+
+$(document).on('input', '#searchRide', function () {
+    const searchKey = $(this).val().trim();
+    fetchHistBookings(searchKey);
+});
+
+
 
 // Declare Functions
 
@@ -399,24 +417,53 @@ function stopQueueInterval() {
 $(document).ready(function() {
 
     loadTransactionHistory();
+    fetchHistBookings();
+    fetchCurrentBookings();
+    
+    
+    
     // Initial data fetch
     // Start the queue interval when the page loads
     startQueueInterval();
 
 
+
+
 });
-    // Event listener for history-tab click
-    $(document).on("click", "#history-tab", async function () {
-        stopQueueInterval(); // Stop the queue updates
-        fetchHistBookings();
+
+
+$(document).on("submit","#formConvert", function (event) {
+    event.preventDefault(); // Prevent form from submitting normally
+
+    const formData = $(this).serialize(); // Serialize form data
+
+    $.ajax({
+        url: "_ajax_convert_earnings.php", // Backend script
+        type: "POST",
+        dataType: "json",
+        data: formData,
+        success: function (response) {
+            if (response.success) {
+                alert("Conversion successful: " + response.message);
+                fetchAndAssignWalletBalance('.walletbalance',".earnings");
+                loadTransactionHistory();
+            } else {
+                alert("Error: " + response.message);
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error("AJAX Error: ", error);
+            alert("An error occurred while processing your request. Please try again.");
+        }
     });
+});
+
 
     // Event listener for booking-tab click
-    $(document).on("click", "#bookings-tab", async function () {
-        
-        fetchCurrentBookings();
-        startQueueInterval(); // Restart the queue updates
-    });
+    // $(document).on("click", "#bookings-tab", async function () {
+    //     fetchCurrentBookings();
+    //     startQueueInterval(); // Restart the queue updates
+    // });
 
 
 $(document).on("click",".claim-stub", function(e){
@@ -612,16 +659,16 @@ function renderPagination() {
     paginationContainer.empty();
 
     if (currentPage > 1) {
-        paginationContainer.append(`<button class="btn btn-secondary" onclick="changePage(${currentPage - 1})">Previous</button>`);
+        paginationContainer.append(`<button class="btn btn-warning rounded-5 btn-sm m-1" onclick="changePage(${currentPage - 1})"> < </button>`);
     }
 
     for (let i = 1; i <= totalPages; i++) {
         const activeClass = (i === currentPage) ? 'active' : '';
-        paginationContainer.append(`<button class="btn btn-secondary ${activeClass}" onclick="changePage(${i})">${i}</button>`);
+        paginationContainer.append(`<button class="btn btn-warning  rounded-5 btn-sm m-1 ${activeClass}" onclick="changePage(${i})">${i}</button>`);
     }
 
     if (currentPage < totalPages) {
-        paginationContainer.append(`<button class="btn btn-secondary" onclick="changePage(${currentPage + 1})">Next</button>`);
+        paginationContainer.append(`<button class="btn btn-warning  rounded-5 btn-sm ms-1" onclick="changePage(${currentPage + 1})"> > </button>`);
     }
 }
 // Change page and re-render data for wallet transactions
@@ -652,6 +699,7 @@ $(document).on('submit', '#topUpForm', function (event) {
                 //form.closest('tr').addClass('d-none'); // Hide the parent row
                 loadTransactionHistory(); // Refresh transaction history
                 fetchAndAssignWalletBalance('.walletbalance',".earnings"); // Update wallet balance
+                $(".txn_status").addClass("alert alert-success").text("Top Up Request sent.");
             } else {
                 alert(response.error || 'Top-up failed. Please try again.');
             }

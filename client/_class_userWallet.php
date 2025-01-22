@@ -92,7 +92,7 @@ class UserWallet {
                                               ELSE wallet_txn_amt
                                          END 
                    ) AS balance 
-                   FROM user_wallet 
+                   FROM user_wallet
                   WHERE (user_id = ? or payTo = ?)
                     AND wallet_txn_status = 'C'",
                 [$this->userId, $this->userId, $this->userId]
@@ -121,13 +121,13 @@ class UserWallet {
      * @return array
      * @throws Exception if balance is insufficient.
      */
-    public function makePayment($amount, $payFrom = null, $payTo = null, $refNumber = null, $paymentType = null, $wallet_action = "Made Payment") {
+    public function makePayment($amount, $payFrom = null, $payTo = null, $refNumber = null, $paymentType = null, $wallet_action = "Payment") {
         $response = ["success" => false, "message" => null];
         $refNum = $refNumber;
         $payType = $paymentType;
         $payTo = $payTo ?? -1;
         $payFrom = $payFrom ?? USER_LOGGED; 
-        $walletAction = $wallet_action ?? "Made Payment";
+        $walletAction = $wallet_action ?? "Payment";
     
         try {
             if ($amount <= 0 || $amount > 9999999999.99) {
