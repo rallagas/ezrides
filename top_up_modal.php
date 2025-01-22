@@ -17,33 +17,33 @@
                     </div>
 
                     <div class="mb-2">
-                        <input placeholder="Amount Sent" type="number" class="form-control" id="topUpAmount"
+                        <input placeholder="Amount Sent" type="number" class="form-control border-secondary" id="topUpAmount"
                             name="topUpAmount" min=1 required />
                     </div>
 
                     <div class="mb-2">
-                        <input placeholder="GCASH Account (number) Sender" type="text" class="form-control"
+                        <input placeholder="GCASH Account (number) Sender" type="text" class="form-control border-secondary"
                             id="gcashAccountNumber" name="gcashAccountNumber" required>
                     </div>
 
                     <div class="mb-2">
-                        <input placeholder="GCASH Account Name Sender" type="text" class="form-control"
+                        <input placeholder="GCASH Account Name Sender" type="text" class="form-control border-secondary"
                             id="gcashAccountName" name="gcashAccountName" required>
                     </div>
 
                     <div class="mb-2">
-                        <input placeholder="GCASH Reference Number" type="text" class="form-control" id="gcashRefNumber"
+                        <input placeholder="GCASH Reference Number" type="text" class="form-control border-secondary" id="gcashRefNumber"
                             name="gcashRefNumber" required>
                     </div>
 
                     <div class="mb-2">
-                        <label for="gcashScreenshot" class="btn btn-outline-secondary">
+                        <!-- <label for="gcashScreenshot" class="btn btn-outline-secondary">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-paperclip" viewBox="0 0 16 16">
                             <path d="M4.5 3a2.5 2.5 0 0 1 5 0v9a1.5 1.5 0 0 1-3 0V5a.5.5 0 0 1 1 0v7a.5.5 0 0 0 1 0V3a1.5 1.5 0 1 0-3 0v9a2.5 2.5 0 0 0 5 0V5a.5.5 0 0 1 1 0v7a3.5 3.5 0 1 1-7 0z"/>
                             </svg>
                             <small class="small fs-6">Attach Screenshot</small>
-                        </label>
-                        <input placeholder="Attach Screenshot" type="file" class="form-control btn btn-secondary d-none" title="Attach Screenshot" id="gcashScreenshot" name="gcashScreenshot" required>
+                        </label> -->
+                        <input placeholder="Attach Screenshot" type="file" class="form-control btn btn-secondary" title="Attach Screenshot" id="gcashScreenshot" name="gcashScreenshot" required>
                     </div>
                 </div>
                 <div class="modal-footer">

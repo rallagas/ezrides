@@ -248,18 +248,26 @@ $(document).ready(function () {
         // Handle the response
         if (response.status === "success") {
             $loginButton.html(loginCheck).addClass("text-light bg-success");
+             $("#loginStat").addClass("alert alert-success").text(response.message);
+             setTimeout(() => {
+                $("#loginStat").append(" Loading your page.");
+             }, 1000);
             setTimeout(() => {
                 location.assign(response.redirect); // Redirect after a short delay
-            }, 500);
-        } else {
-            $loginButton
-                .removeClass("btn-secondary btn-success")
-                .addClass("btn-danger")
-                .html("Login Failed");
-            $("div.status")
-                .removeClass("alert-success")
-                .addClass("alert alert-danger")
-                .html(response.message);
+            }, 2500);
+        } else if(response.status === "error") {
+            $("#loginStat").html("<div class='alert alert-danger'>" + response.message + "</div>");
+            // $loginButton
+            //     .removeClass("btn-secondary btn-success")
+            //     .addClass("btn-danger")
+            //     .html("Login Failed");
+            // $("div.status")
+            //     .removeClass("alert-success")
+            //     .addClass("alert alert-danger")
+            //     .html(response.message);
+        }
+        else{
+            alert("No User Found.");
         }
     
         // Reset button state

@@ -23,20 +23,22 @@ try {
         throw new Exception('All fields are required.');
     }
 
-    // Handle file upload
-    if (!isset($_FILES['gcashScreenshot']) || $_FILES['gcashScreenshot']['error'] != UPLOAD_ERR_OK) {
-        throw new Exception('Screenshot is required.');
-    }
+    //Handle file upload
 
+    if (!isset($_FILES['gcashScreenshot']) || $_FILES['gcashScreenshot']['error'] != UPLOAD_ERR_OK) {
+        throw new Exception("Screenshot is required.");
+    }
+    
     $file = $_FILES['gcashScreenshot'];
     $allowedExtensions = ['jpg', 'jpeg', 'png', 'pdf'];
     $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+
 
     if (!in_array(strtolower($extension), $allowedExtensions)) {
         throw new Exception('Invalid file type. Only JPG, PNG, or PDF allowed.');
     }
 
-    $uploadDir = '../uploads/';
+    $uploadDir = '../_upload_gcash_receipts/';
     $filename = uniqid('gcash_') . '.' . $extension;
     $filePath = $uploadDir . $filename;
 
