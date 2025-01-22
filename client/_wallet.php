@@ -88,9 +88,9 @@ $transactionHistory = query(
                         <!-- Transactions will be loaded here -->
                     </tbody>
                 </table>
-<div id="pagination" class="pagination-container">
-    <!-- Pagination buttons will be inserted here -->
-</div>
+                <div id="pagination" class="pagination-container">
+                    <!-- Pagination buttons will be inserted here -->
+                </div>
 
             </div>
         </div>

@@ -217,6 +217,7 @@ include_once "_functions.php";
                                 </div>
                             </div>
                             <div class="card-footer">
+                                <div id="loginStat"></div>
                                 <button id="loginButton" class="btn btn-outline-light bg-purple mb-0 float-end"
                                     type="submit">Login
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
