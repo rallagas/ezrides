@@ -98,7 +98,7 @@ include_once "button-functions.php";
                             ?>
              <div class="col-12 p-0" id="">
                 <?php include_once $txnlink; 
-                    if($merchant_id == 13 ) //document processing
+                    if(isset($_GET['merchant']) && $_GET['merchant'] == 13 ) //document processing
                     { ?>
               <!-- Button trigger modal -->
 <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#docuTerms" id="openDocuTerms">
