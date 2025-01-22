@@ -1,5 +1,9 @@
 let isBookingAccepted = false; // Tracks if a booking has been accepted
-const loadingIcon = "<span class='spinner-border spinner-border-sm'></span>";
+loadingIcon = "<span class='spinner-border spinner-border-sm'></span>";
+let currentPage = 1;
+const pageSize = 5;
+let transactions = [];
+let lastBookingStatus = null; // Store the last known value
 
 const chkIcon = `<span class="text-light"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-check-fill" viewBox="0 0 16 16">
 <path fill-rule="evenodd" d="M15.854 5.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 0 1 .708-.708L12.5 7.793l2.646-2.647a.5.5 0 0 1 .708 0"/>
@@ -381,7 +385,7 @@ let queueInterval; // Declare the interval variable globally
 function startQueueInterval() {
     queueInterval = setInterval(() => {
         updateQueue();
-    }, 3000); // Run every 3 seconds
+    }, 5000); // Run every 10 seconds
 }
 
 // Function to stop the queue interval
@@ -394,9 +398,11 @@ function stopQueueInterval() {
 
 $(document).ready(function() {
 
+    loadTransactionHistory();
     // Initial data fetch
     // Start the queue interval when the page loads
     startQueueInterval();
+
 
 });
     // Event listener for history-tab click
@@ -557,27 +563,95 @@ async function cashOut({
 
 }
 
+function loadTransactionHistory() {
+    $.ajax({
+        url: '../client/ajax_fetch_wallet_transactions.php',
+        type: 'GET',
+        dataType: 'json',
+        success: function (response) {
+            transactions = response;
+            renderTransactions();
+            renderPagination();
+        },
+        error: function (xhr, status, error) {
+            console.error('Failed to load transaction history:', error);
+        }
+    });
+}
+function isElementLoaded(...selectors) {
+    return selectors.every(selector => {
+        const exists = document.querySelector(selector) !== null;
+        //        console.log(`${selector} ${exists ? 'has' : 'has not'} been loaded`);
+        return exists;
+    });
+}
 
+// Render transactions for the current page
+function renderTransactions() {
+    if (isElementLoaded('#transactionHistoryTable')) {
+        const tbody = $('#transactionHistoryTable tbody');
+        tbody.empty();
 
+        const pageTransactions = transactions.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+        pageTransactions.forEach(transaction => {
+            tbody.append(`
+                <tr>
+                    <td>${transaction.amount}</td>
+                    <td>${transaction.status}</td>
+                    <td>${transaction.date}</td>
+                    <td>${transaction.wallet_txn_status}</td>
+                </tr>
+            `);
+        });
+    }
+}
+// Render pagination controls
+function renderPagination() {
+    const totalPages = Math.ceil(transactions.length / pageSize);
+    const paginationContainer = $('#pagination');
+    paginationContainer.empty();
 
+    if (currentPage > 1) {
+        paginationContainer.append(`<button class="btn btn-secondary" onclick="changePage(${currentPage - 1})">Previous</button>`);
+    }
+
+    for (let i = 1; i <= totalPages; i++) {
+        const activeClass = (i === currentPage) ? 'active' : '';
+        paginationContainer.append(`<button class="btn btn-secondary ${activeClass}" onclick="changePage(${i})">${i}</button>`);
+    }
+
+    if (currentPage < totalPages) {
+        paginationContainer.append(`<button class="btn btn-secondary" onclick="changePage(${currentPage + 1})">Next</button>`);
+    }
+}
+// Change page and re-render data for wallet transactions
+function changePage(page) {
+    if (page >= 1 && page <= Math.ceil(transactions.length / pageSize)) {
+        currentPage = page;
+        renderTransactions();
+        renderPagination();
+    }
+}
 
 $(document).on('submit', '#topUpForm', function (event) {
     event.preventDefault();
 
-    const form = $(this);
-    const formData = form.serialize(); // Serialize the form data
+    const form = $(this)[0]; // Get the raw DOM element
+    const formData = new FormData(form); // Create FormData object with form content
 
     $.ajax({
         url: 'ajax_top_up_wallet.php',
         type: 'POST',
-        data: formData, // Use serialized data
+        data: formData, // Use FormData instead of serialized data
         dataType: 'json',
+        processData: false, // Prevent jQuery from automatically transforming the data into a query string
+        contentType: false, // Prevent jQuery from overriding the Content-Type header
         success: function (response) {
             if (response.success) {
                 $('#topUpModal').modal('hide'); // Close the modal
-                form.closest('tr').addClass('d-none'); // Hide the parent row
+                //form.closest('tr').addClass('d-none'); // Hide the parent row
                 loadTransactionHistory(); // Refresh transaction history
-                fetchAndAssignWalletBalance(elements.walletBalance); // Update wallet balance
+                fetchAndAssignWalletBalance('.walletbalance',".earnings"); // Update wallet balance
             } else {
                 alert(response.error || 'Top-up failed. Please try again.');
             }
