@@ -158,13 +158,14 @@ body {
   position: relative;
 } */
 
-.commutes-destinations .destination {
-  height: 45vh;
+.commutes-destinations 
+.destination {
+  height: 40vh;
   justify-content: space-between;
-  margin-right: 8px;
+  /* margin-right: 8px; */
   min-width: 100%;
   overflow-y: scroll;
-  padding: 12px;
+  /* padding: 12px; */
   position: relative;
   width: 100%;
 }

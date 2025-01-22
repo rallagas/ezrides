@@ -1362,44 +1362,46 @@ async function generateDestinationTemplate(destination) {
         const wbalance = wallet.balance;
         console.log("BALANCE FORM: ", wbalance);
          return `
-            <form id="formFindAngkas">
-    <div class="destination border border-bottom-0 border-end-0 border-start-0  border-5 border-warning">
-        <input hidden class="form-control form-control-sm formWalletbalance" value="${wbalance}" name="walletbalance"
-            Placeholder="Wallet Balance" />
-        <div class="destination-content align-center align-middle">
-            <button type="submit"
-                class="btn btn-warning shadow findMeARiderBTN rounded-circle px-2 position-fixed bottom-0 end-0 mb-3 me-3 z-3"
+<form id="formFindAngkas">
+    <input hidden class="form-control form-control-sm formWalletbalance" value="${wbalance}" name="walletbalance" Placeholder="Wallet Balance" />
+    <div class="destination card"> 
+            <div class="card-header bg-purple text-light">
+                <span class="fs-5 fw-bold">DESTINATION</span>
+            </div>
+            <div class="destination-content card-body align-center align-middle">
+            <button type="submit" class="btn btn-dark bg-purple shadow findMeARiderBTN rounded-circle px-2 position-fixed bottom-0 end-0 mb-5 me-4 z-3"
                 style="width:60px; height: 60px">
+
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
                     class="bi bi-send-fill" viewBox="0 0 16 16">
-                    <path
-                        d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471z" />
+                    <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471z" />
                 </svg>
             </button>
             <div class="mb-1 input-group">
-                <span class="input-group-text fw-bold">Php</span>
-                <input type="text" name="form_Est_Cost" class="form-control" value="${RiderCost}" readonly />
+                <span class="input-group-text fw-bold">PHP </span>
+                <input type="text" name="form_Est_Cost" class="form-control fw-bold" value="${RiderCost}" readonly />
             </div>
             <div class="mb-1 input-group">
-                <span class="input-group-text fw-bold"> From: </span>
-                <input type="text" name="form_from_dest" class="form-control" value="" Placeholder="Checking Current Location..." readonly>
+                <span class="input-group-text fw-bold"> FROM </span>
+                <input type="text" name="form_from_dest" class="form-control fw-bold" value=""
+                    Placeholder="Checking Current Location..." readonly>
                 <input type="hidden" name="curLocCoor" class="" value="" readonly>
             </div>
             <div class="mb-1 input-group">
-                <span class="input-group-text fw-bold"> To: </span>
-                <input type="text" name="form_to_dest" class="form-control" value="${destination.name}" readonly>
-                    <input type="hidden" id="formToDest_lat" name="formToDest_lat"  value="" readonly />
-                    <input type="hidden" id="formToDest_long" name="formToDest_long" value="" readonly />
-                
+                <span class="input-group-text fw-bold"> TO: </span>
+                <input type="text" name="form_to_dest" class="form-control fw-bold" value="${destination.name}" readonly>
+                <input type="hidden" id="formToDest_lat" name="formToDest_lat" value="" readonly />
+                <input type="hidden" id="formToDest_long" name="formToDest_long" value="" readonly />
+
             </div>
             <div class="mb-1 input-group">
-                <span class="input-group-text fw-bold"> Distance (KM): </span>
-                <input type="text" name="form_TotalDistance" class="form-control form-control-sm"
+                <span class="input-group-text fw-bold"> DISTANCE (KM): </span>
+                <input type="text" name="form_TotalDistance" class="form-control fw-bold"
                     value="${destination.distance}" readonly>
             </div>
             <div class="mb-1 input-group">
-                <span class="input-group-text fw-bold"> Estimated Ride Duration (min): </span>
-                <input type="text" name="form_ETA_duration" class="form-control form-control-sm"
+                <span class="input-group-text fw-bold"> EST. RIDE DURATION (min): </span>
+                <input type="text" name="form_ETA_duration" class="form-control fw-bold"
                     value="${parseInt(destination.duration / 60)}" readonly>
             </div>
         </div>

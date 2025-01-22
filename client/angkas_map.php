@@ -57,7 +57,7 @@ include_once "../_sql_utility.php";
                 </svg>
                 <div class="description fw-bold">
                     Wallet Balance: <span class="walletbalance fw-bold"></span>
-                    <h1 class="heading fs-2">Book your EZ Rides</h1>
+                    <h1 class="heading fs-2">BOOK YOUR EZ RIDE</h1>
                     <p>See your Travel Time in Real Time</p>
                 </div>
                 <button class="add-button btn text-light shadow" autofocus>
@@ -137,7 +137,7 @@ include_once "../_sql_utility.php";
         <div class="container py-3">
             <button id="btnRideInfo" class="btn btn-outline-light my-3" type="button" data-bs-toggle="offcanvas"
                 data-bs-target="#offcanvasBottom" aria-controls="offcanvasBottom">
-                <span class="my-3">Ride Info</span>
+                <span class="my-3 fw-bold">RIDE INFO</span>
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
                     class="bi bi-caret-up-square mb-1 ms-2" viewBox="0 0 16 16">
                     <path
@@ -152,19 +152,10 @@ include_once "../_sql_utility.php";
                 id="offcanvasBottom" aria-labelledby="offcanvasBottomLabel">
                 <div class="offcanvas-head clear-fix bg-purple p-2 text-center">
                     <span class="input-group input-group-sm">
-                        <button id="LoadBookingHistory" class="btn btn-outline-light bg-purple btn-sm"
-                            data-bs-toggle="modal" data-bs-target="#BookingHistory">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                class="bi bi-book-half" viewBox="0 0 16 16">
-                                <path
-                                    d="M8.5 2.687c.654-.689 1.782-.886 3.112-.752 1.234.124 2.503.523 3.388.893v9.923c-.918-.35-2.107-.692-3.287-.81-1.094-.111-2.278-.039-3.213.492zM8 1.783C7.015.936 5.587.81 4.287.94c-1.514.153-3.042.672-3.994 1.105A.5.5 0 0 0 0 2.5v11a.5.5 0 0 0 .707.455c.882-.4 2.303-.881 3.68-1.02 1.409-.142 2.59.087 3.223.877a.5.5 0 0 0 .78 0c.633-.79 1.814-1.019 3.222-.877 1.378.139 2.8.62 3.681 1.02A.5.5 0 0 0 16 13.5v-11a.5.5 0 0 0-.293-.455c-.952-.433-2.48-.952-3.994-1.105C10.413.809 8.985.936 8 1.783" />
-                            </svg>
-                        </button>
-                        <span class="input-group-text small">Wallet</span>
-                        <span class="input-group-text small walletbalance"></span>
-                        <button class="btn btn-outline-light bg-purple btn-sm" data-bs-toggle="modal"
+                        <span class="input-group-text small">EZ WALLET</span>
+                        <span class="input-group-text small walletbalance fw-bold"></span>
+                        <button class="btn btn-outline-light bg-purple fw-bold" data-bs-toggle="modal"
                             data-bs-target="#topUpModal">
-                            
                             + CASH-IN</button>
                     </span>
 
@@ -177,38 +168,36 @@ include_once "../_sql_utility.php";
                                 <table class="table table-bordered" id="BookingInfoTable">
                                     <tbody>
                                         <tr>
-                                            <th scope="row">Booking #</th>
+                                            <th scope="row">BOOKING #</th>
                                             <td id="BookingReferenceNumber" class="text-success fw-bold"></td>
                                         </tr>
                                         <tr>
-                                            <th scope="row">Booked</th>
-                                            <td class="text-success fw-bold" id="BookedElaseTime">
-                                                ${elapsedTimeInMinutes} min ago.</td>
+                                            <th scope="row">BOOKED</th>
+                                            <td class="text-success fw-bold" id="BookedElaseTime"></td>
                                         </tr>
                                         <tr>
-                                            <th scope="row">Fare </th>
+                                            <th scope="row">FARE </th>
                                             <td class="text-secondary fw-bold">
                                                 <span id="RideEstCost"></span>
-                                                <span id="paymentStatus">( Checking... ) </span> <br>
+                                                <span id="paymentStatus"></span> <br>
 
-                                                <button id="btnPayRider" data-payment-app="" class="btn-pay btn btn-outline-success d-none">Pay Now</button>
+                                                <button id="btnPayRider" data-payment-app="" class="btn-pay btn btn-success d-none fw-bold">PAY NOW</button>
                                             </td>
                                         </tr>
                                         <tr>
-                                            <th scope="row">Origin</th>
-                                            <td class="fw-semibold" id="CustomerOrigin">{form_from_dest_name}</td>
+                                            <th scope="row">ORIGIN</th>
+                                            <td class="fw-semibold" id="CustomerOrigin"></td>
                                         </tr>
                                         <tr>
-                                            <th scope="row">Destination</th>
-                                            <td class="fw-semibold" id="CustomerDestination">{form_to_dest_name}</td>
+                                            <th scope="row">DESTINATION</th>
+                                            <td class="fw-semibold" id="CustomerDestination"></td>
                                         </tr>
                                         <tr>
-                                            <th scope="row">Booking Status</th>
-                                            <td id="riderInfoBookingStatus" class="fw-semibold">{booking_status_text}
-                                            </td>
+                                            <th scope="row">BOOKING STATUS</th>
+                                            <td id="riderInfoBookingStatus" class="fw-semibold"></td>
                                         </tr>
                                         <tr>
-                                            <th scope="row">Driver</th>
+                                            <th scope="row">DRIVER</th>
                                             <td class="fw-semibold" id="riderInfoPI">
                                                 <div class="spinner-grow text-danger spinner-grow-sm" role="status">
                                                 </div>
@@ -216,11 +205,10 @@ include_once "../_sql_utility.php";
                                                 </div>
                                                 <div class="spinner-grow text-danger spinner-grow-sm" role="status">
                                                 </div>
-                                                {booking.rider_firstname}, {booking.rider_lastname}
                                             </td>
                                         </tr>
 
-                                        <tr>
+                                        <!-- <tr>
                                             <th scope="row">Rate</th>
                                             <td>
                                                 <div class="d-flex align-items-center">
@@ -232,7 +220,7 @@ include_once "../_sql_utility.php";
                                                 </div>
 
                                             </td>
-                                        </tr>
+                                        </tr> -->
                                     </tbody>
                                 </table>
 

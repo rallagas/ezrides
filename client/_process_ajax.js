@@ -879,7 +879,7 @@ $(document).ready(function () {
             
             makePayment(estimatedCost, null, null, dataPaymentApp, 'R', 'Ride Payment')
             updatePaymentStatus(dataPaymentApp, 'C', 'A'); //for booking
-            setTimeout($(this).html(ChkIcon),1000);
+            setTimeout($(this).html(ChkIcon),500);
         }
     });
   
