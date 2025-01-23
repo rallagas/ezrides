@@ -229,7 +229,7 @@ if (!empty($_SESSION['user_profile'])) {
                 </div>
             </div>
             <div class="col-12">
-                <div class="modal fade" id="checkoutModal" aria-hidden="true" aria-labelledby="exampleModalToggleLabel"
+                <div class="modal fw-bold fade" id="checkoutModal" aria-hidden="true" aria-labelledby="exampleModalToggleLabel"
                     tabindex="-1">
                     <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content">
@@ -238,7 +238,7 @@ if (!empty($_SESSION['user_profile'])) {
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
                             </div>
-                            <form id="formPlaceOrder">
+                            <form id="formPlaceOrder" enctype="multipart/form-data">
                                 <div class="modal-body overflow-y-scroll" style="height:70vh">
                                     <input type="text" readonly class="form-control text-secondary fw-bold border-0"
                                         name="shopReferenceNumber" id="shopReferenceNum">
@@ -268,6 +268,7 @@ if (!empty($_SESSION['user_profile'])) {
                                                     class="form-control fw-light" id="MerchantLocCoor" />
                                             </div>
                                         </div>
+                                        <div id="locationStatus"></div>
                                         <div class="input-group input-group-sm my-2">
                                             <input type="text" id="shippingAddress" name="shippingAddress"
                                                 class="form-control form-control-sm border-warning"
@@ -281,6 +282,7 @@ if (!empty($_SESSION['user_profile'])) {
                                                 </svg>
                                             </button>
                                         </div>
+
                                         <div id="pacContainer"></div>
                                         <input type="text" id="shippingName" name="shipingName"
                                             class="form-control form-control-sm mb-2 border border-secondary border-opacity-50"
@@ -294,36 +296,38 @@ if (!empty($_SESSION['user_profile'])) {
                                             id="AddressCoordinates">
                                         <div
                                             class="input-group input-group-sm border rounded border-secondary border-opacity-50 mb-2">
-                                            <span class="input-group-text small border-0">Distance</span>
+                                            <span class="input-group-text small border-0">DISTANCE</span>
                                             <input type="text" class=" border-0 form-control form-control-sm"
                                                 id="formDistanceKM" required>
                                             <span class=" border-0 small input-group-text">KM</span>
                                         </div>
                                         <div
                                             class="input-group input-group-sm border rounded border-secondary border-opacity-50  mb-2">
-                                            <span class="input-group-text small border-0">Est. Time to Complete
-                                                Route</span>
+                                            <span class="input-group-text small border-0">EST TIME TO COMPLETE ROUTE
+                                                </span>
                                             <input type="text" class="form-control form-control-sm  border-0"
                                                 id="formETA" required>
-                                            <span class="input-group-text small  border-0">Mins</span>
+                                            <span class="input-group-text small  border-0">MINS</span>
                                         </div>
                                         <div
                                             class="input-group input-group-sm border rounded border-secondary border-opacity-50  mb-2">
-                                            <span class="input-group-text border-0">Delivery Cost (Php)</span>
+                                            <span class="input-group-text border-0">DELIVERY COST (Php)</span>
                                             <Input type="text" class="border-0 form-control form-control-sm"
                                                 id="formEstimatedCost" required />
                                         </div>
                                         <div class="mb-2 border-opacity-50">
-                                            <textarea name="" id="additionaNotes" class="form-control">Additional Notes</textarea>
+                                            <span class="mb-1">ADDITIONAL NOTES</span>
+                                            <textarea name="" id="additionaNotes" class="form-control"></textarea>
                                         </div>
 
                                     </div>
                                 </div>
                                 <div class="modal-footer">
                                     <div class="d-inline-block AlertStatus"></div>
-
-                                    <!-- <input type="file" id="additionalFileAttachment" class="visually-hidden">
-                                    <button class="float-start btn btn-light"> Attach Files
+                                    <label for="additionalFileAttachment" class="btn btn-secondary form-label"> Attach File
+                                        <input type="file" id="additionalFileAttachment" class="visually-hidden">
+                                    </label>
+                                    <!-- <button type="button" class="float-start btn btn-light"> Attach Files
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-paperclip" viewBox="0 0 16 16">
                                         <path d="M4.5 3a2.5 2.5 0 0 1 5 0v9a1.5 1.5 0 0 1-3 0V5a.5.5 0 0 1 1 0v7a.5.5 0 0 0 1 0V3a1.5 1.5 0 1 0-3 0v9a2.5 2.5 0 0 0 5 0V5a.5.5 0 0 1 1 0v7a3.5 3.5 0 1 1-7 0z"/>
                                         </svg>

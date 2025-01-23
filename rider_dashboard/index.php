@@ -3,7 +3,7 @@
       require_once "_class_riderWallet.php";
 $userWallet = new UserWallet(USER_LOGGED);
 $rider_logged=$_SESSION['user_id'];
-query("DELETE FROM angkas_bookings WHERE date_booked < (NOW() - INTERVAL 2 HOUR) and angkas_rider_user_id is NULL and booking_status = 'P'");
+query("DELETE FROM angkas_bookings WHERE date_booked < (NOW() - INTERVAL 2 HOUR) and angkas_rider_user_id is NULL and booking_status = 'P' AND payment_status <> 'C'");
 ?>
 
 <html>
@@ -198,9 +198,8 @@ query("DELETE FROM angkas_bookings WHERE date_booked < (NOW() - INTERVAL 2 HOUR)
             <!-- end container-fluid   -->
             <div class="col-12 col-lg-6 mb-3">
                 <div class="card shadow border-0">
-                <div class="card-header bg-purple text-light">
+                    <div class="card-header bg-purple text-light">
                         <span class="fs-6 card-title fw-bold">CURRENT BOOKING</span>
-
                     </div>
                     <div class="card-body" id="availableBookings">
                         Checking Available Bookings...

@@ -20,48 +20,18 @@ $response = [
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     try {
-        // Handle FormData or raw JSON input
-        $isMultipart = strpos($_SERVER['CONTENT_TYPE'], 'multipart/form-data') !== false;
+        // Read raw POST data and decode it from JSON
+        $rawData = file_get_contents('php://input');
+        $data = json_decode($rawData, true); // Decode JSON into an associative array
 
-        if ($isMultipart) {
-            // Handle FormData input
-            $data = [
-                'order_items' => isset($_POST['order_items']) ? json_decode($_POST['order_items'], true) : [],
-                'order_ref_num' => $_POST['order_ref_num'] ?? '',
-                'shipping_name' => $_POST['shipping_name'] ?? '',
-                'shipping_address' => $_POST['shipping_address'] ?? '',
-                'shipping_phone' => $_POST['shipping_phone'] ?? '',
-                'shipping_coordinates' => $_POST['shipping_coordinates'] ?? '',
-                'payment_mode' => $_POST['payment_mode'] ?? '',
-                'merchant_address' => $_POST['merchant_address'] ?? '',
-                'merchant_loc_coor' => $_POST['merchant_loc_coor'] ?? '',
-                'estCost' => floatval($_POST['estCost'] ?? 0),
-                'etaTime' => $_POST['etaTime'] ?? '',
-                'etaDistanceKm' => floatval($_POST['etaDistanceKm'] ?? 0),
-            ];
-
-            // Handle file attachments (if any)
-            if (isset($_FILES['additionalFile']) && $_FILES['additionalFile']['error'] === UPLOAD_ERR_OK) {
-                $uploadedFilePath = 'additional-attachments/' . basename($_FILES['additionalFile']['name']);
-                if (!move_uploaded_file($_FILES['additionalFile']['tmp_name'], $uploadedFilePath)) {
-                    throw new Exception("Failed to upload file.");
-                }
-                $data['additionalFile'] = $uploadedFilePath;
-            }
-        } else {
-            // Handle raw JSON input
-            $rawData = file_get_contents('php://input');
-            $data = json_decode($rawData, true); // Decode JSON into an associative array
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                throw new Exception("Invalid JSON input.");
-            }
+        // Check if the data was decoded successfully
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            $response = ['success' => false, 'message' => 'Invalid JSON input', 'statusCode' => 400];
+            echo json_encode($response);
+            exit();
         }
 
-        // Validate user login
         $userId = USER_LOGGED; // Assuming USER_LOGGED is predefined
-        if (!$userId) {
-            throw new Exception("User is not logged in.");
-        }
 
         // Extract the values from the decoded data
         $orderItems = $data['order_items'] ?? [];

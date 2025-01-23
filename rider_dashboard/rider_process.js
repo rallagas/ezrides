@@ -145,16 +145,60 @@ function fetchCurrentBookings() {
                     const card = ViewBookingCard(booking, false); // Use the accepted booking card view
                     $("#bookingCards").append(card);
                 });
-            } else {
-                availableBookings.html('<div class="alert alert-warning">No Current Bookings available. Checking for new Bookings ' + loadingIcon + '</div>');
-            }
+            } 
+            // else {
+            //     availableBookings.html('<div class="alert alert-warning">No Current Bookings available. Checking for new Bookings ' + loadingIcon + '</div>');
+            // }
         },
         error: function (xhr, status, error) {
             console.error("Error fetching current bookings:", error);
         }
     });
 }
+// async function fetchCurrentBookings() {
+//     try {
+//         const response = await $.ajax({
+//             url: "ajax_get_booking.php",
+//             dataType: "json"
+//         });
+//         console.log();
+//         if(response && response.status === 'I'){
+//             if (response && Array.isArray(response.queue_list) && response.queue_list.length > 0) {
+//                 // If there are bookings, return the list of data (booking cards HTML can be generated here)
+//                 return response.queue_list.map((booking) => ViewBookingCard(booking, true));
+//             }
+//         }
+//         // else {
+//         //     // Return empty array or a message in case of no bookings
+//         //     return [];
+//         // }
 
+//     } catch (error) {
+//         console.error("Error fetching current bookings:", error);
+//         return []; // Return empty array in case of error
+//     }
+// }
+
+// function displayBookingCards(bookingCards) {
+//     const availableBookings = $("#availableBookings");
+//     availableBookings.empty(); // Clear previous content
+
+//     if (bookingCards.length > 0) {
+//         // If there are booking cards, display them
+//         const bookingCardsContainer = $("#bookingCards");
+
+//         if (bookingCardsContainer.length === 0) {
+//             availableBookings.append('<div id="bookingCards" class="col-12"></div>');
+//         }
+
+//         bookingCards.forEach(card => {
+//             bookingCardsContainer.append(card);
+//         });
+//     } else {
+//         // If no bookings, display "No current booking, please wait while we check"
+//         availableBookings.html('<div class="alert alert-warning">No current booking, please wait while we check.</div>');
+//     }
+// }
 
 function fetchHistBookings(searchkey = null) {
     const requestData = {};
