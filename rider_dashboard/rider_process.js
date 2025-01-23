@@ -576,8 +576,8 @@ async function cashOut({
 
     
     const data = await getWalletBalance(); // Get wallet balance data
-    if (data && data.balance) {
-        currentBalance = parseFloat(data.balance.replace(/[^0-9.-]+/g, ""));
+    if (data && (data.earnings) ) {
+        currentBalance = parseFloat(data.earnings.replace(/[^0-9.-]+/g, ""));
     }
     else{
         currentBalance = parseFloat(

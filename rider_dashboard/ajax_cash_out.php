@@ -1,6 +1,6 @@
 <?php
 include_once "../_db.php";
-include_once "_class_UserWallet.php";
+include_once "_class_riderWallet.php";
 
 header('Content-Type: application/json');
 
