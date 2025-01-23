@@ -38,6 +38,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'estCost' => floatval($_POST['estCost'] ?? 0),
                 'etaTime' => $_POST['etaTime'] ?? '',
                 'etaDistanceKm' => floatval($_POST['etaDistanceKm'] ?? 0),
+                'additionalNotes' => $_POST['additionalNotes'] ?? '',
+                'additionalFile' => NULL
             ];
 
             // Handle file attachments (if any)
@@ -76,6 +78,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $estCost = floatval($data['estCost'] ?? 0);
         $ETA = $data['etaTime'] ?? '';
         $etaDistanceKm = floatval($data['etaDistanceKm'] ?? 0);
+        $additionalNote = $data['additionalNotes'];
+        $additionalFile = $data['additionalFile'];
 
         // Calculate total amount and collect item/order IDs
         $totalAmount = 0.00;
@@ -123,6 +127,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'booking_status' => 'P',
             'payment_status' => 'P',
             'transaction_category_id' => $_SESSION['txn_cat_id'],
+            'additionalnotes' => $additionalNote,
+            'additionalfile' => $additionalFile
         ];
 
         // Create Angkas booking

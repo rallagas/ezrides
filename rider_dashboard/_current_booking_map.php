@@ -128,6 +128,8 @@ if(!empty($myBooking)){
                                                 , so.quantity
                                                 , so.amount_to_pay
                                                 , si.item_img
+                                                , ab.additionalnotes
+                                                , ab.additionalfile
                                              FROM `angkas_bookings` ab
                                              JOIN `shop_orders` so
                                                ON so.shop_order_ref_num = ab.shop_order_reference_number
@@ -195,7 +197,7 @@ if(!empty($myBooking)){
                         <h5 class="fw-bold card-title text-white mb-0">
                             <?php echo $angkas_book_ref . " <span class='badge text-bg-success'>+PHP ".$AmountToClaim."</span>"; 
                             if($hasShopList){?>
-                            <a class="btn btn-danger btn-sm" data-bs-toggle="collapse" href="#showList" role="button"
+                            <a class="btn btn-warning btn-sm" data-bs-toggle="collapse" href="#showList" role="button"
                                 aria-expanded="false" aria-controls="showList">
 
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
@@ -204,6 +206,9 @@ if(!empty($myBooking)){
                                         d="M5 11.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5M3.854 2.146a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 1 1 .708-.708L2 3.293l1.146-1.147a.5.5 0 0 1 .708 0m0 4a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 1 1 .708-.708L2 7.293l1.146-1.147a.5.5 0 0 1 .708 0m0 4a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 0 1 .708-.708l.146.147 1.146-1.147a.5.5 0 0 1 .708 0" />
                                 </svg>
                                 SHOPPING LIST
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-down-fill" viewBox="0 0 16 16">
+                                <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
+                                </svg>
                             </a>
                             <?php }
                             ?>
@@ -233,7 +238,14 @@ if(!empty($myBooking)){
                                 <th>AMOUNT</th>
                                 <th>IMG</th>
                             </tr>
-                            <?php foreach($shopList as $sl){ ?>
+                            <?php
+                            $addedNotes=null;
+                            $attachmentFile=null;
+                            $shopCost=0.00;
+                            foreach($shopList as $sl){
+                                $addedNotes=$sl['additionalnotes'];
+                                $attachmentFile=$sl['additionalfile'];
+                                ?>
                             <tr class="py-1">
                                 <td><?php echo $sl['item_name'];?></td>
                                 <td><?php echo $sl['quantity'] . " pcs";?></td>
@@ -241,9 +253,27 @@ if(!empty($myBooking)){
                                 <td><img src="../client/_shop/item-img/<?php echo $sl['item_img'];?>" alt=""
                                         class="img-fluid" width="50vw"></td>
                             </tr>
-                            <?php } ?>
+                            <?php $shopCost += $sl['amount_to_pay'];
+                             } ?>
+                             <tr>
+                                <td colspan="2" class="text-end">TOTAL (Php)</td>
+                                <td colspan="2" class="fw-bold"><?php echo number_format(($shopCost ?? 0.00),2);?></td>
+                             </tr>
+                            <tr>
+                                <td class="fw-bold">NOTE:</td>
+                                <td><?php echo $addedNotes; ?></td>
+                                <td class="fw-bold">ATTACHMENT:</td>
+                                <td>
+                                    <?php if($attachmentFile != null){ ?>
+                                        <a href="../client/_shop/<?php echo $attachmentFile;?>" class="btn btn-secondary"> Link </a> </td>
+                                    <?php }
+                                    else {
+                                        echo "No File attached.";
+                                    } ?>
+                            </tr>
                         </table>
                         <?php } ?>
+
 
                     </div>
                     <div class="card-footer p-0">

@@ -14,6 +14,9 @@ try {
     $user_id = USER_LOGGED; // Assuming USER_LOGGED is defined as the logged-in user ID
 
     // Use prepared statements to avoid SQL injection
+ 
+
+
     $sql_shop_order_ref = "SELECT * FROM `shop_item_merchant_view` WHERE `customer_user_id` = ? AND `shop_order_ref_num` = ?";
     $stmt = CONN->prepare($sql_shop_order_ref);
     if (!$stmt) {
