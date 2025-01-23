@@ -42,7 +42,7 @@ $current_booking = query( "SELECT ab.angkas_booking_id
                                [$rider_logged]);
 
 if (empty($current_booking)) {
-     $status = 'No bookings available';
+     $status = 'A';
 } else {
     foreach ($current_booking as $cx) {
         $queue_list[] = [
@@ -70,7 +70,7 @@ if (empty($current_booking)) {
             "user_profile_image" => $cx['user_profile_image']
         ];
     }
-    $status = 'Available';
+    $status = 'I';
 }
 
 // Set current queue and status based on your logic
@@ -81,7 +81,7 @@ $current_queue = count($queue_list); // For example, set current_queue as the nu
 $response = [
     "current_queue" => $current_queue,
     "queue_list" => $queue_list,
-    "status" => $status,
+    "status" => $status, //has booking accepted or not
     "endl" => "yes"
 ];
 

@@ -716,43 +716,52 @@ async function GetCurrentLocation(addressText, addressCoor, CurrLatElement = nul
     }
 
     return new Promise((resolve, reject) => {
+        // Request high-accuracy location
         navigator.geolocation.getCurrentPosition(
-            (position) => {
+            async (position) => {
                 const latitude = position.coords.latitude;
                 const longitude = position.coords.longitude;
+
                 // Update the hidden inputs
                 addressCoorElement.val(`${latitude},${longitude}`);
+                if (CurrLatElement !== null) $(CurrLatElement).val(`${latitude}`);
+                if (CurrLongElement !== null) $(CurrLongElement).val(`${longitude}`);
+
+                // Perform reverse geocoding using Google Maps Geocoder
                 const geocoder = new google.maps.Geocoder();
                 const latlng = new google.maps.LatLng(latitude, longitude);
 
-                if (CurrLatElement !== null) {
-                    const currentLocLat = $(CurrLatElement);
-                    currentLocLat.val(`${latitude}`);
-                }
-                if (CurrLongElement !== null) {
-                    const currentLocLong = $(CurrLongElement);
-                    currentLocLong.val(`${longitude}`);
-                }
-                geocoder.geocode({ location: latlng }, (results, status) => {
-                    if (status === google.maps.GeocoderStatus.OK) {
-                        if (results[0]) {
+                geocoder.geocode(
+                    {
+                        location: latlng,
+                        bounds: new google.maps.LatLngBounds(
+                            new google.maps.LatLng(12.0, 123.0), // Example Southwest bound for Albay/Sorsogon
+                            new google.maps.LatLng(13.5, 124.0) // Example Northeast bound
+                        ),
+                    },
+                    (results, status) => {
+                        if (status === google.maps.GeocoderStatus.OK && results[0]) {
                             const address = results[0].formatted_address;
 
                             // Update the address field
                             addressTxt.val(address);
 
-                            // Return the JSON data
+                            // Resolve with the fetched data
                             resolve({
                                 address: address,
-                                coordinates: { lat: latitude, lng: longitude }
+                                coordinates: { lat: latitude, lng: longitude },
                             });
+                        } else if (status === google.maps.GeocoderStatus.OVER_QUERY_LIMIT) {
+                            reject(new Error("Quota exceeded for Google Maps API."));
+                        } else if (status === google.maps.GeocoderStatus.REQUEST_DENIED) {
+                            reject(new Error("Request denied. Check your API key or permissions."));
+                        } else if (status === google.maps.GeocoderStatus.INVALID_REQUEST) {
+                            reject(new Error("Invalid request. Ensure location parameters are correct."));
                         } else {
-                            reject(new Error("No address found."));
+                            reject(new Error(`Geocoder failed with status: ${status}`));
                         }
-                    } else {
-                        reject(new Error("Geocoder failed due to: " + status));
                     }
-                });
+                );
             },
             (error) => {
                 let errorMessage = "";
@@ -769,16 +778,24 @@ async function GetCurrentLocation(addressText, addressCoor, CurrLatElement = nul
                     default:
                         errorMessage = "An unknown error occurred.";
                 }
+
                 reject(new Error(errorMessage));
             },
             {
                 enableHighAccuracy: true,
-                timeout: 5000,
-                maximumAge: 0
+                timeout: 10000, // Increased timeout for better accuracy
+                maximumAge: 0,
             }
         );
+    }).catch((error) => {
+        console.error("Error in GetCurrentLocation:", error.message);
+        $("#locationStatus").addClass("alert alert-danger").text("Error in GetCurrentLocation:" + error.message);;
+        $("#shippingAddress").val(NULL);
+        throw error; // Ensure errors bubble up to the caller
     });
 }
+
+
 function handleLocationError(isGeolocationError) {
     const errorMessage = isGeolocationError
         ? "Geolocation service failed. Please enable location services in your browser."
@@ -867,23 +884,133 @@ $(document).ready(function () {
 
     elements.loadBookingHistory.on("click", loadBookingInfo);
 
-    elements.btnPayRider.click((event) => {
-        event.preventDefault();
-        $(this).html(LoadingIcon);
-        const walletBalance = parseFloat(elements.walletBalance.text().replace('Php ', '').replace(',', '').trim());
-        const dataPaymentApp = elements.btnPayRider.attr('data-payment-app');
-        const row = elements.btnPayRider.closest('tr');
-        const estimatedCost = parseFloat(row.find('.text-secondary').text().replace('Php ', '').replace(',', '').trim());
-        if (!isNaN(estimatedCost) && estimatedCost > 0 && walletBalance > estimatedCost ) {
-            console.log("::Payment:", estimatedCost, dataPaymentApp, 'R', 'Ride Payment');
+// elements.btnPayRider.click((event) => {
+//         event.preventDefault();
+//         $(this).html(LoadingIcon + " Please Wait");
+//         const walletBalance = parseFloat(elements.walletBalance.text().replace('Php ', '').replace(',', '').trim());
+//         const dataPaymentApp = elements.btnPayRider.attr('data-payment-app');
+//         const row = elements.btnPayRider.closest('tr');
+//         const estimatedCost = parseFloat(row.find('.text-secondary').text().replace('Php ', '').replace(',', '').trim());
+//         if (!isNaN(estimatedCost) && estimatedCost > 0 && walletBalance > estimatedCost ) {
+//             console.log("::Payment:", estimatedCost, dataPaymentApp, 'R', 'Ride Payment');
             
-            makePayment(estimatedCost, null, null, dataPaymentApp, 'R', 'Ride Payment')
+//             makePayment(estimatedCost, null, null, dataPaymentApp, 'R', 'Ride Payment')
+//             updatePaymentStatus(dataPaymentApp, 'C', 'A'); //for booking
+//         setTimeout(() => {
+//             $(this).html(ChkIcon + " Done");
+//         },1000);
+//         }
+// });
+  
+
+
+// $(document).on("click","#PayNowBtn, .PayNowBtn", function (e) {
+//     e.preventDefault();
+    
+//     // Get values from attributes or fallback to element text
+//     let FShopCost = $(this).attr('data-payshopcost') || $("#FinalShopCost").text().trim();
+//     let FDeliveryFee = $(this).attr('data-paydeliveryfee') || parseFloat($("#FinalDeliveryFee").text().trim());
+//     let FOrderRefNum = $(this).attr('data-orderrefnum') || $("#FinalOrderRefNum").text().trim();
+//     let FBookingRefNum = $(this).attr('data-bookingrefnum');
+
+//     // Ensure numeric values for FShopCost and FDeliveryFee
+//     FShopCost = parseFloat(FShopCost) || 0;
+//     FDeliveryFee = parseFloat(FDeliveryFee) || 0;
+
+//     // Perform payments
+//     if(FShopCost !== null && FOrderRefNum !== null){
+//         makePayment(FShopCost, null, FOrderRefNum, FOrderRefNum, 'S'); // Pay shop cost
+//         updatePaymentStatus(FOrderRefNum, 'C','S');
+//     }
+    
+//     if(FDeliveryFee != null && FBookingRefNum !== null){
+//         makePayment(FDeliveryFee, null, null, FBookingRefNum, 'R');      // Pay delivery fee
+//         updatePaymentStatus(FBookingRefNum, 'C','A');
+//     }
+//     $(this).html(LoadingIcon);
+//     setTimeout(()=>{
+//         $(this).prop("disabled", true);
+        
+//         if("form".length > 0){
+//             $("form").trigger("reset");
+//         }
+//     },1000);
+
+    
+//     $("button.btn-success").removeClass("btn-success").addClass("btn-warning").prop("disabled",false);
+//     $("input.border-success").removeClass("border-success").addClass("border-warning");
+
+//     // Close modal after 10 seconds
+//     setTimeout(() => {
+//         $(".btn-close").trigger("click");
+//     }, 10000);
+// });
+  
+
+$(document).on("click", "#PayNowBtn, .PayNowBtn, .btn-pay", function (e) {
+    e.preventDefault();
+    
+    let FShopCost, FDeliveryFee, FOrderRefNum, FBookingRefNum, walletBalance, estimatedCost, dataPaymentApp, row;
+
+    if ($(this).attr('id') === 'btnPayRider') {
+        // For Ride Payment
+        walletBalance = parseFloat(elements.walletBalance.text().replace('Php ', '').replace(',', '').trim());
+        dataPaymentApp = elements.btnPayRider.attr('data-payment-app');
+        row = elements.btnPayRider.closest('tr');
+        estimatedCost = parseFloat(row.find('.text-secondary').text().replace('Php ', '').replace(',', '').trim());
+
+        if (!isNaN(estimatedCost) && estimatedCost > 0 && walletBalance > estimatedCost) {
+            console.log("::Payment:", estimatedCost, dataPaymentApp, 'R', 'Ride Payment');
+            makePayment(estimatedCost, null, null, dataPaymentApp, 'R', 'Ride Payment');
             updatePaymentStatus(dataPaymentApp, 'C', 'A'); //for booking
-            setTimeout($(this).html(ChkIcon),500);
+            $(this).html(LoadingIcon + " Please Wait");
+            setTimeout(() => {
+                $(this).html(ChkIcon + " Done");
+            }, 1000);
         }
-    });
-  
-  
+    } else {
+        // For Shop and Delivery Payment
+        FShopCost = $(this).attr('data-payshopcost') || $("#FinalShopCost").text().trim();
+        FDeliveryFee = $(this).attr('data-paydeliveryfee') || parseFloat($("#FinalDeliveryFee").text().trim());
+        FOrderRefNum = $(this).attr('data-orderrefnum') || $("#FinalOrderRefNum").text().trim();
+        FBookingRefNum = $(this).attr('data-bookingrefnum');
+
+        // Ensure numeric values for FShopCost and FDeliveryFee
+        FShopCost = parseFloat(FShopCost) || 0;
+        FDeliveryFee = parseFloat(FDeliveryFee) || 0;
+
+        // Perform payments for shop cost and delivery fee
+        if (FShopCost !== null && FOrderRefNum !== null) {
+            makePayment(FShopCost, null, FOrderRefNum, FOrderRefNum, 'S'); // Pay shop cost
+            updatePaymentStatus(FOrderRefNum, 'C', 'S');
+        }
+
+        if (FDeliveryFee != null && FBookingRefNum !== null) {
+            makePayment(FDeliveryFee, null, null, FBookingRefNum, 'R'); // Pay delivery fee
+            updatePaymentStatus(FBookingRefNum, 'C', 'A');
+        }
+
+        $(this).html(LoadingIcon);
+        setTimeout(() => {
+            $(this).prop("disabled", true);
+
+            if ("form".length > 0) {
+                $("form").trigger("reset");
+            }
+        }, 1000);
+
+        $("button.btn-success").removeClass("btn-success").addClass("btn-warning").prop("disabled", false);
+        $("input.border-success").removeClass("border-success").addClass("border-warning");
+
+        // Close modal after 10 seconds
+        setTimeout(() => {
+            $(".btn-close").trigger("click");
+        }, 10000);
+
+        $(this).removeClass("btn-warning").removeClass("btn-danger").addClass("btn-success").html(chkIcon + " Done");
+    }
+});
+
 
     // elements.userLogOut.click(() => {
     //     const grower = CreateHtml.loadingGrower;

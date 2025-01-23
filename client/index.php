@@ -82,7 +82,7 @@ include_once "button-functions.php";
 <body>
 <?php include_once "nav-client.php";?>
 
-    <div class="container-fluid p-1">
+    <div class="container-fluid p-1 mt-5">
         <div class="row px-5" id="queryresult"></div>
         <div class="row px-4">
             <div class="col-12" id="TransactionStatus"></div>

@@ -464,7 +464,7 @@ public function updatePaymentStatus($reference, $newStatus, $txn_type = 'A')
             'angkas_booking_reference','shop_order_reference_number','shop_cost', 'user_id', 'form_from_dest_name', 'user_currentLoc_lat', 
             'user_currentLoc_long', 'form_to_dest_name', 'formToDest_long', 'formToDest_lat', 
             'form_ETA_duration', 'form_TotalDistance', 'form_Est_Cost', 'date_booked', 
-            'booking_status', 'payment_status', 'rating', 'transaction_category_id'
+            'booking_status', 'payment_status', 'rating', 'transaction_category_id','additionalnotes','additionalfile'
             ];
 
             // Validate the input data

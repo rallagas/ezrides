@@ -461,10 +461,6 @@ $(document).ready(function(){
     }, 15000);
 });
     </script>
-    <script>
-
-
-    </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBWi3uSAaNEmBLrAdLt--kMWsoN4lKm9Hs&callback=initializeApp&libraries=places,geometry&solution_channel=GMP_QB_commutes_v3_c&loading=async" async defer></script>

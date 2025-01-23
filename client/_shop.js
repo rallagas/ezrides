@@ -240,7 +240,7 @@ async function getDistanceAndETAProxy(fromLat, fromLng, toLat, toLng) {
         const response = await fetch(url);
 
         if (!response.ok) {
-            throw new Error("Failed to fetch data from proxy.");
+            throw new Error("Failed to Calculate Distance. Please make sure to Enable your GPS");
         }
 
         const data = await response.json();
@@ -371,23 +371,58 @@ function computeCostbyDistance(distanceText) {
     return (((distanceValue - MIN_DISTANCE) * rateAfter3KMs) + flagDownRate).toFixed(2);
 }
 
-function PlaceOrder(data) {
+// function PlaceOrder(data) {
+//     return new Promise((resolve, reject) => {
+//         // Validate the data structure before making the request
+//         if (!data || typeof data !== "object") {
+//             reject(new Error("Invalid data passed to PlaceOrder. Ensure it is an object."));
+//             return;
+//         }
+
+//         // Log the data being sent for debugging
+//         console.log("Sending data to server:", data);
+
+//         // Perform the AJAX request
+//         $.ajax({
+//             url: '_shop/_ajax_place_order.php',
+//             type: 'POST',
+//             contentType: 'application/json', // Set the content type for JSON
+//             data: JSON.stringify(data), // Convert the data to a JSON string
+//             success: function (response) {
+//                 try {
+//                     const result = JSON.parse(response); // Parse the JSON response
+//                     console.log("Response from server:", result);
+//                     resolve(result); // Resolve the promise with the parsed result
+//                 } catch (err) {
+//                     reject(new Error("Failed to parse server response as JSON."));
+//                 }
+//             },
+//             error: function (xhr, status, error) {
+//                 console.error("Error in PlaceOrder:", error);
+//                 reject(new Error(`AJAX error: ${status} - ${error}`));
+//             },
+//         });
+//     });
+// }
+
+function PlaceOrder(formData) {
     return new Promise((resolve, reject) => {
-        // Validate the data structure before making the request
-        if (!data || typeof data !== "object") {
-            reject(new Error("Invalid data passed to PlaceOrder. Ensure it is an object."));
+        // Validate the formData before making the request
+        if (!formData || !(formData instanceof FormData)) {
+            reject(new Error("Invalid formData passed to PlaceOrder. Ensure it is a FormData object."));
             return;
         }
 
-        // Log the data being sent for debugging
-        console.log("Sending data to server:", data);
+        // Log the formData for debugging
+        console.log("Sending formData to server:", [...formData.entries()]);
 
         // Perform the AJAX request
         $.ajax({
             url: '_shop/_ajax_place_order.php',
             type: 'POST',
-            contentType: 'application/json', // Set the content type for JSON
-            data: JSON.stringify(data), // Convert the data to a JSON string
+            processData: false, // Do not process the FormData object
+            contentType: false, // Set content type to false for FormData
+            data: formData,
             success: function (response) {
                 try {
                     const result = JSON.parse(response); // Parse the JSON response
@@ -405,62 +440,144 @@ function PlaceOrder(data) {
     });
 }
 
-async function handleOrder(data) {
-    try {
-        const response = await PlaceOrder(data); // Place the orderor
-        const wallet = await getWalletBalance(); // Get wallet balance
-        console.log("Order placed successfully:", response);
 
-        // Extract costs and calculate the final amount to pay
-        let OrderRefNum = response.OrderRefNum;
-        let BookingRefNum = response.AngkasBookingInfo.angkas_booking_reference;
-        let ShopCost = parseFloat(response.AngkasBookingInfo.shop_cost, 2);
-        let RideCost = parseFloat(response.AngkasBookingInfo.form_Est_Cost, 2);
-        let FinalAmountToPay = ShopCost + RideCost;
+// async function handleOrder(data) {
+//     try {
+//         const response = await PlaceOrder(data); // Place the orderor
+//         const wallet = await getWalletBalance(); // Get wallet balance
+//         console.log("Order placed successfully:", response);
+
+//         // Extract costs and calculate the final amount to pay
+//         let OrderRefNum = response.OrderRefNum;
+//         let BookingRefNum = response.AngkasBookingInfo.angkas_booking_reference;
+//         let ShopCost = parseFloat(response.AngkasBookingInfo.shop_cost, 2);
+//         let RideCost = parseFloat(response.AngkasBookingInfo.form_Est_Cost, 2);
+//         let FinalAmountToPay = ShopCost + RideCost;
         
 
+//         // Update the order status UI
+//         $(".order-status").addClass("alert alert-success border-start-4 border-success p-3")
+//             .html(`<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-square-fill me-3" viewBox="0 0 16 16">
+//                     <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm10.03 4.97a.75.75 0 0 1 .011 1.05l-3.992 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.75.75 0 0 1 1.08-.022z"/>
+//                 </svg><small class='small ms-2'>${response.message}</small>`);
+
+//         // Update the order details UI
+//         $(".order-details").addClass("card").html(`
+//                 <div class="card-body p-2">
+//                     <span class="small fw-bolder">Order Reference Number: </span>
+//                     <span id="FinalOrderRefNum" class="small fw-light">${OrderRefNum}</span>
+//                     <br>
+//                     <span class="small fw-bolder">Booking Reference:</span> 
+//                     <span class="small fw-light">${BookingRefNum}</span>
+//                     <br>
+//                     <span class="small fw-bolder">Shop Cost: Php</span> 
+//                     <span id="FinalShopCost" class="small fw-light"> ${ShopCost.toFixed(2)}</span>
+//                     <br>
+//                     <span class="small fw-bolder">Delivery Cost: Php</span> 
+//                     <span  id="FinalDeliveryFee" class="small fw-bold">${RideCost.toFixed(2)}</span>
+//                 </div>
+//         `);
+
+//         $(".PayNowBtn").attr("data-payshopcost",ShopCost);
+//         $(".PayNowBtn").attr("data-paydeliveryfee",RideCost);
+//         $(".PayNowBtn").attr("data-orderrefnum",OrderRefNum);
+//         $(".PayNowBtn").attr("data-bookingrefnum",BookingRefNum);
+
+//         // Check if wallet balance is sufficient
+//         const walletBalance = wallet.balance;
+        
+//         if (walletBalance < FinalAmountToPay) {
+//         console.log( "Compare : Wallet Balance" ,walletBalance, "Final Amount To Pay;", FinalAmountToPay );
+//             // If insufficient, uncheck the wallet payment checkbox
+//             $("#checkWalletPaymentMode").prop('checked', false).prop('disabled', true);
+//             $("label[for=checkWalletPaymentMode]>span")
+//                 .removeClass("bg-purple")
+//                 .addClass("text-bg-danger")  
+//                 .text("Insufficient Balance. Top-Up and Pay Later.");
+//             $(".PayNowBtn").prop('disabled',true);
+//         } else {
+//             // Otherwise, ensure it's checked if the balance is sufficient
+//             $("#checkWalletPaymentMode").prop('checked', true);
+//         }
+
+//         // Update the Final Amount to Pay display
+//         $('#FinalAmountToPay').text(FinalAmountToPay.toFixed(2));
+//         $('button.FinalAmountToPay').text("Pay ");
+
+//         // Handle success, maybe show a confirmation message to the user
+//     } catch (error) {
+//         console.error("Error placing order:", error.message);
+//         // Handle error, show an error message to the user
+//     }
+// }
+
+async function handleOrder(formData) {
+    try {
+        // Place the order
+        const OrderResponse = await PlaceOrder(formData); 
+        console.log("Order placed successfully:", OrderResponse);
+
+        const wallet = await getWalletBalance(); 
+
+        // Extract order and booking information
+        let OrderRefNum = OrderResponse.OrderRefNum;
+        let BookingRefNum = OrderResponse.AngkasBookingInfo.angkas_booking_reference;
+        let ShopCost = parseFloat(OrderResponse.AngkasBookingInfo.shop_cost, 2);
+        let RideCost = parseFloat(OrderResponse.AngkasBookingInfo.form_Est_Cost, 2);
+        let FinalAmountToPay = ShopCost + RideCost;
+
+        // Handle additional notes and file attachment (if present)
+        // const additionalNotes = formData.additionalNotes || "No additional notes provided.";
+        // const additionalFile = formData.additionalFile ? data.additionalFile.name : "No file attached.";
+        
         // Update the order status UI
         $(".order-status").addClass("alert alert-success border-start-4 border-success p-3")
             .html(`<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-square-fill me-3" viewBox="0 0 16 16">
                     <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm10.03 4.97a.75.75 0 0 1 .011 1.05l-3.992 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.75.75 0 0 1 1.08-.022z"/>
-                </svg><small class='small ms-2'>${response.message}</small>`);
+                </svg><small class='small ms-2'>${OrderResponse.message}</small>`);
 
         // Update the order details UI
         $(".order-details").addClass("card").html(`
-                <div class="card-body p-2">
-                    <span class="small fw-bolder">Order Reference Number: </span>
-                    <span id="FinalOrderRefNum" class="small fw-light">${OrderRefNum}</span>
-                    <br>
-                    <span class="small fw-bolder">Booking Reference:</span> 
-                    <span class="small fw-light">${BookingRefNum}</span>
-                    <br>
-                    <span class="small fw-bolder">Shop Cost: Php</span> 
-                    <span id="FinalShopCost" class="small fw-light"> ${ShopCost.toFixed(2)}</span>
-                    <br>
-                    <span class="small fw-bolder">Delivery Cost: Php</span> 
-                    <span  id="FinalDeliveryFee" class="small fw-bold">${RideCost.toFixed(2)}</span>
-                </div>
+            <div class="card-body p-2">
+                <span class="small fw-bolder">Order Reference Number: </span>
+                <span id="FinalOrderRefNum" class="small fw-light">${OrderRefNum}</span>
+                <br>
+                <span class="small fw-bolder">Booking Reference:</span> 
+                <span class="small fw-light">${BookingRefNum}</span>
+                <br>
+                <span class="small fw-bolder">Shop Cost: Php</span> 
+                <span id="FinalShopCost" class="small fw-light">${ShopCost.toFixed(2)}</span>
+                <br>
+                <span class="small fw-bolder">Delivery Cost: Php</span> 
+                <span id="FinalDeliveryFee" class="small fw-bold">${RideCost.toFixed(2)}</span>
+                <br>
+                <span class="small fw-bolder">Additional Notes:</span> 
+                <span id="AdditionalNotes" class="small fw-light">${formData.additionalNotes}</span>
+                <br>
+                <span class="small fw-bolder">Attached File:</span> 
+                <span id="AttachedFile" class="small fw-light">${formData.additionalFile}</span>
+            </div>
         `);
 
-        $(".PayNowBtn").attr("data-payshopcost",ShopCost);
-        $(".PayNowBtn").attr("data-paydeliveryfee",RideCost);
-        $(".PayNowBtn").attr("data-orderrefnum",OrderRefNum);
-        $(".PayNowBtn").attr("data-bookingrefnum",BookingRefNum);
+        $(".PayNowBtn").attr("data-payshopcost", ShopCost);
+        $(".PayNowBtn").attr("data-paydeliveryfee", RideCost);
+        $(".PayNowBtn").attr("data-orderrefnum", OrderRefNum);
+        $(".PayNowBtn").attr("data-bookingrefnum", BookingRefNum);
 
-        // Check if wallet balance is sufficient
+        // Check wallet balance
         const walletBalance = wallet.balance;
-        
+
         if (walletBalance < FinalAmountToPay) {
-        console.log( "Compare : Wallet Balance" ,walletBalance, "Final Amount To Pay;", FinalAmountToPay );
-            // If insufficient, uncheck the wallet payment checkbox
+            console.log("Compare: Wallet Balance", walletBalance, "Final Amount To Pay:", FinalAmountToPay);
+            // Disable wallet payment if balance is insufficient
             $("#checkWalletPaymentMode").prop('checked', false).prop('disabled', true);
             $("label[for=checkWalletPaymentMode]>span")
                 .removeClass("bg-purple")
                 .addClass("text-bg-danger")  
                 .text("Insufficient Balance. Top-Up and Pay Later.");
-            $(".PayNowBtn").prop('disabled',true);
+            $(".PayNowBtn").prop('disabled', true);
         } else {
-            // Otherwise, ensure it's checked if the balance is sufficient
+            // Ensure wallet payment is enabled if balance is sufficient
             $("#checkWalletPaymentMode").prop('checked', true);
         }
 
@@ -468,12 +585,12 @@ async function handleOrder(data) {
         $('#FinalAmountToPay').text(FinalAmountToPay.toFixed(2));
         $('button.FinalAmountToPay').text("Pay ");
 
-        // Handle success, maybe show a confirmation message to the user
     } catch (error) {
         console.error("Error placing order:", error.message);
         // Handle error, show an error message to the user
     }
 }
+
 
 
 
@@ -610,22 +727,23 @@ async function renderShopList(shopList, containerElement) {
         
 
         let card = `
-        <div class="card bg-light mb-1">
-            <div class="card-header">
-                <h5 class="card-title float-start">${shop.shop_order_reference_number}</h5>
-                <small class="small float-end">${shop.order_date} (${shop.elapsed_time})</small>
+        <div class="card bg-light mb-1 shadow border-0">
+            <div class="card-header bg-purple text-light">
+                <span class="card-title fs-6 fw-bold">${shop.shop_order_reference_number}</span>
+                <br>
+                <small class="small">${shop.order_date} (${shop.elapsed_time})</small>
             </div>
              <div class="card-body">
                 <div class="container-fluid">
-                    <div class="row gx-0">
-                        <div class="col-12">
+                    <div class="row gx-0 px-0">
+                        <div class="col-12 px-0">
                             <p class="card-text">
                                 <strong>Shop Payment Status:</strong> ${ShopPaymentStatus || "N/A"}<br>
                                 <strong>Total Amount:</strong> Php ${shop.shop_cost || "0.00"}<br>
                                 <strong>Booking Reference:</strong> ${shop.angkas_booking_reference || "Not yet Booked"}
                             </p>
                         </div>
-                        <div class="col-12 shop-items-content" id="${shop.shop_order_reference_number}"></div>
+                        <div class="col-12 px-0 overflow-x-scroll shop-items-content" id="${shop.shop_order_reference_number}"></div>
                     </div>
                 </div>
             </div>` +
@@ -648,35 +766,48 @@ async function renderShopList(shopList, containerElement) {
 
 // Generates a table of items for a given shop order reference
 function generateItemTable(items) {
+    // Helper function to calculate the amount
+    const calculateAmount = (price, quantity) => parseFloat(price) * parseInt(quantity);
+
     let tableHTML = `
-        <table class="table table-hover table-responsive">
-            <thead>
+        <table class="table table-responsive mx-0">
                 <tr>
-                    <th>Item Name</th>
-                    <th>Price</th>
-                    <th>Quantity</th>
-                    <th>Amount</th>
+                    <th>ITEM</th>
+                    <th>PRICE</th>
+                    <th>QTY</th>
+                    <th>AMT</th>
                 </tr>
-            </thead>
-            <tbody>
     `;
 
     // Loop through each item and generate table rows
+    let totalAmount = 0.00;
+
     items.forEach(item => {
-        const amount = (parseFloat(item.price) * parseInt(item.quantity)).toFixed(2); // Calculate amount
+        const amount = calculateAmount(item.price, item.order_quantity);
+        totalAmount += amount;
+
         tableHTML += `
             <tr>
                 <td>${item.item_name}</td>
                 <td>${parseFloat(item.price).toFixed(2)}</td>
-                <td>${item.quantity}</td>
-                <td>${amount}</td>
+                <td>${item.order_quantity}</td>
+                <td>${amount.toFixed(2)}</td>
             </tr>
         `;
     });
 
-    tableHTML += `</tbody></table>`;
+    // Add the total amount row
+    tableHTML += `
+        <tr>
+            <td colspan="3"></td>
+            <td><strong>${totalAmount.toFixed(2)}</strong></td>
+        </tr>
+    `;
+    
+    tableHTML += `</table>`;
     return tableHTML;
 }
+
 
 // Refactor loadItemFromReference to return a promise
 async function loadItemFromReference(refNum) {
@@ -870,18 +1001,21 @@ $(document).ready(function() {
             if (!merchantCoordinates) {
                 throw new Error("Merchant's location coordinates are not available.");
             }
-            const [merchantLat, merchantLng] = merchantCoordinates.split(',').map(coord => parseFloat(coord.trim()));
+            const [merchantLat, merchantLng] = merchantCoordinates.split(',').map(coord => parseFloat(coord));
 
             // Retrieve the user's coordinates from the updated input
             const userCoordinates = $('#AddressCoordinates').val();
-            const [userLat, userLng] = userCoordinates.split(',').map(coord => parseFloat(coord.trim()));
+            const [userLat, userLng] = userCoordinates.split(',').map(coord => parseFloat(coord));
 
             // Calculate the distance and ETA between the user and merchant
             const resultJSON = await getDistanceAndETAProxy(userLat, userLng, merchantLat, merchantLng);
             const result = JSON.parse(resultJSON);
 
             if (!result.success) {
-                throw new Error(result.message || "Unable to calculate distance and ETA.");
+                $("#locationStatus").addClass("alert-danger fw-bold").text(result.message || "Unable to calculate distance and ETA.");
+                $("#shippingAddress").val(NULL);
+                $(this).prop('disabled',false);
+                throw new Error(result.message || "Unable to calculate distance and ETA.");   
             }
 
             // Update the input fields with distance, ETA, and estimated cost
@@ -894,10 +1028,13 @@ $(document).ready(function() {
             const estimatedCost = computeCostbyDistance(`${result.distanceKm} km`);
             $('#formEstimatedCost').val(estimatedCost);
         } catch (error) {
-            console.error("Error handling location and distance calculation:", error.message);
-            alert('Failed to retrieve location or calculate distance.');
-        } finally {
-            //$button.prop('disabled', false); // Re-enable the button
+            $("div#locationStatus").addClass("mt-2 alert alert-danger fw-bold").text(result.message || "Unable to calculate distance and ETA.");
+            $shippingAddress.val("");
+            console.error("Error handling location and distance calculation:", error.message);            
+            $button.prop('disabled', false); // Re-enable the button
+        } 
+        finally {
+            
             $button.html(checkIcon).removeClass("border-warning btn-warning").addClass("border-success btn-success text-light"); // Restore the original button content
             $shippingAddress.removeClass("border-warning").addClass("border-success");
         }
@@ -1070,6 +1207,7 @@ $('.btn-checkout').click(async function () {
     $('#FinalAmountToPay').text(finalAmountToPay.toFixed(2));
     $('table#CheckOutItems').empty();
 
+
     checkedItems.forEach(function (item) {
         console.log("Creating row for item: ", item);
 
@@ -1082,126 +1220,229 @@ $('.btn-checkout').click(async function () {
 
         $('table#CheckOutItems').append(row);
     });
+    row = `<tr class="border-1 border-bottom-0 border-start-0 border-end-0">
+                <td colspan="3" class="fw-bold">Shop Cost Total</td>
+                <td class="fw-bold"> Php ${subtotal.toFixed(2)} </td>
+            </tr>`;
+
+        $('table#CheckOutItems').append(row);
+        
+
+
 
     console.log("Checkout modal updated with items.");
 });
 
 
+// $('#placeOrderBtn').on('click', async function (e) {
+//     e.preventDefault(); // Prevent default form submission
+//     const $button = $(this);
+//     $button.html(LoadingIcon).prop("disabled", true); // Show loading state
 
-    // Place Order button handler
-    $('#placeOrderBtn').on('click', async function (e) {
-        e.preventDefault(); // Prevent default form submission
-        const $button = $(this);
-        $button.html(LoadingIcon).prop("disabled", true); // Show loading state
-        isAddressNull = ($('#shippingAddress').val() == "");
-        if(isAddressNull){
+//     const isAddressNull = $('#shippingAddress').val() === "";
+
+//     if (isAddressNull) {
+//         $('#getCurrentLocation').trigger('click');
+//     }
+
+//     try {
+//         if (isAddressNull) {
+//             // Wait for the address to be updated (simulate delay)
+//             await new Promise(resolve => setTimeout(resolve, 4000));
+//             if ($('#shippingAddress').val() === "") {
+//                 throw new Error("Shipping address is required.");
+//             }
+//         }
+
+//         // Validate required fields
+//         const userId = $('#userLogged').val();
+//         if (!userId) throw new Error("User is not logged in.");
+
+//         const orderItems = [];
+//         $('#CheckOutItems .check-out-item').each(function () {
+//             const itemId = $(this).attr('checkout-item-id');
+//             const itemName = $(this).find('i').text();
+//             const quantity = parseInt($(this).find('td:nth-child(3)').text().split(' pcs')[0].trim());
+//             const amount = parseFloat($(this).find('td:nth-child(4)').text().replace('Php ', '').trim());
+//             const orderId = $(this).attr('order-id');
+
+//             if (!itemId || !quantity || !amount || !orderId) {
+//                 throw new Error("Some item details are missing.");
+//             }
+
+//             orderItems.push({
+//                 itemId: parseInt(itemId),
+//                 itemName: itemName,
+//                 quantity: quantity,
+//                 amount: amount,
+//                 orderId: parseInt(orderId),
+//             });
+//         });
+
+//         if (orderItems.length === 0) throw new Error("No items in the order.");
+
+//         // Prepare order data
+//         const formData = new FormData();
+//         formData.append("order_items", JSON.stringify(orderItems));
+//         formData.append("order_ref_num", $("#shopReferenceNum").val());
+//         formData.append("shipping_name", $('#shippingName').val());
+//         formData.append("shipping_address", $('#shippingAddress').val());
+//         formData.append("shipping_phone", $('#shippingPhone').val());
+//         formData.append("shipping_coordinates", $('#AddressCoordinates').val());
+//         formData.append("payment_mode", $('#checkWalletPaymentMode').prop('checked') ? 'wallet' : 'other');
+//         formData.append("merchant_address", $("#MerchantAddress").text().trim());
+//         formData.append("merchant_loc_coor", $("#MerchantLocCoor").val());
+//         formData.append("estCost", $("#formEstimatedCost").val());
+//         formData.append("etaTime", $("#formETA").val());
+//         formData.append("etaDistanceKm", $("#formDistanceKM").val());
+//         formData.append("additionalNotes", $("#additionaNotes").val());
+
+//         // Handle file attachment if available
+//         const additionalFile = $("#additionalFileAttachment")[0].files[0];
+//         if (additionalFile) {
+//             formData.append("additionalFile", additionalFile);
+//         }
+
+
+
+//         // Call PlaceOrder and handle the response
+//         const response = await handleOrder(formData);
+//         console.log("Order placed successfully:", response);
+
+//         // Perform post-order actions
+//         fetchAndAssignWalletBalance(walletbalance);
+//         updateCartCount();
+//         //alert("Order placed successfully!");
+//     } catch (error) {
+//         console.error("Error placing order:", error.message);
+//         //alert(error.message);
+//     } finally {
+//         $button.html('Place Order').prop("disabled", false); // Reset the button state
+//     }
+// });
+
+$('#placeOrderBtn').on('click', async function (e) {
+    e.preventDefault(); // Prevent default form submission
+    const $button = $(this);
+    $button.html(LoadingIcon).prop("disabled", true); // Show loading state
+
+    try {
+        // Check if the shipping address is empty
+        const isAddressNull = $('#shippingAddress').val() === "";
+        if (isAddressNull) {
             $('#getCurrentLocation').trigger('click');
-        }
-        $(".PayNowBtn").prop("disabled",true).html(LoadingIcon + " Placing the Order.");
-        setTimeout(()=>{
-            try {
-                // Gather the user data and checkout items
-                const userId = $('#userLogged').val();
-               
-                if (!userId) {
-                    $(this).text("User not logged in.").addClass("btn-danger");
-                    throw new Error("User is not logged in.");
-                }
-        
-                const orderItems = [];
-                $('#CheckOutItems .check-out-item').each(function () {
-                    const itemId = $(this).attr('checkout-item-id');
-                    const itemName = $(this).find('i').text();
-                    const quantity = parseInt($(this).find('td:nth-child(3)').text().split(' pcs')[0].trim());
-                    const amount = parseFloat($(this).find('td:nth-child(4)').text().replace('Php ', '').trim());
-                    const orderId = $(this).attr('order-id');
-        
-                    if (!itemId || !quantity || !amount || !orderId) {
-                        throw new Error("Some item details are missing.");
-                    }
-        
-                    orderItems.push({
-                        itemId: parseInt(itemId),
-                        itemName: itemName,
-                        quantity: quantity,
-                        amount: amount,
-                        orderId: parseInt(orderId),
-                    });
-                });
-        
-                if (orderItems.length === 0) throw new Error("No items in the order.");
-        
-                const data = {
-                    order_items: orderItems,
-                    order_ref_num: $("#shopReferenceNum").val(),
-                    shipping_name: $('#shippingName').val(),
-                    shipping_address: $('#shippingAddress').val(),
-                    shipping_phone: $('#shippingPhone').val(),
-                    shipping_coordinates: $('#AddressCoordinates').val(),
-                    payment_mode: $('#checkWalletPaymentMode').prop('checked') ? 'wallet' : 'other',
-                    merchant_address: $("#MerchantAddress").text().trim(),
-                    merchant_loc_coor: $("#MerchantLocCoor").val(),
-                    estCost: $("#formEstimatedCost").val(),
-                    etaTime: $("#formETA").val(),
-                    etaDistanceKm: $("#formDistanceKM").val(),
-                };
-                      // Call PlaceOrder and handle the response
-                    handleOrder(data); //places the 
-                    fetchAndAssignWalletBalance(walletbalance);
-                    updateCartCount();
-                    $(".PayNowBtn").prop("disabled",false).html("Pay Now");
-            } catch (error) {
-                console.error("Error placing order:", error.message);
-                alert(`${error.message}`);
-            } finally {
-                $button.html('Place Order').prop("disabled", false); // Reset the button after completion
+            await new Promise(resolve => setTimeout(resolve, 4000)); // Wait for address update
+            if ($('#shippingAddress').val() === "") {
+                throw new Error("Shipping address is required.");
             }
         }
-        , (isAddressNull ? 4000 : 1000) );
- 
-    });
-    
+
+        // Validate user login
+        const userId = $('#userLogged').val();
+        if (!userId) throw new Error("User is not logged in.");
+
+        // Collect order items
+        const orderItems = [];
+        $('#CheckOutItems .check-out-item').each(function () {
+            const itemId = $(this).attr('checkout-item-id');
+            const itemName = $(this).find('i').text();
+            const quantity = parseInt($(this).find('td:nth-child(3)').text().split(' pcs')[0].trim());
+            const amount = parseFloat($(this).find('td:nth-child(4)').text().replace('Php ', '').trim());
+            const orderId = $(this).attr('order-id');
+
+            if (!itemId || !quantity || !amount || !orderId) {
+                throw new Error("Some item details are missing.");
+            }
+
+            orderItems.push({
+                itemId: parseInt(itemId),
+                itemName,
+                quantity,
+                amount,
+                orderId: parseInt(orderId),
+            });
+        });
+
+        if (orderItems.length === 0) throw new Error("No items in the order.");
+
+        // Prepare FormData for PlaceOrder
+        const formData = new FormData();
+        formData.append('order_items', JSON.stringify(orderItems));
+        formData.append('order_ref_num', $("#shopReferenceNum").val());
+        formData.append('shipping_name', $('#shippingName').val());
+        formData.append('shipping_address', $('#shippingAddress').val());
+        formData.append('shipping_phone', $('#shippingPhone').val());
+        formData.append('shipping_coordinates', $('#AddressCoordinates').val());
+        formData.append('payment_mode', $('#checkWalletPaymentMode').prop('checked') ? 'wallet' : 'other');
+        formData.append('merchant_address', $("#MerchantAddress").text().trim());
+        formData.append('merchant_loc_coor', $("#MerchantLocCoor").val());
+        formData.append('estCost', $("#formEstimatedCost").val());
+        formData.append('etaTime', $("#formETA").val());
+        formData.append('etaDistanceKm', $("#formDistanceKM").val());
+        formData.append('additionalNotes', $("#additionaNotes").val());
+        if ($("#additionalFileAttachment")[0].files[0]) {
+            formData.append('additionalFile', $("#additionalFileAttachment")[0].files[0]);
+        }
+
+        // Call handleOrder to place the order
+        const orderResponse = await handleOrder(formData);
+        console.log("Order placed successfully:", orderResponse);
+
+        // Update wallet balance and cart count
+        fetchAndAssignWalletBalance(walletbalance);
+        updateCartCount();
+
+        $(".PayNowBtn").prop("disabled", false).html("Pay Now");
+    } catch (error) {
+        console.error("Error placing order:", error.message);
+        alert(error.message);
+    } finally {
+        $button.html('Place Order').prop("disabled", false); // Reset button state
+    }
 });
 
 
-$(document).on("click","#PayNowBtn, .PayNowBtn", function (e) {
-    e.preventDefault();
-    
-    // Get values from attributes or fallback to element text
-    let FShopCost = $(this).attr('data-payshopcost') || $("#FinalShopCost").text().trim();
-    let FDeliveryFee = $(this).attr('data-paydeliveryfee') || parseFloat($("#FinalDeliveryFee").text().trim());
-    let FOrderRefNum = $(this).attr('data-orderrefnum') || $("#FinalOrderRefNum").text().trim();
-    let FBookingRefNum = $(this).attr('data-bookingrefnum');
 
-    // Ensure numeric values for FShopCost and FDeliveryFee
-    FShopCost = parseFloat(FShopCost) || 0;
-    FDeliveryFee = parseFloat(FDeliveryFee) || 0;
-
-    // Perform payments
-    if(FShopCost !== null && FOrderRefNum !== null){
-        makePayment(FShopCost, null, FOrderRefNum, FOrderRefNum, 'S'); // Pay shop cost
-        updatePaymentStatus(FOrderRefNum, 'C','S');
-    }
+// $(document).on("click","#PayNowBtn, .PayNowBtn", function (e) {
+//     e.preventDefault();
     
-    if(FDeliveryFee != null && FBookingRefNum !== null){
-        makePayment(FDeliveryFee, null, null, FBookingRefNum, 'R');      // Pay delivery fee
-        updatePaymentStatus(FBookingRefNum, 'C','A');
-    }
-    $(this).html(LoadingIcon);
-    setTimeout(()=>{
-        $(this).prop("disabled", true);
+//     // Get values from attributes or fallback to element text
+//     let FShopCost = $(this).attr('data-payshopcost') || $("#FinalShopCost").text().trim();
+//     let FDeliveryFee = $(this).attr('data-paydeliveryfee') || parseFloat($("#FinalDeliveryFee").text().trim());
+//     let FOrderRefNum = $(this).attr('data-orderrefnum') || $("#FinalOrderRefNum").text().trim();
+//     let FBookingRefNum = $(this).attr('data-bookingrefnum');
+
+//     // Ensure numeric values for FShopCost and FDeliveryFee
+//     FShopCost = parseFloat(FShopCost) || 0;
+//     FDeliveryFee = parseFloat(FDeliveryFee) || 0;
+
+//     // Perform payments
+//     if(FShopCost !== null && FOrderRefNum !== null){
+//         makePayment(FShopCost, null, FOrderRefNum, FOrderRefNum, 'S'); // Pay shop cost
+//         updatePaymentStatus(FOrderRefNum, 'C','S');
+//     }
+    
+//     if(FDeliveryFee != null && FBookingRefNum !== null){
+//         makePayment(FDeliveryFee, null, null, FBookingRefNum, 'R');      // Pay delivery fee
+//         updatePaymentStatus(FBookingRefNum, 'C','A');
+//     }
+//     $(this).html(LoadingIcon);
+//     setTimeout(()=>{
+//         $(this).prop("disabled", true);
         
-        if("form".length > 0){
-            $("form").trigger("reset");
-        }
-    },1000);
+//         if("form".length > 0){
+//             $("form").trigger("reset");
+//         }
+//     },1000);
 
     
-    $("button.btn-success").removeClass("btn-success").addClass("btn-warning").prop("disabled",false);
-    $("input.border-success").removeClass("border-success").addClass("border-warning");
+//     $("button.btn-success").removeClass("btn-success").addClass("btn-warning").prop("disabled",false);
+//     $("input.border-success").removeClass("border-success").addClass("border-warning");
 
-    // Close modal after 10 seconds
-    setTimeout(() => {
-        $(".btn-close").trigger("click");
-    }, 10000);
+//     // Close modal after 10 seconds
+//     setTimeout(() => {
+//         $(".btn-close").trigger("click");
+//     }, 10000);
+// });
+
 });
