@@ -525,10 +525,11 @@ async function handleOrder(formData) {
         let ShopCost = parseFloat(OrderResponse.AngkasBookingInfo.shop_cost, 2);
         let RideCost = parseFloat(OrderResponse.AngkasBookingInfo.form_Est_Cost, 2);
         let FinalAmountToPay = ShopCost + RideCost;
+        
 
         // Handle additional notes and file attachment (if present)
-        // const additionalNotes = formData.additionalNotes || "No additional notes provided.";
-        // const additionalFile = formData.additionalFile ? data.additionalFile.name : "No file attached.";
+        const additionalNotes = OrderResponse.AngkasBookingInfo.additionalnotes || "No additional notes provided.";
+        const additionalFile = OrderResponse.AngkasBookingInfo.additionalfile ? OrderResponse.AngkasBookingInfo.additionalfile : "No file attached.";
         
         // Update the order status UI
         $(".order-status").addClass("alert alert-success border-start-4 border-success p-3")
@@ -552,10 +553,15 @@ async function handleOrder(formData) {
                 <span id="FinalDeliveryFee" class="small fw-bold">${RideCost.toFixed(2)}</span>
                 <br>
                 <span class="small fw-bolder">Additional Notes:</span> 
-                <span id="AdditionalNotes" class="small fw-light">${formData.additionalNotes}</span>
+                <span id="AdditionalNotes" class="small fw-light">${additionalNotes}</span>
                 <br>
                 <span class="small fw-bolder">Attached File:</span> 
-                <span id="AttachedFile" class="small fw-light">${formData.additionalFile}</span>
+                <a id="AttachedFile" target="_blank" href="./_shop/${additionalFile}" class="btn btn-dark text-decoration-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-arrow-down" viewBox="0 0 16 16">
+                            <path d="M8 5a.5.5 0 0 1 .5.5v3.793l1.146-1.147a.5.5 0 0 1 .708.708l-2 2a.5.5 0 0 1-.708 0l-2-2a.5.5 0 1 1 .708-.708L7.5 9.293V5.5A.5.5 0 0 1 8 5"/>
+                            <path d="M4 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm0 1h8a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1"/>
+                    </svg>
+                </a>
             </div>
         `);
 
