@@ -1,6 +1,6 @@
 <?php
 include_once "_db.php";
-include_once "_function.php";
+include_once "_functions.php";
 
 if(isset($_SESSION['user_id'])){
      setOnlineStatus($_SESSION['user_id'], 0);   
