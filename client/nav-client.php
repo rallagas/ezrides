@@ -1,29 +1,34 @@
 <nav class="navbar sticky-top">
     <div class="container-fluid clear-fix">
+        
+
         <div class="position-fixed top-0 start-0 m-2 d-inline-block" style="z-index:1000">
             <span class="fs-3 float-start">
                 <span class="fw-bold" style="color:indigo">@<?php echo isset($_SESSION['t_username']) ? $_SESSION['t_username'] : "No User Found";?></span>
             </span>
         </div>
         <div class="position-fixed top-0 end-0 m-2 d-inline-block" style="z-index:1000">
-     
 
-            <a href="index.php" class="btn btn-outline-warning bg-warning shadow rounded-4">
+
+            <a href="index.php" class="btn btn-outline-warning bg-yellow  shadow rounded-4">
                 <img src="../icons/house.png" alt="" class="quick-links img-fluid" style="width:4vh;">
             </a>
-<?php
-if(isset($_SESSION['t_rider_status'])){
-        if($_SESSION['t_rider_status'] == 1){
-        ?>
 
-            <a href="../rider_dashboard/index.php" class="btn btn-outline-warning bg-warning shadow rounded-4">
-                <img src="../icons/rider-page.png" alt="" class="quick-links img-fluid" style="width:4vh;">
+            <a href="index.php" class="btn btn-outline-warning bg-yellow shadow rounded-4">
+                <img src="../icons/messages.png" alt="" class="quick-links img-fluid" style="width:4vh;">
             </a>
-<?php }
-}
-?>
+                <?php
+                if(isset($_SESSION['t_rider_status'])){
+                        if($_SESSION['t_rider_status'] == 1){
+                        ?>
+                            <a href="../rider_dashboard/index.php" class="btn btn-outline-warning bg-yellow  shadow rounded-4">
+                                <img src="../icons/rider-page.png" alt="" class="quick-links img-fluid" style="width:4vh;">
+                            </a>
+                <?php }
+                }
+                ?>
 
-            <button id="appMenuBtn" class="btn btn-outline-warning bg-warning shadow rounded-4" type="button"
+            <button id="appMenuBtn" class="btn btn-outline-warning bg-yellow  shadow rounded-4" type="button"
                 data-bs-toggle="offcanvas" data-bs-target="#appMenu" aria-controls="appMenu">
                 <img src="../icons/menu.png" alt="" class="quick-links img-fluid" style="width:4vh;">
             </button>
@@ -103,5 +108,39 @@ if(isset($_SESSION['t_rider_status'])){
             </div>
         </div>
 
+    </div>
+</div>
+
+
+<div class="modal open-chat-modal fade" id="chatModal" tabindex="-1" aria-labelledby="chatModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content overflow-y-scroll">
+            <div class="modal-header bg-purple text-light">
+                <span class="modal-title fw-bold" id="chatModalLabel">EZ Chat @<span id="riderName"></span></span>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            
+                <div class="modal-body overflow-y-scroll" id="conversation" style="height: 80vh">
+                  
+                   <small class="text-center text-body-tertiary">Start a conversation.</small>
+                   
+                  
+                </div>
+          <form id="formChatRider">
+                <div class="modal-footer p-0 bg-secondary bg-opacity-50">
+                       <div class="input-group rounded-5 border-9">
+                            <input type="hidden" id="rideruserid" name="receiver_id">
+                           <input type="hidden"  id="senderuserid" name="sender_id" value="<?php echo USER_LOGGED;?>">
+                           <input type="text" id="messagecontent" class="form-control border-0" name="message">
+                            <button type="submit" class="btn btn-secondary border-0">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-send" viewBox="0 0 16 16">
+                                  <path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.75.75 0 0 1-1.329.124l-3.178-4.995L.643 7.184a.75.75 0 0 1 .124-1.33L15.314.037a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 4.338L14.13 2.576zm6.787-8.201L1.591 6.602l4.339 2.76z"/>
+                                </svg>
+                            </button>
+                        </div>
+                </div>
+            </form>
+            
+        </div>
     </div>
 </div>

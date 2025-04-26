@@ -21,7 +21,8 @@ try {
     $columns = [
         'angkas_booking_reference', 'form_from_dest_name', 'form_to_dest_name',
         'form_Est_Cost', 'date_booked', 'booking_status', 'payment_status_text',
-        'rider_firstname', 'rider_lastname', 'booking_status_text'
+        'rider_firstname', 'rider_lastname', 'booking_status_text', 'rider_username', 'rider_user_id',
+        'plate_no','license_no','vehicle_model','vehicle_photo_1','vehicle_photo_2','vehicle_photo_3','vehicle_photo_4','rider_profile'
     ];
 
     // Retrieve booking data

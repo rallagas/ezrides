@@ -237,7 +237,8 @@ class AngkasBookings {
         , 'date_booked', 'booking_status', 'payment_status', 'rating'
         , 'payment_status_text', 'customer_firstname', 'customer_lastname'
         , 'customer_mi', 'customer_gender', 'customer_contact_no', 'customer_email_address'
-        , 'customer_profile', 'rider_firstname', 'rider_lastname', 'booking_status_text'
+        , 'customer_profile', 'rider_firstname', 'rider_lastname', 'booking_status_text', 'rider_username'
+        ,  'plate_no','license_no','vehicle_model','vehicle_photo_1','vehicle_photo_2','vehicle_photo_3','vehicle_photo_4', 'rider_profile'
     ];
 
     // Validate columns

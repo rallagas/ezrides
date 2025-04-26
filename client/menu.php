@@ -8,10 +8,10 @@ if ($_SESSION['t_user_type'] == 'C') {
     foreach ($txn_cats as $tcat) {
         appButtonIcon($tcat['icon_class'], $tcat['txn_category_id'], $tcat['page_action'], $tcat['txn_category_name']);
     }
-    appButtonIcon('document.png','6','shop','DOCUMENT','&merchant=13');
-    appButtonIcon('groc-delivery.png','6','shop','GROCERY','&merchant=1');
-    appButtonIcon('rx-delivery.png','6','shop','PHARMACY','&merchant=11');
-    appButtonIcon('delivery-guy-icon.png','6','shop','FOOD','&merchant=12');
+  //  appButtonIcon('document.png','6','shop','DOCUMENT','&merchant=13');
+//    appButtonIcon('groc-delivery.png','6','shop','GROCERY','&merchant=1');
+//    appButtonIcon('rx-delivery.png','6','shop','PHARMACY','&merchant=11');
+//    appButtonIcon('delivery-guy-icon.png','6','shop','FOOD','&merchant=12');
 } ?>
 <div class="col-4 col-lg-4 col-md-3 col-sm-4 text-center">
     <a href="./_profile/" class="btn btn-outline-warning bg-yellow shadow rounded-4 w-100">

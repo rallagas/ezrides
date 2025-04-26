@@ -85,7 +85,8 @@ class User {
                 'user_lastname' => $profile['user_lastname'],
                 'user_mi' => $profile['user_mi'],
                 'user_contact_no' => $profile['user_contact_no'],
-                'user_email_address' => $profile['user_email_address']
+                'user_email_address' => $profile['user_email_address'],
+                'user_profile_image' => $profile['user_profile_image'],
             ];
         }
     }

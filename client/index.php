@@ -3,6 +3,19 @@ require_once "../_db.php";
 include_once "../_functions.php";
 include_once "../_sql_utility.php";
 include_once "button-functions.php";
+include_once "./_shop/_class_grocery.php";
+
+
+
+if(!isset($_SESSION['user_id'])){
+    header("location: ../index.php?page=login&nouserfound");
+    exit;
+}
+
+if(isset($_SESSION['txn_cat_id'])){
+    $TXN_CAT = $_SESSION['txn_cat_id'];
+}
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -175,16 +188,20 @@ include_once "button-functions.php";
 
                 if (!isset($_GET['page']) || (isset($_GET['page']) && $_GET['page'] == 'home')) { ?>
 
-            <div class="col-lg-6">
+            <div class="col-lg-12">
+            <!--        Where To?           -->
+                <div class="card">
+                    <div class="card-body">
+                        
+                    </div>
+                </div>
+            <!--        Where To?           -->
+            </div>
+            <div class="col-lg-6 collapse hidden hide">
                 <?php include_once "_index_wallet.php"; ?>
             </div>
-            <!-- <div class="col-lg-12 col-md-12 col-sm-12">
-                        <h1 class="fw-bold display-6 m-5"> Welcome! </h1>
-                        <p class="fw-light fs-6">Going Somewhere? Craving for some Burger? Need to Process Documents? Groceries? Pharmacy?</p>
-                        <p class="fs-4">EZ Rides</p>
-                    </div> -->
 
-            <div class="col-12 col-lg-12">
+            <div class="col-12 col-lg-12 mt-3">
                 <div class="container-fluid">
                     <div class="row gx-1 gy-1">
                         <?php
@@ -195,10 +212,10 @@ include_once "button-functions.php";
                                             appButton($tcat['icon_class'], $tcat['txn_category_id'], $tcat['page_action'], $tcat['txn_category_name']);
                                         }
 
-                                        appButton('document.png','6','shop','DOCUMENT','&merchant=13');
-                                        appButton('groc-delivery.png','6','shop','GROCERY','&merchant=1');
-                                        appButton('rx-delivery.png','6','shop','PHARMACY','&merchant=11');
-                                        appButton('delivery-guy-icon.png','6','shop','FOOD','&merchant=12');
+                                       // appButton('document.png','6','shop','DOCUMENT','&merchant=13');
+                                       // appButton('groc-delivery.png','6','shop','GROCERY','&merchant=1');
+                                       // appButton('rx-delivery.png','6','shop','PHARMACY','&merchant=11');
+                                       // appButton('delivery-guy-icon.png','6','shop','FOOD','&merchant=12');
                                     } ?>
                         <div class="col-4 col-lg-1 col-md-3 col-sm-4 text-center">
                             <a href="./_profile/" class="btn btn-outline-light bg-yellow shadow rounded-4 w-100">
@@ -209,6 +226,57 @@ include_once "button-functions.php";
                         </div>
 
                     </div>
+                    
+                    <hr>
+       <div class="row g-1">
+            <?php 
+                                                                                                 
+        try {
+            // Fetch all merchants using the Merchant class
+            $merchants = Merchant::getAllMerchants();
+            
+            // Check if merchants are available
+            if (!empty($merchants)) {
+                foreach ($merchants as $merchant) { 
+                    // Ensure merchant data is valid
+                    if ($merchant instanceof Merchant) { 
+                        $merchType = $merchant->getMerchantType(); ?>
+            <div class="col-4 col-sm-4 col-md-4 col-lg-2 mb-3">
+
+                <div class="card shadow border-0" style="height:20vh">
+                   <a class="btn btn-warning rounded-4 border-0"
+                            href="?page=shop&txn_cat=<?php echo $TXN_CAT; ?>&merchant=<?php echo $merchant->getId(); ?>">
+                            <div class="card-header p-0">
+                                <img src="../images/<?php echo  $merchant->getMerchantImg();?>" alt=""
+                                    class="card-img-top object-fit-cover" style="height:20vh;">
+                            </div>
+                            <div class="card-footer border-0 badge text-bg-warning p-1 pb-2">
+                                <span class="w-100"><?php echo $merchant->getMerchantType();?></span>
+                            </div>
+                    </a>
+                </div>
+
+            </div>
+            <?php } else { ?>
+            <div class="col-12">
+                <p class="text-center text-danger">Invalid merchant data found.</p>
+            </div>
+            <?php }
+                }
+              
+            } else { ?>
+            <div class="col-12">
+                <p class="text-center">No merchants found.</p>
+            </div>
+            <?php } 
+        } catch (Exception $e) { ?>
+            <div class="col-12">
+                <p class="text-center text-danger">An error occurred while fetching merchants:
+                    <?php echo htmlspecialchars($e->getMessage()); ?></p>
+            </div>
+            <?php } ?>
+        </div>
+                    <br>
 
                     <div class="row gx-2">
                         <div class="col-12 col-lg-6">

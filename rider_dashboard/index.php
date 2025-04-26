@@ -1,9 +1,25 @@
-<?php include_once "../_db.php";
-      include_once "../_sql_utility.php";
+<?php include_once __DIR__ . "/../_db.php";
+      include_once __DIR__ . "/../_sql_utility.php";
       require_once "_class_riderWallet.php";
+
+
+
+if(!isset($_SESSION['user_id'])){
+    header("location: ../index.php?page=login&nouserfound");
+    exit;
+}
+
+
+
 $userWallet = new UserWallet(USER_LOGGED);
-$rider_logged=$_SESSION['user_id'];
+$rider_logged=USER_LOGGED;
 query("DELETE FROM angkas_bookings WHERE date_booked < (NOW() - INTERVAL 2 HOUR) and angkas_rider_user_id is NULL and booking_status = 'P' AND payment_status <> 'C'");
+
+function getUserProfile($user){
+    return select_data("user_profile","user_id = $user","user_id",1);   
+}
+
+
 ?>
 
 <html>
@@ -22,6 +38,7 @@ query("DELETE FROM angkas_bookings WHERE date_booked < (NOW() - INTERVAL 2 HOUR)
 </head>
 
 <body>
+   
     <?php include_once "nav_rider.php";?>
     <?php include_once "../top_up_modal.php";?>
 
@@ -199,7 +216,7 @@ query("DELETE FROM angkas_bookings WHERE date_booked < (NOW() - INTERVAL 2 HOUR)
             <div class="col-12 col-lg-6 mb-3">
                 <div class="card shadow border-0">
                     <div class="card-header bg-purple text-light">
-                        <span class="fs-6 card-title fw-bold">CURRENT BOOKING</span>
+                        <span class="fs-6 card-title fw-bold">LOOKING FOR RIDERS</span>
                     </div>
                     <div class="card-body" id="availableBookings">
                         Checking Available Bookings...
@@ -272,6 +289,31 @@ query("DELETE FROM angkas_bookings WHERE date_booked < (NOW() - INTERVAL 2 HOUR)
 <script src="../_multipurpose_ajax.js"></script>
 <script async defer
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBWi3uSAaNEmBLrAdLt--kMWsoN4lKm9Hs&libraries=places,geometry&loading=async">
+</script>
+
+<script>
+$(document).on('click','#userLogOut',function(e){
+    
+    e.preventDefault;
+    console.log("Logout button clicked");
+    $.ajax({
+        url: '../_action_logout_user.php',
+        type: 'POST',
+        success: function (response) {
+            console.log('Session ended successfully:', response);
+
+            $('body').html(LoadingIcon + " Heading Out so Soon?").addClass('text-center mt-5');
+            setTimeout(() => {
+                    window.location.href = '../index.php?page=login';
+            }, 3000);
+            
+        },
+        error: function (xhr, status, error) {
+            console.error('Failed to end session:', error);
+            alert('An error occurred while trying to log you out. Please try again.');
+        }
+    });
+});    
 </script>
 
 

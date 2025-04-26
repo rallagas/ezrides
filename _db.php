@@ -6,6 +6,7 @@ error_reporting(E_ALL);
 
 // Define the configuration class
 class Config {
+    
     const HOST = 'localhost';
     const DBNAME = 'ezride';
     const USERNAME = 'root';
@@ -118,11 +119,19 @@ function isCONN($conn) {
 
 // Initialize classes
 $db = new Database();
+define('BASE_PATH', __DIR__);
 define('CONN', $db->getConnection());
 define('SECRET_KEY', 'ezrides'); // Use a secure, random key
 define('SECRET_IV', 'ezrides123456789');   // Use a secure, random IV
 define('GCASH_ADMIN_ACCOUNT',"09985518206");
 define('GCASH_ADMIN_NAME', NULL);
 include_once "_sql_utility.php";
+
+
+$baseClientUrl = (isset($_SERVER['HTTPS']) ? "https" : "http") . "://{$_SERVER['HTTP_HOST']}/ezrides/client/";
+$baseRiderUrl = (isset($_SERVER['HTTPS']) ? "https" : "http") . "://{$_SERVER['HTTP_HOST']}/ezrides/rider_dashboard/";
+
+
+
 
 $sessionManager = new SessionManager();
