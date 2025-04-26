@@ -1,5 +1,5 @@
 <?php
-include_once "../_sql_utility.php";
+include_once __DIR__ . "/../_sql_utility.php";
 
 class UserWallet {
     private $userId;

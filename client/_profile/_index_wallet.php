@@ -1,5 +1,5 @@
 <?php
-require_once '_class_userWallet.php'; // Assuming this is where the UserWallet class is defined
+require_once __DIR__ . '/../_class_userWallet.php'; // Assuming this is where the UserWallet class is defined
 
 //define('USER_LOGGED', $_SESSION['user_id']); // Assuming user_id is stored in session upon login
 
@@ -28,11 +28,11 @@ $transactionHistory = query(
 <body>
 
     <!-- Top-Up Modal -->
-    <?php include_once "../top_up_modal.php";?>
+    <?php include_once __DIR__ . "/../../top_up_modal.php";?>
   
     <div class="container-fluid">
         <!-- Display Current Balance -->
-        <div class="card mb-2">
+        <div class="card mb-2 mx-0 border-0">
             <div class="card-body">
                 <span class="card-title text-secondary">EZ Wallet 
                      <button class="btn btn-secondary bg-yellow float-end" data-bs-toggle="modal" data-bs-target="#topUpModal">

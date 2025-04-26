@@ -2,7 +2,12 @@
     <div class="container-fluid clear-fix">
         <div class="position-fixed top-0 start-0 m-2 d-inline-block" style="z-index:1000">
             <span class="fs-3 float-start">
-                <span class="fw-bold" style="color:indigo">@<?php echo isset($_SESSION['t_username']) ? $_SESSION['t_username'] : "No User Found";?></span>
+ <img src="../profile/<?php echo getUserProfile(USER_LOGGED)[0]['user_profile_image'];?>"  
+                     alt="Profile Picture" 
+                     class="rounded-circle mb-3 profile-upload-label " 
+                     style="width: 45px; height: 45px; object-fit: cover;">               
+
+                  <span class="fw-bold" style="color:indigo">@<?php echo isset($_SESSION['t_username']) ? $_SESSION['t_username'] : "No User Found";?></span>
             </span>
         </div>
 

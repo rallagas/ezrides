@@ -165,21 +165,17 @@ include_once "../_sql_utility.php";
                         <div class="row">
                             <div class="col-12" id="destinationInfoFormContainer"></div>
                             <div class="col-lg-12 col-sm-12 col-md-12" id="currentBookingInfo">
-                                <table class="table table-bordered" id="BookingInfoTable">
+                                <table class="table" id="BookingInfoTable">
                                     <tbody>
                                         <tr>
-                                            <th scope="row">BOOKING #</th>
+                                            <th scope="row"><i id="BookedElaseTime"></i></th>
                                             <td id="BookingReferenceNumber" class="text-success fw-bold"></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">BOOKED</th>
-                                            <td class="text-success fw-bold" id="BookedElaseTime"></td>
                                         </tr>
                                         <tr>
                                             <th scope="row">FARE </th>
                                             <td class="text-secondary fw-bold">
                                                 <span id="RideEstCost"></span>
-                                                <span id="paymentStatus"></span> <br>
+                                                <span id="paymentStatus"></span>
 
                                                 <button id="btnPayRider" data-payment-app="" class="btn-pay btn btn-success d-none fw-bold">PAY NOW</button>
                                             </td>
@@ -193,34 +189,25 @@ include_once "../_sql_utility.php";
                                             <td class="fw-semibold" id="CustomerDestination"></td>
                                         </tr>
                                         <tr>
-                                            <th scope="row">BOOKING STATUS</th>
-                                            <td id="riderInfoBookingStatus" class="fw-semibold"></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">DRIVER</th>
-                                            <td class="fw-semibold" id="riderInfoPI">
-                                                <div class="spinner-grow text-danger spinner-grow-sm" role="status">
-                                                </div>
-                                                <div class="spinner-grow text-danger spinner-grow-sm" role="status">
-                                                </div>
-                                                <div class="spinner-grow text-danger spinner-grow-sm" role="status">
-                                                </div>
-                                            </td>
-                                        </tr>
-
-                                        <!-- <tr>
-                                            <th scope="row">Rate</th>
-                                            <td>
-                                                <div class="d-flex align-items-center">
-                                                    <div id="myRatingCustomFeedbackStart"
-                                                        class="text-body-secondary me-3"></div>
-                                                    <div id="myRatingCustomFeedback"></div>
-                                                    <div id="myRatingCustomFeedbackEnd" class="badge text-bg-dark ms-3">
+                                            <th scope="row" colspan="2">
+                                                <div class="container-fluid">
+                                                   <div class="row">
+                                                       <div class="col-12" id="riderInfoBookingStatus"></div>
+                                                   </div>
+                                                    <div class="row">
+                                                        <div class="col-12" id="riderInfoPI">
+                                                             <div class="spinner-grow text-danger spinner-grow-sm" role="status">
+                                                                </div>
+                                                                <div class="spinner-grow text-danger spinner-grow-sm" role="status">
+                                                                </div>
+                                                                <div class="spinner-grow text-danger spinner-grow-sm" role="status">
+                                                                </div>
+                                                        </div>
                                                     </div>
                                                 </div>
+                                            </th>
+                                        </tr>
 
-                                            </td>
-                                        </tr> -->
                                     </tbody>
                                 </table>
 

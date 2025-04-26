@@ -6,26 +6,7 @@ const loginCheck = `<span class="text-light"><svg xmlns="http://www.w3.org/2000/
 const loadingIcon = "<span class='spinner-border spinner-border-sm'></span>";
 
 
-$(document).on('click','#userLogOut',function(){
-    console.log("Logout button clicked");
-    $.ajax({
-        url: '../_action_logout_user.php',
-        type: 'POST',
-        success: function (response) {
-            console.log('Session ended successfully:', response);
 
-            $('body').html(loadingIcon + " Heading Out so Soon?").addClass('text-center mt-5');
-            setTimeout(() => {
-                    window.location.href = '../index.php?page=login';
-            }, 3000);
-            
-        },
-        error: function (xhr, status, error) {
-            console.error('Failed to end session:', error);
-            alert('An error occurred while trying to log you out. Please try again.');
-        }
-    });
-});
 $(document).ready(function () {
 
 
@@ -138,7 +119,7 @@ $(document).ready(function () {
                     console.log("Suggestions received:", data);
                     $('#suggestCar').empty();
                     data.forEach(function (car) {
-                        $('#suggestCar').append(`<button class="suggest-item badge btn text-secondary btn-light m-1">${car.vehicle_model}</button>`);
+                        $('#suggestCar').append(`<button class="suggest-item badge btn text-secondary btn-light m-1">${car.vehicle_model} ( ${car.model_body_type} )</button>`);
                     });
                 },
                 error: function (xhr, status, error) {
@@ -160,68 +141,139 @@ $(document).ready(function () {
     });
     
     // Form submission handler with AJAX
+//    $('form#formRegistration').submit(function (e) {
+//
+//        e.preventDefault(); // Prevent the form from submitting traditionally
+//        $(".createAcctBtn").prop('disabled',true).html(loadingIcon);
+//        // Form validation checks for required fields
+//        let valid = true;
+//
+//        // Check if fields are empty and if the form passes Bootstrap validation
+//        $(this).find(':input[required]').each(function () {
+//            if ($(this).val().trim() === "") {
+//                $(this).addClass('is-invalid');
+//                valid = false;
+//            } else {
+//                $(this).removeClass('is-invalid');
+//            }
+//        });
+//
+//        if (!valid) {
+//            $("div.status").removeClass("alert-success").addClass("alert alert-danger").html("Please fill in all required fields.");
+//            return; // Prevent form submission if not valid
+//        }
+//
+//        $.ajax({
+//            type: "POST",
+//            url: "_action_register_user.php",
+//            data: $(this).serialize(),
+//            dataType: "json", // Expect JSON response from server
+//            success: function (response) {
+//                $("div.status").removeClass("alert-danger alert-success").html(""); // Clear previous messages
+//                $(".error-message").remove(); // Clear previous error messages on fields
+//
+//                if (response.status === "success") {
+//                    $("button.reset-button").click(); // Reset form fields
+//                    $("div.status")
+//                        .addClass("alert alert-success")
+//                        .html(response.message); // Show success message
+//                } else if (response.status === "error") {
+//                    $("div.status")
+//                        .addClass("alert alert-danger")
+//                        .html(response.message); // Show general error message
+//
+//                    // Display specific field errors
+//                    if (response.errors) {
+//                        $.each(response.errors, function (field, errorMessage) {
+//                            const fieldElement = $(`[name=${field}]`);
+//                            fieldElement
+//                                .addClass("border border-3 border-danger")
+//                                .after(`<span class="error-message badge text-bg-danger">${errorMessage}</span>`);
+//                        });
+//                    }
+//                    $(".createAcctBtn").prop('disabled',false).html("Create Account");
+//                }
+//            },
+//            error: function (xhr, status, error) {
+//                $("div.status")
+//                    .removeClass("alert-success")
+//                    .addClass("alert alert-danger")
+//                    .html(`An unexpected error occurred: ${xhr.responseText || error}.`); // Show detailed error
+//            }
+//        });
+//    });
+
     $('form#formRegistration').submit(function (e) {
+    e.preventDefault();
 
-        e.preventDefault(); // Prevent the form from submitting traditionally
-        $(".createAcctBtn").prop('disabled',true).html(loadingIcon);
-        // Form validation checks for required fields
-        let valid = true;
+    $(".createAcctBtn").prop('disabled', true).html(loadingIcon);
 
-        // Check if fields are empty and if the form passes Bootstrap validation
-        $(this).find(':input[required]').each(function () {
-            if ($(this).val().trim() === "") {
-                $(this).addClass('is-invalid');
-                valid = false;
-            } else {
-                $(this).removeClass('is-invalid');
-            }
-        });
+    let form = this;
+    let valid = true;
 
-        if (!valid) {
-            $("div.status").removeClass("alert-success").addClass("alert alert-danger").html("Please fill in all required fields.");
-            return; // Prevent form submission if not valid
+    $(form).find(':input[required]').each(function () {
+        if ($(this).val().trim() === "") {
+            $(this).addClass('is-invalid');
+            valid = false;
+        } else {
+            $(this).removeClass('is-invalid');
         }
-
-        $.ajax({
-            type: "POST",
-            url: "_action_register_user.php",
-            data: $(this).serialize(),
-            dataType: "json", // Expect JSON response from server
-            success: function (response) {
-                $("div.status").removeClass("alert-danger alert-success").html(""); // Clear previous messages
-                $(".error-message").remove(); // Clear previous error messages on fields
-
-                if (response.status === "success") {
-                    $("button.reset-button").click(); // Reset form fields
-                    $("div.status")
-                        .addClass("alert alert-success")
-                        .html(response.message); // Show success message
-                } else if (response.status === "error") {
-                    $("div.status")
-                        .addClass("alert alert-danger")
-                        .html(response.message); // Show general error message
-
-                    // Display specific field errors
-                    if (response.errors) {
-                        $.each(response.errors, function (field, errorMessage) {
-                            const fieldElement = $(`[name=${field}]`);
-                            fieldElement
-                                .addClass("border border-3 border-danger")
-                                .after(`<span class="error-message badge text-bg-danger">${errorMessage}</span>`);
-                        });
-                    }
-                    $(".createAcctBtn").prop('disabled',false).html("Create Account");
-                }
-            },
-            error: function (xhr, status, error) {
-                $("div.status")
-                    .removeClass("alert-success")
-                    .addClass("alert alert-danger")
-                    .html(`An unexpected error occurred: ${xhr.responseText || error}.`); // Show detailed error
-            }
-        });
     });
 
+    if (!valid) {
+        $("div.status")
+            .removeClass("alert-success")
+            .addClass("alert alert-danger")
+            .html("Please fill in all required fields.");
+        $(".createAcctBtn").prop('disabled', false).html("Create Account");
+        return;
+    }
+
+    let formData = new FormData(form); // THIS is what allows file uploads
+
+    $.ajax({
+        type: "POST",
+        url: "_action_register_user.php",
+        data: formData,
+        processData: false, // Required for file upload
+        contentType: false, // Required for file upload
+        dataType: "json",
+        success: function (response) {
+            $("div.status").removeClass("alert-danger alert-success").html("");
+            $(".error-message").remove();
+
+            if (response.status === "success") {
+                $("button.reset-button").click();
+                $("div.status")
+                    .addClass("alert alert-success")
+                    .html(response.message);
+            } else if (response.status === "error") {
+                $("div.status")
+                    .addClass("alert alert-danger")
+                    .html(response.message);
+
+                if (response.errors) {
+                    $.each(response.errors, function (field, errorMessage) {
+                        const fieldElement = $(`[name=${field}]`);
+                        fieldElement
+                            .addClass("border border-3 border-danger")
+                            .after(`<span class="error-message badge text-bg-danger">${errorMessage}</span>`);
+                    });
+                }
+            }
+            $(".createAcctBtn").prop('disabled', false).html("Create Account");
+        },
+        error: function (xhr, status, error) {
+            $("div.status")
+                .removeClass("alert-success")
+                .addClass("alert alert-danger")
+                .html(`An unexpected error occurred: ${xhr.responseText || error}.`);
+            $(".createAcctBtn").prop('disabled', false).html("Create Account");
+        }
+    });
+});
+
+    
     async function logUser(formData) {
         try {
             const response = await $.ajax({

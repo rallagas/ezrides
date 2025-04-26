@@ -7,6 +7,8 @@ header('Content-Type: application/json'); // Set header to return JSON
 $errors = []; // Initialize an array to store validation errors
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    
+
 
     // Required fields
     $requiredFields = ['f_emailadd', 'f_username', 'f_password', 'f_cpassword', 'agreement_Checkbox'];
@@ -81,6 +83,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     insert_data('users', $userData);
     $userId = getLastInsertedId('users'); // Get the last inserted user ID using the new function
 
+    
+    // Handle profile image upload (only for riders)
+        $profileImagePath = "default.jpg";
+
+        if ($isRider && isset($_FILES['f_profile_picture']) && $_FILES['f_profile_picture']['error'] === UPLOAD_ERR_OK) {
+
+            $uploadDir = __DIR__ . "/profile/{$userId}";
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0777, true);
+            }
+
+            $timestamp = date('Ymd_His');
+            $fileName = "{$timestamp}.jpg";
+            $destination = "{$uploadDir}/{$fileName}";
+
+            // Optionally validate image type here
+            $fileTmp = $_FILES['f_profile_picture']['tmp_name'];
+            $fileType = mime_content_type($fileTmp);
+            if (in_array($fileType, ['image/jpeg', 'image/jpg', 'image/png'])) {
+                if (!move_uploaded_file($fileTmp, $destination)) {
+                    error_log("Failed to move uploaded file.");
+                     //$profileImagePath = "";
+                }
+                else if (move_uploaded_file($fileTmp, $destination)) {
+                    // Store relative path for DB
+                    $profileImagePath = "{$userId}/{$fileName}";
+                }
+                else{
+                    $profileImagePath = "{$userId}/{$fileName}";
+                }
+            }
+        }
+
+    
     // Insert into `user_profile` table
     $profileData = [
         'user_id' => $userId,
@@ -91,7 +127,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'user_gender' => $_POST['f_gender'] ?? null,
         'user_email_address' => $_POST['f_emailadd'],
         'rider_plate_no' => $isRider ? ($_POST['f_r_plate_no'] ?? null) : null,
-        'rider_license_no' => $isRider ? ($_POST['f_r_license_no'] ?? null) : null
+        'rider_license_no' => $isRider ? ($_POST['f_r_license_no'] ?? null) : null,
+        'vehicle_model_id' => $isRider ? ($_POST['f_r_car_brand'] ?? null) : null,
+        'user_profile_image' => $profileImagePath,
+
     ];
     insert_data('user_profile', $profileData);
 

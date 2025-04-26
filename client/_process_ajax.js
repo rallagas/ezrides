@@ -31,7 +31,7 @@ const elements = {
     topUpForm: $('#topUpForm'),
     topUpAmount: $('#topUpAmount'),
     topUpModal: $('#topUpModal'),
-    userLogOut: $('#userLogOut'),
+//    userLogOut: $('#userLogOut'),
     pagination: $('#pagination'),
     transactionStatus: $('#TransactionStatus'),
     appMenuBtn: $('#appMenuBtn'),
@@ -47,6 +47,27 @@ const elements = {
     addDestinationButton : $(".add-destination-button"),
 };
 
+$(document).on('click','#userLogOut',function(e){
+    e.preventDefault;
+    console.log("Logout button clicked");
+    $.ajax({
+        url: '../_action_logout_user.php',
+        type: 'POST',
+        success: function (response) {
+            console.log('Session ended successfully:', response);
+
+            $('body').html(LoadingIcon + " Heading Out so Soon?").addClass('text-center mt-5');
+            setTimeout(() => {
+                    window.location.href = '../index.php?page=login';
+            }, 3000);
+            
+        },
+        error: function (xhr, status, error) {
+            console.error('Failed to end session:', error);
+            alert('An error occurred while trying to log you out. Please try again.');
+        }
+    });
+});
 
 function clog(logMsg) {
     console.log(logMsg);
@@ -395,9 +416,33 @@ function chkBooking() {
                         }
 
                         // Handle driver info
+                         /* ${booking.rider_firstname || "N/A"}, ${booking.rider_lastname } */
                         if (booking.booking_status_text !== "Waiting for Driver") {
                             elements.riderInfoPI.html(
-                                `${booking.rider_firstname || "N/A"}, ${booking.rider_lastname || "N/A"}`
+                                `<div class="card border-0">
+                                    <div class="card-body border-0 position-relative">
+                                            <img src="../profile/${booking.rider_profile || 'default.jpg'}"
+                                           alt="Profile Picture" 
+                                            class="card-img-top object-fit-cover position-absolute top-0 end-0 rounded-circle" 
+                                            style="width: 100px;height:100px;">
+                                    
+                                        ${booking.rider_firstname || "N/A"}, ${booking.rider_lastname } 
+                                       <br>
+
+                                        <i>${booking.plate_no}</i>
+                                        <br>
+                                       <a class="btn btn-outline-warning bg-yellow text-dark open-chat-modal" 
+                                            data-bs-toggle="modal"  data-bs-target="#chatModal" 
+                                            data-rider-username="${booking.rider_username}" data-rider-userid="${booking.rider_user_id}">
+                                            @${booking.rider_username}
+                                        
+                                        <sup><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chat-dots" viewBox="0 0 16 16">
+                                          <path d="M5 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0m4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/>
+                                          <path d="m2.165 15.803.02-.004c1.83-.363 2.948-.842 3.468-1.105A9 9 0 0 0 8 15c4.418 0 8-3.134 8-7s-3.582-7-8-7-8 3.134-8 7c0 1.76.743 3.37 1.97 4.6a10.4 10.4 0 0 1-.524 2.318l-.003.011a11 11 0 0 1-.244.637c-.079.186.074.394.273.362a22 22 0 0 0 .693-.125m.8-3.108a1 1 0 0 0-.287-.801C1.618 10.83 1 9.468 1 8c0-3.192 3.004-6 7-6s7 2.808 7 6-3.004 6-7 6a8 8 0 0 1-2.088-.272 1 1 0 0 0-.711.074c-.387.196-1.24.57-2.634.893a11 11 0 0 0 .398-2"/>
+                                        </svg></sup>
+                                    </a>
+                                    </div>
+                                </div>`
                             );
                         } else {
                             elements.riderInfoPI.html(CreateHtml.loadingGrower);
@@ -633,11 +678,11 @@ function loadBookingInfo() {
                           <div class="card mb-3 w-100 mx-1">
                                 <div class="row g-0">
                                     <div class="col-4 d-sm-none d-lg-block">
-                                        <img src="${booking.rider_profile_image || defaultImage}" class="img-fluid rounded-start" alt="Rider Image">
+                                        <img src="${booking.rider_profile || defaultImage}" class="img-fluid rounded-start" alt="Rider Image">
                                     </div>
                                     <div class="col-8">
                                         <div class="card-body">
-                                            <img src="${booking.rider_profile_image || defaultImage}" class="img-fluid card-img-top rounded-start d-lg-none" alt="Rider Image">
+                                            <img src="${booking.rider_profile || defaultImage}" class="img-fluid card-img-top rounded-start d-lg-none" alt="Rider Image">
                                             <span class="card-title fw-bold">${booking.angkas_booking_reference}</span>
                                             <p class="card-text">
                                                 <strong>From:</strong> ${booking.form_from_dest_name}<br>
@@ -884,72 +929,162 @@ $(document).ready(function () {
 
     elements.loadBookingHistory.on("click", loadBookingInfo);
 
-// elements.btnPayRider.click((event) => {
-//         event.preventDefault();
-//         $(this).html(LoadingIcon + " Please Wait");
-//         const walletBalance = parseFloat(elements.walletBalance.text().replace('Php ', '').replace(',', '').trim());
-//         const dataPaymentApp = elements.btnPayRider.attr('data-payment-app');
-//         const row = elements.btnPayRider.closest('tr');
-//         const estimatedCost = parseFloat(row.find('.text-secondary').text().replace('Php ', '').replace(',', '').trim());
-//         if (!isNaN(estimatedCost) && estimatedCost > 0 && walletBalance > estimatedCost ) {
-//             console.log("::Payment:", estimatedCost, dataPaymentApp, 'R', 'Ride Payment');
-            
-//             makePayment(estimatedCost, null, null, dataPaymentApp, 'R', 'Ride Payment')
-//             updatePaymentStatus(dataPaymentApp, 'C', 'A'); //for booking
-//         setTimeout(() => {
-//             $(this).html(ChkIcon + " Done");
-//         },1000);
-//         }
-// });
-  
+    $('#chatModal').on('show.bs.modal', function (event) {
+        // Button that triggered the modal
+        var button = $(event.relatedTarget);
+
+        // Extract info from data-* attributes
+        var riderUsername = button.data('rider-username');
+        var riderUserId = button.data('rider-userid');
+
+        // Update modal content
+        $('#riderName').text(riderUsername);
+        $('#riderNameModal').text(riderUsername);
+        $('#rideruserid').val(riderUserId);
+    });
 
 
-// $(document).on("click","#PayNowBtn, .PayNowBtn", function (e) {
-//     e.preventDefault();
+        $('#formChatRider').on('submit', async function (e) {
+        e.preventDefault(); // Prevent default form submission behavior
+
+        // Collect form data
+        const formData = $(this).serialize();
+
+        try {
+            // Perform AJAX request to send the message
+            const response = await $.ajax({
+                url: '_ajax_send_message.php', // Backend script to handle message sending
+                type: 'POST',
+                data: formData
+            });
+
+            const result = JSON.parse(response);
+
+            if (result.status === 'success') {
+                // Clear the message input field
+                $('#formChatRider #messagecontent').val('');
+
+                // Re-fetch and update the chat messages
+                const senderId = $('input[name="sender_id"]').val();
+                const receiverId = $('input[name="receiver_id"]').val();
+
+                const messages = await fetchChatMessages(senderId, receiverId);
+
+                // Clear the chat container
+                $('#conversation').empty();
+
+                // Format and append messages to the chat container
+                messages.forEach((message) => {
+                    const messageClass = message.sender_id === senderId ? 'btn-secondary' : 'btn-primary';
+                    // timeAlignment = message.sender_id === senderId ? 'text-end' : 'text-start';
+                    const     alignment = message.sender_id === senderId ? 'ms-auto' : 'me-auto';
+                   const     timeAlignment = message.sender_id === senderId ? 'ms-auto' : 'me-auto';
+                    $('#conversation').append(`
+                         <div class="d-flex mb-1">
+                        <div class="p-2 ${alignment}">
+                            <p class="btn ${messageClass}"> ${message.message} </p>
+                        </div>
+                        <div class="p-2 ${timeAlignment}">
+                            <small class="small">${message.date_received}</small>
+                        </div>
+                    </div>
+                    `);
+                });
+            } else {
+                alert('Failed to send the message. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred while sending the message. Please try again.');
+        }
+    });
+
     
-//     // Get values from attributes or fallback to element text
-//     let FShopCost = $(this).attr('data-payshopcost') || $("#FinalShopCost").text().trim();
-//     let FDeliveryFee = $(this).attr('data-paydeliveryfee') || parseFloat($("#FinalDeliveryFee").text().trim());
-//     let FOrderRefNum = $(this).attr('data-orderrefnum') || $("#FinalOrderRefNum").text().trim();
-//     let FBookingRefNum = $(this).attr('data-bookingrefnum');
 
-//     // Ensure numeric values for FShopCost and FDeliveryFee
-//     FShopCost = parseFloat(FShopCost) || 0;
-//     FDeliveryFee = parseFloat(FDeliveryFee) || 0;
+});
 
-//     // Perform payments
-//     if(FShopCost !== null && FOrderRefNum !== null){
-//         makePayment(FShopCost, null, FOrderRefNum, FOrderRefNum, 'S'); // Pay shop cost
-//         updatePaymentStatus(FOrderRefNum, 'C','S');
-//     }
+async function fetchChatMessages(senderId, receiverId) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: '_ajax_fetch_messages.php', // Backend script to fetch messages
+            method: 'POST',
+            data: {
+                sender_id: senderId,
+                receiver_id: receiverId
+            },
+            dataType: 'json',
+            success: function (response) {
+                if (response.status === 'success') {
+                    resolve(response.messages); // Return messages on success
+                } else {
+                    reject(response.error || 'Failed to fetch messages.');
+                }
+            },
+            error: function (xhr, status, error) {
+                reject(error || 'An error occurred while fetching messages.');
+            }
+        });
+    });
+}
+
+$(document).on('click', '.open-chat-modal', async function () {
+    const senderId = $('#senderuserid').val();
+    const receiverId = $(this).data('rider-userid');
     
-//     if(FDeliveryFee != null && FBookingRefNum !== null){
-//         makePayment(FDeliveryFee, null, null, FBookingRefNum, 'R');      // Pay delivery fee
-//         updatePaymentStatus(FBookingRefNum, 'C','A');
-//     }
-//     $(this).html(LoadingIcon);
-//     setTimeout(()=>{
-//         $(this).prop("disabled", true);
+    try {
+        // Fetch messages
+        const messages = await fetchChatMessages(senderId, receiverId);
         
-//         if("form".length > 0){
-//             $("form").trigger("reset");
-//         }
-//     },1000);
+        // Populate the #conversation element with the messages
+        const conversationDiv = $('#conversation');
+        conversationDiv.empty(); // Clear previous messages
+        let alignment="";
+        let messageClass = "";
+        if (messages.length > 0) {
+            messages.forEach(msg => {
+                
+                     alignment = msg.sender_id === senderId ? 'me-auto' : 'ms-auto';
+                     timeAlignment = msg.sender_id === senderId ? 'ms-auto' : 'me-auto';
+                     messageClass = msg.sender_id === senderId ? 'btn-secondary' : 'btn-primary';
 
-    
-//     $("button.btn-success").removeClass("btn-success").addClass("btn-warning").prop("disabled",false);
-//     $("input.border-success").removeClass("border-success").addClass("border-warning");
+                    conversationDiv.append(`
+                     <div class="d-flex mb-1">
+                        
+                        <div class="p-2 ${timeAlignment}">
+                            <small class="small">${msg.date_received}</small>
+                        </div>
 
-//     // Close modal after 10 seconds
-//     setTimeout(() => {
-//         $(".btn-close").trigger("click");
-//     }, 10000);
-// });
-  
+                <div class="p-2 ${alignment}">
+                            <p class="btn ${messageClass}"> ${msg.message} </p>
+                        </div>
+                    </div>
+
+                    `);
+                
+//                const messageHtml = `
+//                    <div class="d-flex ${msg.sender_id === senderId ? 'justify-content-end' : 'justify-content-start'}">
+//                        <div class="p-2 rounded-3 bg-${msg.sender_id === senderId ? 'primary text-white' : 'light text-dark'}">
+//                            ${msg.message}
+//                        </div>
+//                    </div>`;
+//                conversationDiv.append(messageHtml);
+            });
+        } else {
+            conversationDiv.html('<small class="text-center text-body-tertiary">No messages yet. Start the conversation!</small>');
+        }
+    } catch (error) {
+        console.error('Error fetching messages:', error);
+        alert('Could not fetch messages. Please try again.');
+    }
+});
+
+
+
+
 
 $(document).on("click", "#PayNowBtn, .PayNowBtn, .btn-pay", function (e) {
     e.preventDefault();
-    
+
     let FShopCost, FDeliveryFee, FOrderRefNum, FBookingRefNum, walletBalance, estimatedCost, dataPaymentApp, row;
 
     if ($(this).attr('id') === 'btnPayRider') {
@@ -965,7 +1100,7 @@ $(document).on("click", "#PayNowBtn, .PayNowBtn, .btn-pay", function (e) {
             updatePaymentStatus(dataPaymentApp, 'C', 'A'); //for booking
             $(this).html(LoadingIcon + " Please Wait");
             setTimeout(() => {
-                $(this).html(ChkIcon + " Done");
+                $(this).html(chkIcon + " Done");
             }, 1000);
         }
     } else {
@@ -1009,21 +1144,6 @@ $(document).on("click", "#PayNowBtn, .PayNowBtn, .btn-pay", function (e) {
 
         $(this).removeClass("btn-warning").removeClass("btn-danger").addClass("btn-success").html(chkIcon + " Done");
     }
-});
-
-
-    // elements.userLogOut.click(() => {
-    //     const grower = CreateHtml.loadingGrower;
-    //     $("body").html(`<center>${grower}</center>`);
-    //     setTimeout(() => {
-    //         window.location.assign("../index.php?logout");
-    //     }, 1200);
-    // });
-
-
-
-    
-
 });
 
 
@@ -1076,3 +1196,5 @@ $(document).on('click','.attachmentBtn',function() {
     alert(1);
     $('.attachInput').trigger('click');
 });
+
+

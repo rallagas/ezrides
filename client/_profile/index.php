@@ -1,7 +1,7 @@
 <?php
-require_once "../../_db.php";
-require_once "../../_functions.php";
-require_once "../../_sql_utility.php";?>
+require_once __DIR__ . "/../../_db.php";
+require_once __DIR__ . "/../../_functions.php";
+require_once __DIR__ . "/../../_sql_utility.php";?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -16,6 +16,21 @@ require_once "../../_sql_utility.php";?>
     <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.6.0/uicons-regular-rounded/css/uicons-regular-rounded.css'>
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
     <link rel="stylesheet" href="../../css/style.css">
+    <style>
+    
+             .profile-upload-label {
+                cursor: pointer;
+                transition: box-shadow 0.3s ease, border 0.3s ease;
+                border: 2px solid transparent;
+                border-radius: 50%;
+            }
+
+            .profile-upload-label:hover {
+                border: 5px solid #ccc; /* light gray border */
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); /* soft shadow */
+            }
+
+    </style>
 </head>
 <body>
         <?php 
@@ -38,14 +53,43 @@ require_once "../../_sql_utility.php";?>
 
 
             <div class="row">
-                 <!-- Profile Header -->
-        <div class="card">
-            <div class="card-body text-center">
-                <img src="../../icons/<?php echo $user_profile_image;?>" alt="Profile Picture" class="rounded-circle mb-3" style="width: 150px; height: 150px;">
-                <h3 class="card-title"><?php echo $user_firstname . ", " . $user_lastname . ", " . $user_mi;?></h3>
-                <p class="text-muted"><?php echo $user_email_address;?></p>
-            </div>
-        </div>
+<!-- Profile Header -->
+<div class="card">
+    <div class="card-body text-center">
+
+        <!-- Profile Image Upload Form -->
+        <form action="upload_dp.php" method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="submit_profile_upload" value="1">
+
+            <label for="profileInput" class="position-relative d-inline-block" style="cursor: pointer;">
+                <!-- Profile Image -->
+                <img src="<?php echo $user_profile_image == "female_person1.jpg" ? "../../icons/$user_profile_image" : "../../profile/$user_profile_image" ;?>" 
+                     alt="Profile Picture" 
+                     class="rounded-circle mb-3 profile-upload-label " 
+                     style="width: 150px; height: 150px; object-fit: cover;">
+
+                <!-- Camera Icon Overlay -->
+<!--
+                <span class="position-absolute bottom-0 start-0 bg-secondary text-white px-2 pb-1 mb-1 mt-2"
+                      style="transform: translate(25%, 25%);">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-camera-fill" viewBox="0 0 16 16">
+  <path d="M10.5 8.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
+  <path d="M2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1.172a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 9.172 2H6.828a2 2 0 0 0-1.414.586l-.828.828A2 2 0 0 1 3.172 4zm.5 2a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1m9 2.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0"/>
+</svg>
+                </span>
+-->
+                <!-- Hidden File Input -->
+                <input type="file" name="profile_picture" id="profileInput" accept="image/*" style="display: none;" onchange="this.form.submit()">
+            </label>
+        </form>
+
+        <h3 class="card-title"><?php echo $user_firstname . ", " . $user_lastname . ", " . $user_mi;?></h3>
+        <p class="text-muted"><?php echo $user_email_address;?></p>
+    </div>
+</div>
+
+    <?php include_once __DIR__ . "/_index_wallet.php";?>
+
 
         <!-- Navigation Tabs -->
         <ul class="nav nav-tabs mt-4" id="profileTab" role="tablist">
@@ -59,6 +103,8 @@ require_once "../../_sql_utility.php";?>
                 <button class="nav-link" id="activity-tab" data-bs-toggle="tab" data-bs-target="#activity" type="button" role="tab" aria-controls="activity" aria-selected="false">Activity</button>
             </li> -->
         </ul>
+        
+    
 
         <!-- Tab Content -->
         <div class="tab-content mt-4" id="profileTabContent">
@@ -130,7 +176,22 @@ require_once "../../_sql_utility.php";?>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
 
+<script>
+document.getElementById('profileInput').addEventListener('change', function () {
+    const formData = new FormData(document.getElementById('uploadForm'));
 
+    fetch('upload_dp.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(res => res.text())
+    .then(response => {
+        // Refresh the page to reflect new image
+        location.reload();
+    })
+    .catch(error => console.error('Upload failed:', error));
+});
+</script>
     
 </body>
 </html>

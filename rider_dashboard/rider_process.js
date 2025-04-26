@@ -5,10 +5,40 @@ const pageSize = 5;
 let transactions = [];
 let lastBookingStatus = null; // Store the last known value
 
-const chkIcon = `<span class="text-light"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-check-fill" viewBox="0 0 16 16">
-<path fill-rule="evenodd" d="M15.854 5.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 0 1 .708-.708L12.5 7.793l2.646-2.647a.5.5 0 0 1 .708 0"/>
-<path d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/>
-</svg></span>`;
+const LoadingIcon = `<span class="spinner-border spinner-border-sm ms-auto" aria-hidden="true"></span>`;
+const CreateHtml = {
+    loadingGrower : `<div class="spinner-grow text-danger spinner-grow-sm" role="status"></div><div class="spinner-grow text-danger spinner-grow-sm" role="status"></div><div class="spinner-grow text-danger spinner-grow-sm" role="status"></div>`
+}
+const chkIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
+  <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+</svg>`;
+
+
+
+
+$(document).on('click','#userLogOut',function(e){
+    e.preventDefault;
+    console.log("Logout button clicked");
+    $.ajax({
+        url: '../_action_logout_user.php',
+        type: 'POST',
+        success: function (response) {
+            console.log('Session ended successfully:', response);
+
+            $('body').html(LoadingIcon + " Heading Out so Soon?").addClass('text-center mt-5');
+            setTimeout(() => {
+                    window.location.href = '../index.php?page=login';
+            }, 3000);
+            
+        },
+        error: function (xhr, status, error) {
+            console.error('Failed to end session:', error);
+            alert('An error occurred while trying to log you out. Please try again.');
+        }
+    });
+});    
+
+
 
 $(document).on("submit", ".booking_form", function (e) {
     e.preventDefault();
@@ -129,6 +159,7 @@ function handleQueueData(data) {
 
 
 function fetchCurrentBookings() {
+    $("#availableBookings").append(LoadingIcon + " Checking ...");
     $.ajax({
         url: "ajax_get_booking.php",
         dataType: "json",
@@ -265,7 +296,7 @@ else if (elapsedTimeInMinutes <= 10) {
    return `
       <div class="row d-flex align-items-start mb-4 p-3 rounded bg-white">
         <div class="col-md-3 d-none d-md-block position-relative">
-            <img src="../icons/${booking.user_profile_image}"  class="img-fluid rounded-start"  alt="${booking.user_firstname} ${booking.user_lastname}"  style="object-fit: cover; height: 200px; width: 100%;">
+            <img src="${window.location.origin}/ezrides/profile/${booking.user_profile_image}"  class="img-fluid rounded-start"  alt="${booking.user_firstname} ${booking.user_lastname}"  style="object-fit: cover; height: 200px; width: 100%;">
         </div>
         <div class="col-md-6">
             <div class="card-body">
@@ -337,7 +368,7 @@ else if (elapsedTimeInMinutes <= 10) {
           <div class="row d-flex align-items-start mb-4 p-3 shadow-sm border-0 rounded bg-white">
             <!-- Image Section -->
             <div class="col-md-3 col-sm-12">
-                <img src="../icons/${booking.user_profile_image}" 
+                <img src="${window.location.origin}/ezrides/profile/${booking.user_profile_image}" 
                      class="img-fluid rounded-start" 
                      alt="${booking.user_firstname} ${booking.user_lastname}" 
                      style="object-fit: cover; height: 200px; width: 100%;">
