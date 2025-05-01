@@ -1,7 +1,7 @@
 <?php
-require_once __DIR__ . "/../../_db.php";
-require_once __DIR__ . "/../../_functions.php";
-require_once __DIR__ . "/../../_sql_utility.php";?>
+require_once __DIR__ . "/../_db.php";
+require_once __DIR__ . "/../_functions.php";
+require_once __DIR__ . "/../_sql_utility.php";?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -15,7 +15,7 @@ require_once __DIR__ . "/../../_sql_utility.php";?>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.6.0/uicons-regular-rounded/css/uicons-regular-rounded.css'>
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
-    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../css/style.css">
     <style>
     
              .profile-upload-label {
@@ -33,10 +33,28 @@ require_once __DIR__ . "/../../_sql_utility.php";?>
     </style>
 </head>
 <body>
+      
+       
+      <div class="position-fixed top-0 end-0 m-2 d-inline-block" style="z-index:1000">
+
+            <a href="index.php" class="btn btn-outline-warning bg-warning shadow rounded-4">
+                <img src="../icons/house.png" alt="" class="quick-links img-fluid" style="width:4vh;">
+            </a>
+            <a href="../client/index.php" class="btn btn-outline-warning bg-warning shadow rounded-4">
+                <img src="../icons/mobile-shopping.png" alt="" class="quick-links img-fluid" style="width:4vh;">
+            </a>
+
+            <button id="appMenuBtn" class="btn btn-outline-warning bg-warning shadow rounded-4" type="button"
+                data-bs-toggle="offcanvas" data-bs-target="#appMenu" aria-controls="appMenu">
+                <img src="../icons/menu.png" alt="" class="quick-links img-fluid" style="width:4vh;">
+            </button>
+            
+    </div>
+       
         <?php 
-        require "nav-client.php";
-        include_once "menu.php";
-        include_once "page-check.php";
+        //include_once "nav_rider.php";
+        //include_once "menu.php";
+        //include_once "page-check.php";
 
         $profile = query("SELECT u.*, up.*
                             FROM `users` u
@@ -63,7 +81,7 @@ require_once __DIR__ . "/../../_sql_utility.php";?>
 
             <label for="profileInput" class="position-relative d-inline-block" style="cursor: pointer;">
                 <!-- Profile Image -->
-                <img src="<?php echo $user_profile_image == "female_person1.jpg" ? "../../icons/$user_profile_image" : "../../profile/$user_profile_image" ;?>" 
+                <img src="<?php echo $user_profile_image == "female_person1.jpg" ? "../icons/$user_profile_image" : "../profile/$user_profile_image" ;?>" 
                      alt="Profile Picture" 
                      class="rounded-circle mb-3 profile-upload-label " 
                      style="width: 150px; height: 150px; object-fit: cover;">
@@ -87,9 +105,6 @@ require_once __DIR__ . "/../../_sql_utility.php";?>
         <p class="text-muted"><?php echo $user_email_address;?></p>
     </div>
 </div>
-
-    <?php include_once __DIR__ . "/_index_wallet.php";?>
-
 
         <!-- Navigation Tabs -->
         <ul class="nav nav-tabs mt-4" id="profileTab" role="tablist">
@@ -174,8 +189,6 @@ require_once __DIR__ . "/../../_sql_utility.php";?>
         <script src="https://cdn.jsdelivr.net/npm/@coreui/coreui-pro@5.7.0/dist/js/coreui.bundle.min.js" integrity="sha384-kwU8DU7Bx4h5xZtJ61pZ2SANPo2ukmbAwBd/1e5almQqVbLuRci4qtalMECfu9O6" crossorigin="anonymous"></script>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-        
-        <script src="../_process_ajax.js"></script>
 
 
 <script>
