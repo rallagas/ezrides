@@ -224,7 +224,7 @@ $pendingTopupList = query($sql_top_up_approval);
                 </div>
             </div>
 
-            <div class="col-lg-12">
+            <div class="col-lg-12 collapse">
                 <div class="card border-0 shadow">
                     <div class="card-header">
                         <h6 class="card-title fw-bold" id="carrentallist">CAR RENTALS

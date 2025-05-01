@@ -123,7 +123,7 @@ define('BASE_PATH', __DIR__);
 define('CONN', $db->getConnection());
 define('SECRET_KEY', 'ezrides'); // Use a secure, random key
 define('SECRET_IV', 'ezrides123456789');   // Use a secure, random IV
-define('GCASH_ADMIN_ACCOUNT',"09985518206");
+define('GCASH_ADMIN_ACCOUNT',"");
 define('GCASH_ADMIN_NAME', NULL);
 include_once "_sql_utility.php";
 
