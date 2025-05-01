@@ -9,8 +9,11 @@
                 <div class="modal-body">
 
                     <div class="alert alert-info pt-2 pb-0">
+                      <center>
+                       <img src="icons/QR.jpg" alt="" class="align-center img-responsive" style="width:200px">
+                       </center>
                         <ul class="small">
-                            <li>Send the Topup Amount to <?php echo GCASH_ADMIN_ACCOUNT; ?></li>
+                            <li>Scan the QR above in your GCASH account then Send the Topup Amount</li>
                             <li>Keep the GCash Reference number for the input below.</li>
                             <li>Wait for the approval of the Admin.</li>
                         </ul>
@@ -37,6 +40,7 @@
                     </div>
 
                     <div class="mb-2">
+                       <label for="gcashScreenshot" class="form-label">Attach Screenshot</label>
                         <!-- <label for="gcashScreenshot" class="btn btn-outline-secondary">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-paperclip" viewBox="0 0 16 16">
                             <path d="M4.5 3a2.5 2.5 0 0 1 5 0v9a1.5 1.5 0 0 1-3 0V5a.5.5 0 0 1 1 0v7a.5.5 0 0 0 1 0V3a1.5 1.5 0 1 0-3 0v9a2.5 2.5 0 0 0 5 0V5a.5.5 0 0 1 1 0v7a3.5 3.5 0 1 1-7 0z"/>
