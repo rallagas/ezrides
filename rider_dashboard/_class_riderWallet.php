@@ -65,7 +65,9 @@ class UserWallet {
             'gcash_account_number' => $gcashData['gcash_account_number'] ?? null,
             'gcash_account_name' => $gcashData['gcash_account_name'] ?? null,
             'gcash_reference_number' => $gcashData['gcash_ref_number'] ?? null,
-            'wallet_txn_status' => 'P'
+            'wallet_txn_status' => 'P',
+            'gcash_qr' => $gcashData['gcash_qr']
+            
         ];
     
         // Attempt to insert data into the database
