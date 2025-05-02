@@ -553,42 +553,106 @@ $(document).on("click",".claim-stub", function(e){
     //$(this).addClass("d-none");
 });
 
-$(document).on('submit','#formCashOut', function (event) {
-    event.preventDefault(); // Prevent default form submission behavior
-    const $button = $('.btnCashOut');
-    $button.prop("disabled",true);
-    $button.html(loadingIcon);
-    // Extract form data
-    const amount = parseFloat($('input[name="CashOutAmount"]').val().trim());
-    const gcashAccountNumber = $('input[name="GCashAccountNumber"]').val().trim();
-    const gcashAccountName = $('input[name="GCashAccountName"]').val().trim();
+//$(document).on('submit','#formCashOut', function (event) {
+//    event.preventDefault(); // Prevent default form submission behavior
+//    const $button = $('.btnCashOut');
+//    $button.prop("disabled",true);
+//    $button.html(loadingIcon);
+//    // Extract form data
+//    const amount = parseFloat($('input[name="CashOutAmount"]').val().trim());
+//    const gcashAccountNumber = $('input[name="GCashAccountNumber"]').val().trim();
+//    const gcashAccountName = $('input[name="GCashAccountName"]').val().trim();
+//
+//    // Validate form inputs
+//    if (!amount || amount <= 0) {
+//        alert('Please enter a valid amount.');
+//        return;
+//    }
+//    if (!gcashAccountNumber) {
+//        alert('Please provide a valid GCash Account Number.');
+//        return;
+//    }
+//    if (!gcashAccountName) {
+//        alert('Please provide a valid GCash Account Name.');
+//        return;
+//    }
+//
+//    // Call the cashOut function
+//    cashOut({
+//        amount: amount,
+//        payFrom: -1, // Assuming 99 is a default value for "payFrom"
+//        referenceNum : null, // Generate a unique reference number
+//        paymentType: 'C', // Default payment type is 'C'
+//        action: 'Cash Out', // Wallet action
+//        gcashAccountNumber: gcashAccountNumber,
+//        gcashAccountName: gcashAccountName
+//    });
+//    $button.html(chkIcon);
+//});
 
-    // Validate form inputs
+$(document).on('submit', '#formCashOut', function (event) {
+    event.preventDefault();
+    const $button = $('.btnCashOut');
+    $button.prop("disabled", true);
+    $button.html(loadingIcon);
+
+    const form = document.getElementById('formCashOut');
+    const formData = new FormData(form); // Use FormData to capture all inputs, including file
+
+    const amount = parseFloat(formData.get('CashOutAmount'));
+    const gcashAccountNumber = formData.get('GCashAccountNumber')?.trim();
+    const gcashAccountName = formData.get('GCashAccountName')?.trim();
+    const uploadedFile = formData.get('receivePaymentQR');
+
+    // Basic Validation
     if (!amount || amount <= 0) {
         alert('Please enter a valid amount.');
-        return;
-    }
-    if (!gcashAccountNumber) {
-        alert('Please provide a valid GCash Account Number.');
-        return;
-    }
-    if (!gcashAccountName) {
-        alert('Please provide a valid GCash Account Name.');
+        $button.prop("disabled", false).html('Submit Request');
         return;
     }
 
-    // Call the cashOut function
-    cashOut({
-        amount: amount,
-        payFrom: -1, // Assuming 99 is a default value for "payFrom"
-        referenceNum : null, // Generate a unique reference number
-        paymentType: 'C', // Default payment type is 'C'
-        action: 'Cash Out', // Wallet action
-        gcashAccountNumber: gcashAccountNumber,
-        gcashAccountName: gcashAccountName
+    // Must have either QR image or GCash account info
+    if ((!uploadedFile || uploadedFile.size === 0) && (!gcashAccountNumber || !gcashAccountName)) {
+        alert('Please upload a GCASH QR image or provide account details.');
+        $button.prop("disabled", false).html('Submit Request');
+        return;
+    }
+
+    $.ajax({
+        url: 'ajax_cash_out.php',
+        method: 'POST',
+        data: formData,
+        processData: false, // Required for FormData
+        contentType: false, // Required for FormData
+        dataType: 'json',
+        success: function (response) {
+            if (response.success) {
+                $('.txn_status')
+                    .removeClass("alert-danger")
+                    .addClass("alert-success")
+                    .html(`
+                        <br>Cash-out of Php ${parseFloat(response.amount).toFixed(2)} submitted successfully.<br>
+                    `);
+                fetchAndAssignWalletBalance('.walletbalance', '.earnings');
+            } else {
+                $('.txn_status')
+                    .removeClass("alert-success")
+                    .addClass("alert-danger")
+                    .text(response.message || "Cash-out request failed.");
+            }
+        },
+        error: function (xhr, status, error) {
+            $('.txn_status')
+                .removeClass("alert-success")
+                .addClass("alert-danger")
+                .text("An error occurred during cash-out.");
+        },
+        complete: function () {
+            $button.prop("disabled", false).html('Submit Request');
+        }
     });
-    $button.html(chkIcon);
 });
+
 
 async function cashOut({ 
     amount, 
@@ -635,53 +699,86 @@ async function cashOut({
     // Disable the button during the request
     triggerElement.prop('disabled', true);
 
-
-    $.ajax({
-        url: 'ajax_cash_out.php',
-        method: 'POST',
-        dataType: 'json',
-        data: JSON.stringify({
-            amount,
-            payToUser: payTo,
-            payFromUser: payFrom,
-            refNum: referenceNum,
-            paymentType,
-            wallet_action: action,
-            gcashAccountNumber,
-            gcashAccountName
-        }),
-        contentType: 'application/json',
-        success: function (response) {
-            if (response.success) {
-                console.log("Cash-out request submitted successfully.");
-                $('.txn_status')
-                    .removeClass("alert-danger")
-                    .addClass("alert-success")
-                    .html(`
-                        <br>Requested cash out of Php ${parseFloat(response.amount).toFixed(2)} 
-                        to GCash Account: ${gcashAccountNumber}<br>
-                    `);
-
-                fetchAndAssignWalletBalance('.walletbalance','.earnings');
-            } else {
-                $('.txn_status')
-                    .removeClass("alert-success")
-                    .addClass("alert-danger")
-                    .text(response.message || "Cash-out request failed.");
-            }
-        },
-        error: function (xhr, status, error) {
-            console.error('Cash-out request error:', error);
-            $('.txn_status')
-                .removeClass("alert-success")
-                .addClass("alert-danger")
-                .text("An error occurred while processing the cash-out request.");
-        },
-        complete: function () {
-            triggerElement.prop('disabled', false);
-        }
-    });
+         $.ajax({
+                url: 'ajax_cash_out.php',
+                method: 'POST',
+                data: formData,
+                processData: false, // Required for FormData
+                contentType: false, // Required for FormData
+                dataType: 'json',
+                success: function (response) {
+                    if (response.success) {
+                        $('.txn_status')
+                            .removeClass("alert-danger")
+                            .addClass("alert-success")
+                            .html(`
+                                <br>Cash-out of Php ${parseFloat(response.amount).toFixed(2)} submitted successfully.<br>
+                            `);
+                        fetchAndAssignWalletBalance('.walletbalance', '.earnings');
+                    } else {
+                        $('.txn_status')
+                            .removeClass("alert-success")
+                            .addClass("alert-danger")
+                            .text(response.message || "Cash-out request failed.");
+                    }
+                },
+                error: function (xhr, status, error) {
+                    $('.txn_status')
+                        .removeClass("alert-success")
+                        .addClass("alert-danger")
+                        .text("An error occurred during cash-out.");
+                },
+                complete: function () {
+                    $button.prop("disabled", false).html('Submit Request');
+                }
+            });
     }
+//    $.ajax({
+//        url: 'ajax_cash_out.php',
+//        method: 'POST',
+//        dataType: 'json',
+//        data: JSON.stringify({
+//            amount,
+//            payToUser: payTo,
+//            payFromUser: payFrom,
+//            refNum: referenceNum,
+//            paymentType,
+//            wallet_action: action,
+//            gcashAccountNumber,
+//            gcashAccountName
+//        }),
+//        contentType: 'application/json',
+//        success: function (response) {
+//            if (response.success) {
+//                console.log("Cash-out request submitted successfully.");
+//                $('.txn_status')
+//                    .removeClass("alert-danger")
+//                    .addClass("alert-success")
+//                    .html(`
+//                        <br>Requested cash out of Php ${parseFloat(response.amount).toFixed(2)} 
+//                        to GCash Account: ${gcashAccountNumber}<br>
+//                    `);
+//
+//                fetchAndAssignWalletBalance('.walletbalance','.earnings');
+//            } else {
+//                $('.txn_status')
+//                    .removeClass("alert-success")
+//                    .addClass("alert-danger")
+//                    .text(response.message || "Cash-out request failed.");
+//            }
+//        },
+//        error: function (xhr, status, error) {
+//            console.error('Cash-out request error:', error);
+//            $('.txn_status')
+//                .removeClass("alert-success")
+//                .addClass("alert-danger")
+//                .text("An error occurred while processing the cash-out request.");
+//        },
+//        complete: function () {
+//            triggerElement.prop('disabled', false);
+//        }
+//    });
+    
 
 }
 
