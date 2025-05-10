@@ -133,11 +133,11 @@ include_once "../_sql_utility.php";
 
     <?php include_once "../top_up_modal.php" ;?>
 
-    <nav class="navbar fixed-bottom bg-purple rideInfoContainer d-none">
-        <div class="container py-3">
-            <button id="btnRideInfo" class="btn btn-outline-light my-3" type="button" data-bs-toggle="offcanvas"
-                data-bs-target="#offcanvasBottom" aria-controls="offcanvasBottom">
-                <span class="my-3 fw-bold">RIDE INFO</span>
+    <nav class="navbar fixed-bottom bg-purple rideInfoContainer d-none" style="height:10vh">
+        <div class="container h-100">
+            <button id="btnRideInfo" class="btn btn-outline-light w-100" type="button" data-bs-toggle="offcanvas"
+                data-bs-target="#offcanvasBottom" aria-controls="offcanvasBottom" style="height:100%">
+                <span class="fw-bold">Angkas Information</span>
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
                     class="bi bi-caret-up-square mb-1 ms-2" viewBox="0 0 16 16">
                     <path
@@ -192,7 +192,7 @@ include_once "../_sql_utility.php";
                                             <th scope="row" colspan="2">
                                                 <div class="container-fluid">
                                                    <div class="row">
-                                                       <div class="col-12" id="riderInfoBookingStatus"></div>
+                                                       <div class="col-12 fs-3" id="riderInfoBookingStatus"></div>
                                                    </div>
                                                     <div class="row">
                                                         <div class="col-12" id="riderInfoPI">
@@ -224,6 +224,8 @@ include_once "../_sql_utility.php";
         integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
     <script src="angkas_map.js"></script>
     <script src="_process_ajax.js"></script>
+    <script src="chat.js"></script>
+    
     <script>
     // Configuration object
 const CONFIGURATION = {

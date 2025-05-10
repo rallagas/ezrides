@@ -30,7 +30,7 @@ rp.user_firstname AS rider_firstname,
 rp.user_lastname AS rider_lastname,
 rp.user_id AS rider_user_id,
 ru.t_username as rider_username
-CASE WHEN ab.booking_status = 'P' THEN 'Waiting for Driver' WHEN ab.booking_status = 'A' THEN 'Driver Found' WHEN ab.booking_status = 'R' THEN 'Driver Arrived in Your Location' WHEN ab.booking_status = 'I' THEN 'In Transit' WHEN ab.booking_status = 'C' THEN 'Completed' WHEN ab.booking_status = 'F' THEN 'Pending Payment' WHEN ab.booking_status = 'D' THEN 'Done'
+CASE WHEN ab.booking_status = 'P' THEN 'Waiting for Driver' WHEN ab.booking_status = 'A' THEN 'We Found you a Driver' WHEN ab.booking_status = 'R' THEN 'Driver Arrived in Your Location' WHEN ab.booking_status = 'I' THEN 'In Transit' WHEN ab.booking_status = 'C' THEN 'Completed' WHEN ab.booking_status = 'F' THEN 'Pending Payment' WHEN ab.booking_status = 'D' THEN 'Done'
 END AS booking_status_text
 FROM
     (

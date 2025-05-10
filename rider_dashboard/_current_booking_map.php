@@ -87,6 +87,7 @@ if(isset($_GET['cancelBooking'])){
 
 if(!empty($myBooking)){
   foreach($myBooking as $cb){
+      $cus_user_id = $cb['customer_user_id'];
       $cusName = $cb['user_firstname'] . " " . $cb['user_lastname'] . " " . $cb['user_mi'];
       $cusContact = $cb['user_contact_no'];
       $cusEmail = $cb['user_email_address'];
@@ -151,6 +152,7 @@ if(!empty($myBooking)){
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="_map.css">
+    <link rel="stylesheet" href="../style.css">
 </head>
 
 <body>
@@ -166,13 +168,17 @@ if(!empty($myBooking)){
             <div class="col-sm-8 col-lg-8">
                 <div id="customerInfo" class="offcanvas offcanvas-end" tabindex="-1" id="customerInfo"
                     aria-labelledby="customerInfo">
-                    <div class="offcanvas-header">
+                    <div class="offcanvas-header" style="background-color:indigo; color: #fff">
                         <h5 class="offcanvas-title" id="offcanvasExampleLabel"><?php echo $cusName; ?></h5>
+<!--                        Customer Id for Chat as receipient-->
+                        <span class="customer-id d-none" data-customer-userid="<?php echo $cus_user_id;?>"><?php echo $cus_user_id;?></span>
+<!--                        Customer Id for Chat as receipient-->
+                        <span class="rider-id  d-none" data-rider-userid="<?php echo USER_LOGGED;?>" ><?php echo USER_LOGGED;?></span>
                         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                     </div>
                     <div class="offcanvas-body">
-                        <div>
-                            <table class="table-responsive table-bordered table">
+                        <div class="mb-3">
+                            <table class="table-responsive table-striped table">
                                 <tr>
                                     <td>Contact No</td>
                                     <td><?php echo $cusContact;?></td>
@@ -187,8 +193,36 @@ if(!empty($myBooking)){
                                 </tr>
                             </table>
                         </div>
+                        <div class="mb-3" id="conversation">
+                                    <div class="modal-content overflow-y-scroll">
+                                            <div class="modal-body overflow-y-scroll" id="conversation" style="height: 100%">
+                                               <small class="text-center text-body-tertiary">Start a conversation.</small>
+                                            </div>
+                                   
+
+                                    </div>
+                          
+                            
+                        </div>
+                        <div class="mb-3">
+                               <form id="formChatCustomer">
+                                            <div class="p-0 bg-secondary bg-opacity-50">
+                                                   <div class="input-group">
+                                                        <input type="hidden" id="rideruserid" name="receiver_id" value="<?php echo $cus_user_id;?>">
+                                                       <input type="hidden"  id="senderuserid" name="sender_id" value="<?php echo USER_LOGGED;?>">
+                                                       <input type="text" id="messagecontent" class="form-control border-bottom-1 border-top-0 border-start-0 border-end-0 border-dark" name="message">
+                                                        <button type="submit" class="btn btn-light">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-send" viewBox="0 0 16 16">
+                                                              <path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.75.75 0 0 1-1.329.124l-3.178-4.995L.643 7.184a.75.75 0 0 1 .124-1.33L15.314.037a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 4.338L14.13 2.576zm6.787-8.201L1.591 6.602l4.339 2.76z"/>
+                                                            </svg>
+                                                        </button>
+                                                    </div>
+                                            </div>
+                                        </form>
+                        </div>
                     </div>
                 </div>
+                
             </div>
 
             <div class="col-12">
@@ -215,7 +249,7 @@ if(!empty($myBooking)){
 
 
 
-                            <button id="viewCusProfile" class="float-end btn btn-sm btn-warning" type="button"
+                            <button id="viewCusProfile" class="float-end btn btn-sm btn-warning open-chat-modal" type="button"
                                 data-bs-toggle="offcanvas" data-bs-target="#customerInfo" aria-controls="customerInfo">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                     class="bi bi-person-circle" viewBox="0 0 16 16">
@@ -286,18 +320,18 @@ if(!empty($myBooking)){
                         <div class="input-group border-0 rounded-0 m-0 p-0 route-info">
                             <?php switch($bookingStatus){ 
                                 case 'A': ?>
-                            <button class="btn btn-primary float-start" id="ConfirmArrivalButton">Arrived</button>
-                            <button class="btn btn-success d-none" id="DropOffCustomer">Drop Off</button>
+                            <button class="btn btn-outline-warning bg-yellow  shadow rounded-4" id="ConfirmArrivalButton"> <img src="../icons/taxi-arrival.png" alt="Arrived" style="width: 3vh">Arrived</button>
+                            <button class="btn btn-light d-none" id="DropOffCustomer"> <img src="../icons/taxi-arrival.png" alt="" style="width: 3vh"> Drop Off</button>
                             <?php break;
                                 case 'I': ?>
-                            <button class="btn btn-success" id="DropOffCustomer">Drop Off</button>
+                            <button class="btn btn-light" id="DropOffCustomer"> <img src="../icons/taxi-arrival.png" alt="" style="width: 3vh"> Drop Off</button>
                             <?php break; 
                                 case 'R': ?>
-                            <button class="btn btn-success" id="DropOffCustomer">Drop Off</button>
+                            <button class="btn btn-light" id="DropOffCustomer"> <img src="../icons/taxi-arrival.png" alt="" style="width: 3vh"> Drop Off</button>
                             <?php break; 
                                 default: ?>
 
-                            <button class="btn btn-success" id="DropOffCustomer">Drop Off</button>
+                            <button class="btn btn-light" id="DropOffCustomer"><img src="../icons/taxi-arrival.png" alt="" style="width: 3vh"> Drop Off</button>
                             <?php } ?>
 
                             <span class="input-group-text border-0 fw-bold">ETA:</span>
@@ -367,5 +401,7 @@ if(!empty($myBooking)){
 <script async defer
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBWi3uSAaNEmBLrAdLt--kMWsoN4lKm9Hs&libraries=places,geometry,marker&callback=initMap&loading=async">
 </script>
+<script src="../js/jquery-3.5.1.min.js"></script>
+<script src="chat.js"></script>
 
 </html>

@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                ( (sender_id = ? AND receiver_id = ?) 
                 OR (sender_id = ? AND receiver_id = ?) )
             AND DATE(date_received) = CURRENT_DATE
-            ORDER BY date_received asc
+            ORDER BY date_received ASC
         ";
 
         // Execute the query using the query() function
