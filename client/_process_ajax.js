@@ -64,7 +64,7 @@ $(document).on('click','#userLogOut',function(e){
         },
         error: function (xhr, status, error) {
             console.error('Failed to end session:', error);
-            alert('An error occurred while trying to log you out. Please try again.');
+            console.error('An error occurred while trying to log you out. Please try again.');
         }
     });
 });
@@ -419,30 +419,39 @@ function chkBooking() {
                          /* ${booking.rider_firstname || "N/A"}, ${booking.rider_lastname } */
                         if (booking.booking_status_text !== "Waiting for Driver") {
                             elements.riderInfoPI.html(
-                                `<div class="card border-0">
-                                    <div class="card-body border-0 position-relative">
-                                            <img src="../profile/${booking.rider_profile || 'default.jpg'}"
-                                           alt="Profile Picture" 
-                                            class="card-img-top object-fit-cover position-absolute top-0 end-0 rounded-circle" 
-                                            style="width: 100px;height:100px;">
-                                    
-                                        ${booking.rider_firstname || "N/A"}, ${booking.rider_lastname } 
-                                       <br>
+                                `<div class="card border-0" style="border-radius: 15px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+  <div class="card-body position-relative p-5">
+    
+    <!-- Profile Picture -->
+    <img src="../profile/${booking.rider_profile || 'default.jpg'}"
+         alt="Profile Picture"
+         class="rounded-circle position-absolute top-0 start-50 translate-middle"
+         style="width: 100px; height: 100px; object-fit: cover; margin-top: 10px; margin-left: 10px;">
 
-                                        <i>${booking.plate_no}</i>
-                                        <br>
-                                       <a class="btn btn-outline-warning bg-yellow text-dark open-chat-modal" 
-                                            data-bs-toggle="modal"  data-bs-target="#chatModal" 
-                                            data-rider-username="${booking.rider_username}" data-rider-userid="${booking.rider_user_id}">
-                                            @${booking.rider_username}
-                                        
-                                        <sup><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chat-dots" viewBox="0 0 16 16">
-                                          <path d="M5 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0m4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/>
-                                          <path d="m2.165 15.803.02-.004c1.83-.363 2.948-.842 3.468-1.105A9 9 0 0 0 8 15c4.418 0 8-3.134 8-7s-3.582-7-8-7-8 3.134-8 7c0 1.76.743 3.37 1.97 4.6a10.4 10.4 0 0 1-.524 2.318l-.003.011a11 11 0 0 1-.244.637c-.079.186.074.394.273.362a22 22 0 0 0 .693-.125m.8-3.108a1 1 0 0 0-.287-.801C1.618 10.83 1 9.468 1 8c0-3.192 3.004-6 7-6s7 2.808 7 6-3.004 6-7 6a8 8 0 0 1-2.088-.272 1 1 0 0 0-.711.074c-.387.196-1.24.57-2.634.893a11 11 0 0 0 .398-2"/>
-                                        </svg></sup>
-                                    </a>
-                                    </div>
-                                </div>`
+    <!-- Name and Contact -->
+    <div class="ms-5 ps-3">
+      <h5 class="fw-bold mb-1">${booking.rider_firstname || "N/A"} ${booking.rider_lastname || ""}</h5>
+      <p class="text-muted mb-1"><i>${booking.plate_no || "N/A"}</i></p>
+      <p class="mb-2">@${booking.rider_username}</p>
+    </div>
+
+    <!-- Chat Button with Stats -->
+    <div class="d-flex justify-content-between align-items-center mt-4 bg-light rounded p-2">
+      <a class="btn bg-yellow  shadow open-chat-modal"
+         data-bs-toggle="modal"
+         data-bs-target="#chatModal"
+         data-rider-username="${booking.rider_username}"
+         data-rider-userid="${booking.rider_user_id}"
+        >
+        Chat <img src="../icons/messages.png" style="width: 20px; margin-left: 8px;" />
+      </a>
+
+     
+    </div>
+
+  </div>
+</div>
+`
                             );
                         } else {
                             elements.riderInfoPI.html(CreateHtml.loadingGrower);
@@ -510,7 +519,7 @@ async function handleCheckPendingBooking() { //in the app button
                     textColor = 'text-bg-danger';
                     break;
                 case 'A':
-                    bookingStatusText = 'Driver Found';
+                    bookingStatusText = 'We Found you a Driver';
                     textColor = 'text-bg-success';
                     break;
                 case 'R':
@@ -535,7 +544,7 @@ async function handleCheckPendingBooking() { //in the app button
 
             switch (payment_status) {
                 case 'D':
-                    paymentStatusText = 'Driver Found';
+                    paymentStatusText = 'We Found you a Driver';
                     textColor = 'text-bg-success';
                     break;
                 case 'C':
@@ -559,7 +568,7 @@ async function handleCheckPendingBooking() { //in the app button
             var bookingCardView = `
             <div class="card-header bg-warning clear-fix">
                 <span class="fw-bolder" id="BookingReferenceNum">${response.bookingDetails.angkas_booking_reference}</span>
-                <span class="badge ${textColor} fw-bold float-end" id="bookingStatus">${bookingStatusText}</span>
+                <span class="badge ${textColor} fw-bold text-danger float-end" id="bookingStatus" style="height:100px">${bookingStatusText}</span>
             </div>
             <div class="card-body" style="--bs-bg-opacity: .2;" id="bookingDetails">
                 <div class="container-fluid">
@@ -634,7 +643,7 @@ function updateBookingStatus(newStatus) {
             textColor = 'text-bg-danger';
             break;
         case 'A':
-            bookingStatusText = 'Driver Found';
+            bookingStatusText = 'We Found you a Driver';
             textColor = 'text-bg-success';
             break;
         case 'R':
@@ -845,7 +854,7 @@ function handleLocationError(isGeolocationError) {
     const errorMessage = isGeolocationError
         ? "Geolocation service failed. Please enable location services in your browser."
         : "Your browser does not support geolocation.";
-    alert(errorMessage);
+    console.error(errorMessage);
 }
 
 
@@ -943,140 +952,156 @@ $(document).ready(function () {
         $('#rideruserid').val(riderUserId);
     });
 
-
-        $('#formChatRider').on('submit', async function (e) {
-        e.preventDefault(); // Prevent default form submission behavior
-
-        // Collect form data
-        const formData = $(this).serialize();
-
-        try {
-            // Perform AJAX request to send the message
-            const response = await $.ajax({
-                url: '_ajax_send_message.php', // Backend script to handle message sending
-                type: 'POST',
-                data: formData
-            });
-
-            const result = JSON.parse(response);
-
-            if (result.status === 'success') {
-                // Clear the message input field
-                $('#formChatRider #messagecontent').val('');
-
-                // Re-fetch and update the chat messages
-                const senderId = $('input[name="sender_id"]').val();
-                const receiverId = $('input[name="receiver_id"]').val();
-
-                const messages = await fetchChatMessages(senderId, receiverId);
-
-                // Clear the chat container
-                $('#conversation').empty();
-
-                // Format and append messages to the chat container
-                messages.forEach((message) => {
-                    const messageClass = message.sender_id === senderId ? 'btn-secondary' : 'btn-primary';
-                    // timeAlignment = message.sender_id === senderId ? 'text-end' : 'text-start';
-                    const     alignment = message.sender_id === senderId ? 'ms-auto' : 'me-auto';
-                   const     timeAlignment = message.sender_id === senderId ? 'ms-auto' : 'me-auto';
-                    $('#conversation').append(`
-                         <div class="d-flex mb-1">
-                        <div class="p-2 ${alignment}">
-                            <p class="btn ${messageClass}"> ${message.message} </p>
-                        </div>
-                        <div class="p-2 ${timeAlignment}">
-                            <small class="small">${message.date_received}</small>
-                        </div>
-                    </div>
-                    `);
-                });
-            } else {
-                alert('Failed to send the message. Please try again.');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            alert('An error occurred while sending the message. Please try again.');
-        }
-    });
-
-    
-
-});
-
-async function fetchChatMessages(senderId, receiverId) {
-    return new Promise((resolve, reject) => {
-        $.ajax({
-            url: '_ajax_fetch_messages.php', // Backend script to fetch messages
-            method: 'POST',
-            data: {
-                sender_id: senderId,
-                receiver_id: receiverId
-            },
-            dataType: 'json',
-            success: function (response) {
-                if (response.status === 'success') {
-                    resolve(response.messages); // Return messages on success
-                } else {
-                    reject(response.error || 'Failed to fetch messages.');
-                }
-            },
-            error: function (xhr, status, error) {
-                reject(error || 'An error occurred while fetching messages.');
-            }
-        });
-    });
-}
-
-$(document).on('click', '.open-chat-modal', async function () {
-    const senderId = $('#senderuserid').val();
-    const receiverId = $(this).data('rider-userid');
-    
-    try {
-        // Fetch messages
-        const messages = await fetchChatMessages(senderId, receiverId);
-        
-        // Populate the #conversation element with the messages
-        const conversationDiv = $('#conversation');
-        conversationDiv.empty(); // Clear previous messages
-        let alignment="";
-        let messageClass = "";
-        if (messages.length > 0) {
-            messages.forEach(msg => {
-                
-                     alignment = msg.sender_id === senderId ? 'me-auto' : 'ms-auto';
-                     timeAlignment = msg.sender_id === senderId ? 'ms-auto' : 'me-auto';
-                     messageClass = msg.sender_id === senderId ? 'btn-secondary' : 'btn-primary';
-
-                    conversationDiv.append(`
-                     <div class="d-flex mb-1">
-                        
-                        <div class="p-2 ${timeAlignment}">
-                            <small class="small">${msg.date_received}</small>
-                        </div>
-
-                <div class="p-2 ${alignment}">
-                            <p class="btn ${messageClass}"> ${msg.message} </p>
-                        </div>
-                    </div>
-
-                    `);
-                
-//                const messageHtml = `
-//                    <div class="d-flex ${msg.sender_id === senderId ? 'justify-content-end' : 'justify-content-start'}">
-//                        <div class="p-2 rounded-3 bg-${msg.sender_id === senderId ? 'primary text-white' : 'light text-dark'}">
-//                            ${msg.message}
+//
+//    $('#formChatRider').on('submit', async function (e) {
+//        e.preventDefault(); // Prevent default form submission behavior
+//
+//        // Collect form data
+//        const formData = $(this).serialize();
+//
+//        try {
+//            // Perform AJAX request to send the message
+//            const response = await $.ajax({
+//                url: '_ajax_send_message.php', // Backend script to handle message sending
+//                type: 'POST',
+//                data: formData
+//            });
+//
+//            const result = JSON.parse(response);
+//
+//            if (result.status === 'success') {
+//                // Clear the message input field
+//                $('#formChatRider #messagecontent').val('');
+//
+//                // Re-fetch and update the chat messages
+//                const senderId = $('input[name="sender_id"]').val();
+//                const receiverId = $('input[name="receiver_id"]').val();
+//
+//                const messages = await fetchChatMessages(senderId, receiverId);
+//
+//                // Clear the chat container
+//                $('#conversation').empty();
+//
+//                // Format and append messages to the chat container
+//                messages.forEach((message) => {
+//                    const messageClass = message.sender_id === senderId ? 'btn-secondary' : 'btn-primary';
+//                    // timeAlignment = message.sender_id === senderId ? 'text-end' : 'text-start';
+//                    const     alignment = message.sender_id === senderId ? 'ms-auto' : 'me-auto';
+//                   const     timeAlignment = message.sender_id === senderId ? 'ms-auto' : 'me-auto';
+//                    $('#conversation').append(`
+//                         <div class="d-flex mb-1">
+//                        <div class="p-2 ${alignment}">
+//                            <p class="btn ${messageClass}"> ${message.message} </p>
 //                        </div>
-//                    </div>`;
-//                conversationDiv.append(messageHtml);
-            });
-        } else {
-            conversationDiv.html('<small class="text-center text-body-tertiary">No messages yet. Start the conversation!</small>');
-        }
-    } catch (error) {
-        console.error('Error fetching messages:', error);
-        alert('Could not fetch messages. Please try again.');
-    }
+//                        <div class="p-2 ${timeAlignment}">
+//                            <small class="small">${message.date_received}</small>
+//                        </div>
+//                    </div>
+//                    `);
+//                });
+//            } else {
+//                console.log('Failed to send the message. Please try again.');
+//            }
+//        } catch (error) {
+//            console.error('An error occurred while sending the message. Please try again.',error);
+//        }
+//    });
+//
+//    
+//
 });
+//
+//
+//async function fetchChatMessages(senderId, receiverId) {
+//    return new Promise((resolve, reject) => {
+//        $.ajax({
+//            url: '_ajax_fetch_messages.php', // Backend script to fetch messages
+//            method: 'POST',
+//            data: {
+//                sender_id: senderId,
+//                receiver_id: receiverId
+//            },
+//            dataType: 'json',
+//            success: function (response) {
+//                if (response.status === 'success') {
+//                    resolve(response.messages); // Return messages on success
+//                } else {
+//                    reject(response.error || 'Failed to fetch messages.');
+//                }
+//            },
+//            error: function (xhr, status, error) {
+//                reject(error || 'An error occurred while fetching messages.');
+//            }
+//        });
+//    });
+//}
+//
+//$(document).on('click', '.open-chat-modal', async function () {
+//    const senderId = $('#senderuserid').val();
+//    const receiverId = $(this).data('rider-userid');
+//    
+//  e.preventDefault(); // Prevent default form submission behavior
+//
+//    // Collect form data
+//    const formData = $(this).serialize();
+//    const conversationDiv = $('#conversation');
+//
+//    try {
+//        // Perform AJAX request to send the message
+//        const response = await $.ajax({
+//            url: '_ajax_send_message.php', // Backend script to handle message sending
+//            type: 'POST',
+//            data: formData
+//        });
+//
+//        const result = JSON.parse(response);
+//
+//        if (result.status === 'success') {
+//            // Clear the message input field
+//            $('#messagecontent').val('');
+//
+//            // Re-fetch and update the chat messages
+//            // const senderId = $('input[name="sender_id"]').val();
+//            //    const receiverId = $('input[name="receiver_id"]').val();
+//
+////            const senderId = $(".rider-id").data('rider-userid');
+////            const receiverId = $(".customer-id").data('customer-userid');
+//
+//            const messages = await fetchChatMessages(senderId, receiverId);
+//
+//            // Clear the chat container
+//            $('#conversation').empty();
+//
+//            // Format and append messages to the chat container
+//            if (messages.length > 0) {
+//                messages.forEach(msg => {
+//                    const isSender = msg.sender_id === senderId;
+//
+//                    const alignmentClass = isSender ? 'justify-content-end' : 'justify-content-start';
+//                    const bubbleClass = isSender ? 'bg-primary text-white' : 'bg-light text-dark';
+//
+//                    const messageHtml = `
+//            <div class="d-flex ${alignmentClass} mb-1">
+//                <div class="p-2 rounded-3 ${bubbleClass}">
+//                    ${msg.message}
+//                </div>
+//            </div>
+//        `;
+//
+//                    conversationDiv.append(messageHtml);
+//                });
+//            } else {
+//                conversationDiv.html('<small class="text-center text-body-tertiary">No messages yet for today. Start the conversation!</small>');
+//            }
+//
+//
+//        } else {
+//            console.log('Failed to send the message. Please try again.');
+//        }
+//    } catch (error) {
+//        console.error('An error occurred while sending the message. Please try again.', error);
+//    }
+//});
 
 
 
@@ -1182,19 +1207,16 @@ $(document).on('submit', '#topUpForm', function (event) {
                     }, 2000); // Delay before closing the modal
                 }, 2000); // Delay for showing the loading icon
             }  else {
-                alert(response.error || 'Top-up failed. Please try again.');
+                console.error(response.error || 'Top-up failed. Please try again.');
             }
         },
         error: function () {
-            alert('An error occurred. Please try again later.');
+        
+            console.log("An error occurred. Please try again later.");
         }
     });
 });
 
 
-$(document).on('click','.attachmentBtn',function() {
-    alert(1);
-    $('.attachInput').trigger('click');
-});
 
 
