@@ -7,6 +7,7 @@ include_once "./_shop/_class_grocery.php";
 
 
 
+
 if(!isset($_SESSION['user_id'])){
     header("location: ../index.php?page=login&nouserfound");
     exit;
@@ -14,6 +15,8 @@ if(!isset($_SESSION['user_id'])){
 
 if(isset($_SESSION['txn_cat_id'])){
     $TXN_CAT = $_SESSION['txn_cat_id'];
+}else{
+    $TXN_CAT = 6;
 }
 
 ?>
