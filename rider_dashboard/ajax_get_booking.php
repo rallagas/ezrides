@@ -13,6 +13,7 @@ $status = ''; // Initialize status, determine how you want to set it
 // Get the list of bookings needed by the rider
 $current_booking = query( "SELECT ab.angkas_booking_id
                                   , ab.angkas_booking_reference
+                                  , ab.shop_order_reference_number
                                   , ab.user_id AS customer_user_id
                                   , ab.angkas_rider_user_id
                                   , ab.form_from_dest_name
@@ -47,6 +48,7 @@ if (empty($current_booking)) {
     foreach ($current_booking as $cx) {
         $queue_list[] = [
             "angkas_booking_id" => $cx['angkas_booking_id'],
+            "shop_order_reference_number" => $cx['shop_order_reference_number'],
             "angkas_booking_reference" => $cx['angkas_booking_reference'],
             "customer_user_id" => $cx['customer_user_id'],
             "angkas_rider_user_id" => $cx['angkas_rider_user_id'],

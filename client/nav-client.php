@@ -11,7 +11,7 @@
 
 
             <a href="index.php" class="btn btn-outline-warning bg-yellow  shadow rounded-4">
-                <img src="../icons/house.png" alt="" class="quick-links img-fluid" style="width:4vw;">
+                <img src="../icons/house.png" alt="" class="quick-links img-fluid" style="width:3vw;">
             </a>
 
                 <?php
@@ -19,7 +19,7 @@
                         if($_SESSION['t_rider_status'] == 1){
                         ?>
                             <a href="../rider_dashboard/index.php" class="btn btn-outline-warning bg-yellow  shadow rounded-4">
-                                <img src="../icons/rider-page.png" alt="" class="quick-links img-fluid" style="width:4vw;">
+                                <img src="../icons/rider-page.png" alt="" class="quick-links img-fluid" style="width:3vw;">
                             </a>
                 <?php }
                 }
@@ -27,7 +27,7 @@
 
             <button id="appMenuBtn" class="btn btn-outline-warning bg-yellow  shadow rounded-4" type="button"
                 data-bs-toggle="offcanvas" data-bs-target="#appMenu" aria-controls="appMenu">
-                <img src="../icons/menu.png" alt="" class="quick-links img-fluid" style="width:4vw;">
+                <img src="../icons/menu.png" alt="" class="quick-links img-fluid" style="width:3vw;">
             </button>
                         <?php
             $current_page = basename($_SERVER['PHP_SELF']); // Get the current page name
@@ -47,25 +47,25 @@
                             <button
                                 class="d-none shadow btn bg-danger mx-1 rounded-4 btn-checkout"
                                 data-bs-toggle="tooltip" data-bs-title="Check Out" data-bs-placement="left">
-                                <img src="../icons/checkout.png" alt="" class="quick-links img-fluid" style="width:4vh;">
+                                <img src="../icons/checkout.png" alt="" class="quick-links img-fluid" style="width:3vw;">
                               
                             </button>
                             <button id="ShowCartItems" class="shadow btn btn-warning rounded-4 position-relative float-end"
                                 data-bs-toggle="collapse" data-bs-target="#CartItems" aria-expanded="false" aria-controls="CartItems">
                                 <span id="cartCountBadge"
                                     class="position-absolute z-3 top-0 start-100 translate-middle badge rounded-pill bg-danger"></span>
-                                    <img src="../icons/trolley.png" alt="" class="quick-links img-fluid" style="width:4vh;">
+                                    <img src="../icons/trolley.png" alt="" class="quick-links img-fluid" style="width:3vw;">
                             </button>
                             <button
                                 class="HideOrderHistory toggleBtnOrderHist d-none shadow btn rounded-4 btn-outline-secondary bg-purple position-relative mx-1 float-end">
                                 <span class="position-absolute  z-3 top-0 start-100 translate-middle badge rounded-pill bg-danger"></span>
-                                <img src="../icons/hidehist.png" alt="" class="quick-links img-fluid" style="width:4vh;">
+                                <img src="../icons/hidehist.png" alt="" class="quick-links img-fluid" style="width:3vw;">
                             </button>
                             <button
                                 class="ShowOrderHistory toggleBtnOrderHist shadow btn rounded-4 btn-primary position-relative mx-1 float-end">
                                 <span
                                     class="MyShopListCountBadge position-absolute  z-3 top-0 start-100 translate-middle badge rounded-pill bg-danger"></span>
-                                    <img src="../icons/cycle.png" alt="" class="quick-links img-fluid" style="width:4vh;">
+                                    <img src="../icons/cycle.png" alt="" class="quick-links img-fluid" style="width:3vw;">
                             </button>
                 <?php }
             }
@@ -87,7 +87,7 @@
                 </span>
 
                 <a id="userLogOut" href="#" class="float-end btn btn-sm btn-danger">
-                    <img src="../icons/logout.png" alt="" class="quick-links img-fluid" style="width:3vh;">
+                    <img src="../icons/logout.png" alt="" class="quick-links img-fluid" style="width:3vw;">
                 </a>
             </div>
         </div>

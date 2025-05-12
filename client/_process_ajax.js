@@ -516,7 +516,7 @@ async function handleCheckPendingBooking() { //in the app button
             switch (BookingStatus) {
                 case 'P':
                     bookingStatusText = 'Waiting for Driver';
-                    textColor = 'text-bg-danger';
+                    textColor = 'text-bg-light';
                     break;
                 case 'A':
                     bookingStatusText = 'We Found you a Driver';
@@ -640,7 +640,7 @@ function updateBookingStatus(newStatus) {
     switch (newStatus) {
         case 'P':
             bookingStatusText = 'Waiting for Driver';
-            textColor = 'text-bg-danger';
+            textColor = 'text-bg-light';
             break;
         case 'A':
             bookingStatusText = 'We Found you a Driver';
