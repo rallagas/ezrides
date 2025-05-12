@@ -116,3 +116,36 @@ async function fetchChatMessages(senderId, receiverId) {
         });
     });
 }
+
+
+
+
+function fetchUnreadCount() {
+    $.ajax({
+        url: '_ajax_unreadmsg.php',
+        method: 'GET',
+        dataType: 'json',
+        success: function(response) {
+            if (response.success) {
+                const count = response.unread_count;
+                const $counter = $('.msgCounter');
+                if (count > 0) {
+                    $counter.text(count).addClass('bg-danger').show();
+                } else {
+                    $counter.text('').removeClass('bg-danger').hide();
+                }
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error("Failed to fetch unread count:", error);
+        }
+    });
+}
+
+$(document).ready(function(){
+// Initial fetch
+fetchUnreadCount();
+
+// Poll every 10 seconds
+setInterval(fetchUnreadCount, 10000);    
+});

@@ -113,7 +113,7 @@
     <div class="modal-dialog">
         <div class="modal-content overflow-y-scroll">
             <div class="modal-header bg-purple text-light">
-                <span class="modal-title fw-bold" id="chatModalLabel">EZ Chat @<span id="riderName"></span> (  ) </span>
+                <span class="modal-title fw-bold" id="chatModalLabel">EZ Chat @<span id="riderName"></span></span>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             
