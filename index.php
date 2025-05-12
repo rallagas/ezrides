@@ -361,6 +361,7 @@ else{
 
         <div class="row">
 
+<!--
             <div class="col-6 col-lg-4 card border-0">
                 <div class="card-header border-0 p-5">
                     <img src="icons/car-rental-icon.png" alt="" class="card-img-top service-icon">
@@ -370,6 +371,7 @@ else{
                     <p class="card-caption">Rent and Drive your own vehicle for an affordable rate.</p>
                 </div>
             </div>
+-->
 
             <div class="col-6 col-lg-4 card border-0">
                 <div class="card-header border-0 p-5">
@@ -386,7 +388,7 @@ else{
                     <img src="icons/delivery-guy-icon.png" alt="" class="card-img-top service-icon">
                 </div>
                 <div class="card-body border-0 text-center">
-                    <h5 class="fs-4 fw-bold">EZ FOOD DELIVERY</h5>
+                    <h5 class="fs-4 fw-bold">EZ PABILI</h5>
                     <p class="card-caption">Hungry? EZ Delivery is our solution, "ipa EZ Delivery mo na yan!"</p>
 
                 </div>
@@ -401,6 +403,7 @@ else{
 
                 </div>
             </div>
+<!--
             <div class="col-6 col-lg-4 card border-0">
                 <div class="card-header border-0 p-5">
                     <img src="icons/document.png" alt="" class="card-img-top service-icon">
@@ -412,6 +415,7 @@ else{
 
                 </div>
             </div>
+-->
             <div class="col-6 col-lg-4 card border-0">
                 <div class="card-header border-0 p-5">
                     <img src="icons/wallet.png" alt="" class="card-img-top service-icon">
