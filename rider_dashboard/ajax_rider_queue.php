@@ -55,6 +55,7 @@ if ($current_queue > 0) {
     $list_of_need_rider =
             query( "SELECT  ab.angkas_booking_id
                               ,  ab.angkas_booking_reference
+                              ,  ab.shop_order_reference_number
                               ,  ab.user_id as customer_user_id
                               ,  ab.angkas_rider_user_id
                               ,  ab.form_from_dest_name
@@ -96,6 +97,7 @@ if ($current_queue > 0) {
             $queue_list[] = [
                 "angkas_booking_id" => $cx['angkas_booking_id'],
                 "angkas_booking_reference" => $cx['angkas_booking_reference'],
+                "shop_order_reference_number" => $cx['shop_order_reference_number'],
                 "customer_user_id" => $cx['customer_user_id'],
                 "angkas_rider_user_id" => $cx['angkas_rider_user_id'],
                 "form_from_dest_name" => $cx['form_from_dest_name'],

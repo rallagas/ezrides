@@ -231,6 +231,70 @@ function fetchCurrentBookings() {
 //     }
 // }
 
+function generateItemTable(items) {
+    // Helper function to calculate the amount
+    const calculateAmount = (price, quantity) => parseFloat(price) * parseInt(quantity);
+
+    let tableHTML = `
+        <table class="table table-responsive mx-0">
+                <tr>
+                    <th>ITEM</th>
+                    <th>PRICE</th>
+                    <th>QTY</th>
+                    <th>AMT</th>
+                </tr>
+    `;
+
+    // Loop through each item and generate table rows
+    let totalAmount = 0.00;
+
+    items.forEach(item => {
+        const amount = calculateAmount(item.price, item.order_quantity);
+        totalAmount += amount;
+
+        tableHTML += `
+            <tr>
+                <td>${item.item_name}</td>
+                <td>${parseFloat(item.price).toFixed(2)}</td>
+                <td>${item.order_quantity}</td>
+                <td>${amount.toFixed(2)}</td>
+            </tr>
+        `;
+    });
+
+    // Add the total amount row
+    tableHTML += `
+        <tr>
+            <td colspan="3"></td>
+            <td><strong>${totalAmount.toFixed(2)}</strong></td>
+        </tr>
+    `;
+    
+    tableHTML += `</table>`;
+    return tableHTML;
+}
+
+async function loadItemFromReference(refNum) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: '_shop_load_item_from_reference.php',
+            type: 'POST',
+            data: { ref_num: refNum },
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    resolve(response.data); // Resolve the promise with the data
+                } else {
+                    reject('Error loading data: ' + response.error);
+                }
+            },
+            error: function(xhr, status, error) {
+                reject("Request failed: " + error);
+            }
+        });
+    });
+}
+
 function fetchHistBookings(searchkey = null) {
     const requestData = {};
     
@@ -300,8 +364,12 @@ else if (elapsedTimeInMinutes <= 10) {
         </div>
         <div class="col-md-6">
             <div class="card-body">
-                <h5 class="text-primary">${booking.angkas_booking_reference}</h5>
-                <p class="small fw-light mb-0 ${colorText}">Booked ${elapsedTimeInMinutes} min ago</p>
+<h5 class="text-primary">${booking.angkas_booking_reference}</h5>
+
+${booking.angkas_booking_reference.startsWith("GRX") ? `<span class="badge rounded-pill bg-danger text-white"> PABILI </span>` : `<span class="badge rounded-pill bg-danger p-3 text-white"> ANGKAS </span>`}
+
+<p class="small fw-light mb-0 ${colorText}">Booked ${elapsedTimeInMinutes} min ago</p>
+
                 <hr class="my-0">
                 <p class="mb-1"><strong>From:</strong> ${booking.form_from_dest_name}</p>
                 <p class="mb-1"><strong>To:</strong> ${booking.form_to_dest_name}</p>
@@ -313,6 +381,10 @@ else if (elapsedTimeInMinutes <= 10) {
                     <strong>Contact:</strong> ${booking.user_contact_no} 
                     <span class="text-muted">(${booking.user_email_address})</span>
                 </p>
+        ${booking.angkas_booking_reference.startsWith("GRX") ? 
+       `<a href="#" class="badge rounded-pill bg-danger text-white showPabiliItems" data-ref="${booking.shop_order_reference_number}">
+            SHOW ITEMS
+        </a>` : ''}
             </div>
         </div>
         <div class="col-md-3 d-flex align-items-center justify-content-center">
@@ -324,6 +396,7 @@ else if (elapsedTimeInMinutes <= 10) {
                     </button>
                 </form>
         </div>
+
 </div>
 
    `;
@@ -378,6 +451,7 @@ else if (elapsedTimeInMinutes <= 10) {
             <div class="col-md-6">
                 <div class="row mb-2">
                     <h5 class="text-primary">${booking.angkas_booking_reference}</h5>
+${booking.angkas_booking_reference.startsWith("GRX") ? `<span class="badge rounded-pill bg-danger text-white"> PABILI </span>` : `<span class="badge rounded-pill bg-danger text-white"> ANGKAS </span>`}
                     <p class="small text-muted">Booked ${elapsedTimeInMinutes} minutes ago</p>
                 </div>
                 <hr class="my-2">
@@ -392,6 +466,10 @@ else if (elapsedTimeInMinutes <= 10) {
                         <strong>Contact:</strong> ${booking.user_contact_no} 
                         <span class="text-muted">(${booking.user_email_address})</span>
                     </p>
+           ${booking.angkas_booking_reference.startsWith("GRX") ? 
+               `<a href="#" class="badge rounded-pill bg-danger text-white showPabiliItems" data-ref="${booking.shop_order_reference_number}">
+                    SHOW ITEMS
+                </a>` : ''}
                 </div>
             </div>
             ${actionButton}
@@ -507,6 +585,22 @@ $(document).ready(function() {
 });
 
 
+ $(document).on('click','.showPabiliItems', async function(e) {
+        e.preventDefault();
+
+        const refNum = $(this).data('ref');
+        $('#pabiliModalBody').html('<p class="text-muted">Loading items...</p>');
+        const modal = new bootstrap.Modal(document.getElementById('pabiliModal'));
+        modal.show();
+
+        try {
+            const items = await loadItemFromReference(refNum);
+            const table = generateItemTable(items);
+            $('#pabiliModalBody').html(table);
+        } catch (error) {
+            $('#pabiliModalBody').html(`<p class="text-danger">${error}</p>`);
+        }
+    });
 
 
 $(document).on("submit","#formConvert", function (event) {

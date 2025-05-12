@@ -232,6 +232,26 @@ function getUserProfile($user){
             </div>
             <!-- end container-fluid   -->
             <div class="col-12 col-lg-6 mb-3">
+<!--               MODAL-->
+<div class="modal fade" id="pabiliModal" tabindex="-1" aria-labelledby="pabiliModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="pabiliModalLabel">Pabili po nito</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="pabiliModalBody">
+        <!-- Item table will be inserted here -->
+        <p class="text-muted">Loading items...</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--               Modal-->
                 <div class="card shadow border-0">
                     <div class="card-header bg-purple text-light">
                         <span class="fs-6 card-title fw-bold">LOOKING FOR RIDERS</span>
