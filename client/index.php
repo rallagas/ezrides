@@ -320,6 +320,9 @@ if(isset($_SESSION['txn_cat_id'])){
                                     <?php
                                                 $pastDelheader = query("SELECT distinct so.shop_order_ref_num as shop_ref
                                                                                       , ab.angkas_booking_reference as rider_ref
+                                                                                      , ab.angkas_rider_user_id as rider_user_id
+                                                                                      , up.user_firstname as rider_fn
+                                                                                      , up.user_lastname as rider_ln
                                                                                       , ab.shop_cost shop_fee
                                                                                       , ab.form_Est_Cost rider_fee
                                                                                       , ab.date_booked
@@ -332,15 +335,36 @@ if(isset($_SESSION['txn_cat_id'])){
                                                                         on so.item_id = si.item_id
                                                                       join `shop_merchants` sm
                                                                         on sm.merchant_id = si.merchant_id
+                                                                      left join `user_profile` as up
+                                                                        on ab.angkas_rider_user_id = up.user_id
                                                                      WHERE ab.user_id = ? 
                                                                        AND angkas_booking_reference NOT like 'ANG%'
                                                                      order by date_booked DESC limit 10", [USER_LOGGED]);
                                                 foreach($pastDelheader as $ps){ ?>
                                     <div
                                         class="alert alert-light mb-1 rounded-0 border-success border-start-5 border-top-1 border-bottom-1 border-end-1">
+                                 
+                                        
                                         <span class="fw-bold fs-5 float-start"><?php echo $ps['rider_ref'];?> (
                                             <?php echo $ps['shop_ref'];?> )</span>
                                         <span class="fw-light float-end"><?php echo $ps['date_booked'];?></span>
+                                               <?php
+                                        if($ps['booking_status'] != 'C' && $ps['booking_status'] != 'P') { ?>
+<!--                                        CHAT-->
+                                       <div class="d-flex justify-content-between align-items-center mt-4 bg-light rounded p-2">
+      <a class="btn bg-yellow  shadow open-chat-modal"
+         data-bs-toggle="modal"
+         data-bs-target="#chatModal"
+         data-rider-username="<?php echo $ps['rider_ln'] . ", " . $ps['rider_fn']; ?>"
+         data-rider-userid="<?php echo $ps['rider_user_id']; ?>"
+        >
+        Chat <img src="../icons/messages.png" style="width: 20px; margin-left: 8px;" />
+      </a>
+
+     
+    </div>
+<!--                                       Chat-->
+                                       <?php } ?>
                                         <br><br>
                                         You shopped to <span class="fw-bold"><?php echo $ps['shop_name'];?></span> and
                                         spent Php <?php echo $ps['rider_fee'];?> for the Delivery fee and Php
@@ -363,41 +387,48 @@ if(isset($_SESSION['txn_cat_id'])){
                                             </a>
                                             <?php }
                                             $current_progress=null;
+                                            $status_text = null;
                                             $stat1 = "btn-secondary";
                                             $stat2 = "btn-secondary";
                                             $stat3 = "btn-secondary";
                                             switch($ps['booking_status']){
                                                 case 'P': $current_progress= '0%';
+                                                           $status_text = "Looking for Rider";
                                                             $stat1 = "btn-warning";
                                                             $stat2 = "btn-secondary";
                                                             $stat3 = "btn-secondary"; 
                                                         break;
 
                                                 case 'A': $current_progress= '50%';
+                                                $status_text = "Driver Found";
                                                 $stat1 = "btn-success";
                                                 $stat2 = "btn-warning";
                                                 $stat3 = "btn-secondary"; 
                                                     break;
                                                 
                                                 case 'R': $current_progress= '50%';
+                                                $status_text = "Driver Arrived in the Store";
                                                     $stat1 = "btn-success";
                                                     $stat2 = "btn-success";
                                                     $stat3 = "btn-secondary"; 
                                                         break;
 
                                                 case 'I': $current_progress= '100%';
+                                                $status_text = "Driver is in Transit";
                                                 $stat1 = "btn-success";
                                                 $stat2 = "btn-success";
                                                 $stat3 = "btn-warning"; 
                                                     break;
 
                                                 case 'C': $current_progress= '100%';
+                                                    $status_text = "Completed";
                                                 $stat1 = "btn-success";
                                                 $stat2 = "btn-success";
                                                 $stat3 = "btn-success"; 
                                                     break;
                                                 
                                                 default: $current_progress= '0%';
+                                                    $status_text = "Pending";
                                                 $stat1 = "btn-secondary";
                                                 $stat2 = "btn-secondary";
                                                 $stat3 = "btn-secondary"; 
@@ -407,6 +438,7 @@ if(isset($_SESSION['txn_cat_id'])){
 
                                         </div>
                                         <div class="position-relative m-4">
+                                           <span class="badge rounded-pill"><?php echo $status_text;?></span>
                                             <div class="progress" role="progressbar" aria-label="Progress"
                                                 aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"
                                                 style="height: 1px;">
@@ -538,5 +570,6 @@ if (isset($_GET['page'])) {
 <?php } ?>
 
 <script src="../_multipurpose_ajax.js"></script>
+<script src="chat.js"></script>
 
 </html>
