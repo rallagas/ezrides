@@ -4,6 +4,7 @@ include_once "../_functions.php";
 include_once "../_sql_utility.php";
 include_once "button-functions.php";
 include_once "./_shop/_class_grocery.php";
+$TXN_CAT = 6;
 
 
 
