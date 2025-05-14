@@ -110,12 +110,14 @@ $pendingTopupList = query($sql_top_up_approval);
                         <table class="table table-sm table-responsive table-borderless">
                             <?php foreach($booking_per_day_data as $trend){ ?>
                             <tr>
-                                <td style="width:10%" class="small"><?php echo $trend['date_booked'];?></td>
-                                <td style="width:3%" class="text-center d-none d-lg-block">
-                                    <?php echo $trend['total_number_of_bookings']; ?></td>
-                                <td style="width:87%">
+                                <td style="width:15%" class="small">
+                                    <?php echo date('M-d', strtotime($trend['date_booked'])); ?>
+                                </td>
+
+                                <td style="width:85%">
                                     <div class="progress" role="progressbar" aria-label="Basic example" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
                                         <div class="progress-bar" style="width: <?php echo (($booking_total > 0) ? ($trend['total_number_of_bookings'] / $booking_total) * 100 : 0) ;?>%">
+                                        <?php echo $trend['total_number_of_bookings']; ?>
                                         </div>
                                     </div>
                                 </td>
@@ -544,11 +546,11 @@ $pendingTopupList = query($sql_top_up_approval);
                     <div class="card-header">
                         <h6 class="fs-6 fw-bold">CASH OUT APPROVAL</h6>
                         <sup class="text-danger">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-exclamation-triangle" viewBox="0 0 16 16">
-  <path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.15.15 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.2.2 0 0 1-.054.06.1.1 0 0 1-.066.017H1.146a.1.1 0 0 1-.066-.017.2.2 0 0 1-.054-.06.18.18 0 0 1 .002-.183L7.884 2.073a.15.15 0 0 1 .054-.057m1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767z"/>
-  <path d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0M7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0z"/>
-</svg>
-                          SEND THEM THE CASHOUT AMOUNT VIA GCASH BEFORE APPROVING</sup>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-exclamation-triangle" viewBox="0 0 16 16">
+                                <path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.15.15 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.2.2 0 0 1-.054.06.1.1 0 0 1-.066.017H1.146a.1.1 0 0 1-.066-.017.2.2 0 0 1-.054-.06.18.18 0 0 1 .002-.183L7.884 2.073a.15.15 0 0 1 .054-.057m1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767z" />
+                                <path d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0M7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0z" />
+                            </svg>
+                            SEND THEM THE CASHOUT AMOUNT VIA GCASH BEFORE APPROVING</sup>
                     </div>
                     <div class="card-body">
                         <div class="modal fade" id="qrPreviewModal" tabindex="-1" aria-labelledby="qrPreviewModalLabel" aria-hidden="true">
@@ -596,7 +598,7 @@ $pendingTopupList = query($sql_top_up_approval);
                                 <td class="align-middle"><?php echo $gcash_account_name; ?></td>
                                 <td class="align-middle"><img src="../../<?php echo $gcash_qr;?>" alt="" class="img-thumbnail img-responsive" style="width:100px; cursor:pointer;" data-bs-toggle="modal" data-bs-target="#qrPreviewModal"></td>
                                 <td class="align-middle"><?php echo $gcash_reference_number; ?></td>
-                                <td  class="align-middle">
+                                <td class="align-middle">
                                     <?php
                                         // Encode wallet ID in Base64
                                         $encoded_wallet_id = base64_encode($user_wallet_id);
@@ -710,10 +712,10 @@ $pendingTopupList = query($sql_top_up_approval);
 
 
 <script>
-document.querySelectorAll('img[data-bs-target="#qrPreviewModal"]').forEach(img => {
-    img.addEventListener('click', function () {
-        const fullSrc = this.getAttribute('src');
-        document.getElementById('qrPreviewImg').src = fullSrc;
+    document.querySelectorAll('img[data-bs-target="#qrPreviewModal"]').forEach(img => {
+        img.addEventListener('click', function() {
+            const fullSrc = this.getAttribute('src');
+            document.getElementById('qrPreviewImg').src = fullSrc;
+        });
     });
-});
 </script>

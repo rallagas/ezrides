@@ -222,6 +222,7 @@ body {
 .commutes-destinations .destination-container svg {
   height: 18px;
   width: 18px;
+    overflow-y: auto;
 }
 
 /* .commutes-destinations .destination .location-marker {
