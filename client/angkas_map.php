@@ -49,14 +49,14 @@ include_once "../_sql_utility.php";
 
     <main class="commutes container-fluid clear-fix">
 
-        <div class="commutes-info row bg-warning position-fixed bottom-0 z-1 mb-1">
+        <div class="commutes-info row bg-warning position-fixed bottom-0 z-1 mb-3 rounded-3 shadow">
 
             <div class="commutes-initial-state border-0">
                 <svg aria-label="Directions Icon" width="53" height="53" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <use href="#commutes-initial-icon" />
                 </svg>
                 <div class="description fw-bold">
-                    Wallet Balance: <span class="walletbalance fw-bold"></span>
+                    EZ Wallet Balance: <span class="walletbalance fw-bold"></span>
                     <h1 class="heading fs-2">BOOK YOUR EZ RIDE</h1>
                     <p>See your Travel Time in Real Time</p>
                 </div>
@@ -72,7 +72,7 @@ include_once "../_sql_utility.php";
                 <div class="destinations-container">
 
 
-                    <div class="destination-list overflow-y-scroll vw-100"></div>
+                    <div class="destination-list vw-100"></div>
                     <button class="add-button d-none">
                         <div class="label">Add destination</div>
                     </button>

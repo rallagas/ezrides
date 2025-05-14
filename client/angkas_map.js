@@ -1381,29 +1381,51 @@ async function generateDestinationTemplate(destination) {
                 <span class="input-group-text fw-bold">PHP </span>
                 <input type="text" name="form_Est_Cost" class="form-control fw-bold" value="${RiderCost}" readonly />
             </div>
-            <div class="mb-1 input-group">
-                <span class="input-group-text fw-bold"> FROM </span>
-                <input type="text" name="form_from_dest" class="form-control fw-bold" value=""
-                    Placeholder="Checking Current Location..." readonly>
-                <input type="hidden" name="curLocCoor" class="" value="" readonly>
+           
+
+<!-- Replaces FROM and TO input groups visually, keeps names and classes -->
+<div class="card shadow-sm rounded-4 p-3 mb-3">
+    <div class="d-flex flex-column gap-3">
+
+        <!-- Start Location -->
+        <div class="d-flex">
+            <div class="me-3 text-center">
+                <div class="bg-secondary rounded-circle" style="width:12px; height:12px; margin-top: 4px;"></div>
+                <div class="border-start border-2 ms-1" style="height:20px;"></div>
             </div>
-            <div class="mb-1 input-group">
-                <span class="input-group-text fw-bold"> TO: </span>
-                <input type="text" name="form_to_dest" class="form-control fw-bold" value="${destination.name}" readonly>
+            <div class="flex-fill">
+                <div class="text-muted small">Start Location</div>
+                <input type="text" name="form_from_dest" class="form-control-plaintext fw-bold" value=""
+                    placeholder="Checking Current Location..." readonly>
+                <input type="hidden" name="curLocCoor" value="" readonly>
+            </div>
+        </div>
+
+        <!-- Destination -->
+        <div class="d-flex">
+            <div class="me-3 text-center">
+                <i class="bi bi-geo-alt-fill text-primary fs-5"></i>
+            </div>
+            <div class="flex-fill">
+                <div class="text-muted small">Your Destination</div>
+                <input type="text" name="form_to_dest" class="form-control-plaintext fw-bold" value="${destination.name}" readonly>
                 <input type="hidden" id="formToDest_lat" name="formToDest_lat" value="" readonly />
                 <input type="hidden" id="formToDest_long" name="formToDest_long" value="" readonly />
+            </div>
+        </div>
 
-            </div>
-            <div class="mb-1 input-group">
-                <span class="input-group-text fw-bold"> DISTANCE (KM): </span>
-                <input type="text" name="form_TotalDistance" class="form-control fw-bold"
-                    value="${destination.distance}" readonly>
-            </div>
-            <div class="mb-1 input-group">
-                <span class="input-group-text fw-bold"> EST. RIDE DURATION (min): </span>
-                <input type="text" name="form_ETA_duration" class="form-control fw-bold"
-                    value="${parseInt(destination.duration / 60)}" readonly>
-            </div>
+    </div>
+</div>
+
+       <!-- Distance -->
+<div class="mb-2 input-group">
+    <div class="text-muted small  pt-1">Distance (KM)</div>
+    <input type="text" name="form_TotalDistance" class="form-control-sm border-0 text-muted small" value="${destination.distance}" readonly>
+
+    <div class="text-muted small pt-1">Est. Ride Duration (min)</div>
+    <input type="text" name="form_ETA_duration" class="form-control-sm border-0  text-muted small" value="${parseInt(destination.duration / 60)}" readonly>
+</div>
+
         </div>
     </div>
 </form>`;

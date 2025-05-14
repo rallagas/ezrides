@@ -667,7 +667,7 @@ INSERT INTO `vehicle` (`vehicle_id`, `vehicle_type`, `vehicle_plate_no`, `vehicl
 (19, '0005', 'STU-5678', 'Blue', 'Toyota Prius', 'prius.jpg', 8, '', '', '10.00', '200.00', '0.50', 1),
 (20, '02', 'VWX-1234', 'Red', 'Honda Scoopy', 'scoopy.jpg', 8, '', '', '3.00', '60.00', '0.15', 1),
 (21, '01', 'YZX-5678', 'Black', 'Giant Escape', 'giant.jpg', 8, '', '', '1.00', '20.00', '0.05', 1),
-(22, '0005', 'EAJ 2024', 'Black', 'Toyota Vios 2024', 'delivery-icon-map.png', 8, 'Reymar Llagas', 'Polangui', '45.00', '2500.00', '200.00', 1);
+
 
 -- --------------------------------------------------------
 
