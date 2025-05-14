@@ -318,17 +318,17 @@ if(!empty($myBooking)){
                             <?php switch($bookingStatus){ 
                                 case 'A': ?>
                             <button class="btn btn-outline-warning bg-yellow  shadow rounded-4" id="ConfirmArrivalButton"> <img src="../icons/taxi-arrival.png" alt="Arrived" style="width: 3vh">Arrived</button>
-                            <button class="btn btn-light d-none" id="DropOffCustomer"> <img src="../icons/taxi-arrival.png" alt="" style="width: 3vh"> Drop Off</button>
+                            <button class="btn btn-secondary d-none shadow rounded-4" id="DropOffCustomer"> <img src="../icons/taxi-arrival.png" alt="" style="width: 3vh"> Drop Off</button>
                             <?php break;
                                 case 'I': ?>
-                            <button class="btn btn-light" id="DropOffCustomer"> <img src="../icons/taxi-arrival.png" alt="" style="width: 3vh"> Drop Off</button>
+                            <button class="btn btn-secondary shadow rounded-4 " id="DropOffCustomer"> <img src="../icons/taxi-arrival.png" alt="" style="width: 3vh"> Drop Off</button>
                             <?php break; 
                                 case 'R': ?>
-                            <button class="btn btn-light" id="DropOffCustomer"> <img src="../icons/taxi-arrival.png" alt="" style="width: 3vh"> Drop Off</button>
+                            <button class="btn btn-secondary shadow rounded-4" id="DropOffCustomer"> <img src="../icons/taxi-arrival.png" alt="" style="width: 3vh"> Drop Off</button>
                             <?php break; 
                                 default: ?>
 
-                            <button class="btn btn-light" id="DropOffCustomer"><img src="../icons/taxi-arrival.png" alt="" style="width: 3vh"> Drop Off</button>
+                            <button class="btn btn-secondary shadow rounded-4" id="DropOffCustomer"><img src="../icons/taxi-arrival.png" alt="" style="width: 3vh"> Drop Off</button>
                             <?php } ?>
 
                             <span class="input-group-text border-0 fw-bold">ETA:</span>

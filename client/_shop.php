@@ -234,7 +234,7 @@ if (!empty($_SESSION['user_profile'])) {
                     <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content">
                             <div class="modal-header bg-purple text-light">
-                                <h1 class="modal-title fs-5" id="exampleModalToggleLabel">Order Summary</h1>
+                                <h1 class="modal-title fs-5" id="exampleModalToggleLabel">Pabili Summary</h1>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
                             </div>
@@ -246,8 +246,7 @@ if (!empty($_SESSION['user_profile'])) {
                                         class="form-control">
                                     <hr class="p-0 m-0">
                                     <table class="table table-sm" id="CheckOutItems"></table>
-                                    
-                                    <!-- Order Summary Items go here -->
+                           
                                     <!-- Shipping Details -->
                                     <div class="mt-3">
                                         <div
