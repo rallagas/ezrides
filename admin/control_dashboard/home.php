@@ -11,7 +11,7 @@ $sql = " SELECT SUM(x.wallet) as income from (
 $sales_data = query($sql);
 $sales = $sales_data[0]['income'] ?? 0;
 
-$sql = "SELECT SUM(wallet_txn_amt) as total_wallet_pool, count(user_id) as userCount from `user_wallet` where payment_type = 'T' ";
+$sql = "SELECT SUM(wallet_txn_amt) as total_wallet_pool, count(user_id) as userCount from `user_wallet` where payment_type = 'T' AND wallet_txn_status = 'C' ";
 $wallet_pool_data = query($sql);
 $wallet_pool = $wallet_pool_data[0]['total_wallet_pool'] ?? 0 ;
 $userOwnerCount = $wallet_pool_data[0]['userCount'] ?? 0 ;

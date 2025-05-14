@@ -5,6 +5,16 @@ let directionsService;
 let directionsRenderer;
 let watchId;
 
+function createMarkerContentWithImage(src, width = '32px') {
+    const img = document.createElement('img');
+    img.src = src;
+    img.style.width = width;
+    img.style.height = 'auto'; // Optional
+    return img;
+}
+
+
+
 function clog(log){
     console.log(log);
 }
@@ -34,19 +44,16 @@ function initMap() {
                 directionsRenderer.setMap(map);
 
                 // Place marker for current location
-                currentMarker = new google.maps.marker.AdvancedMarkerElement({
-                    position: currentLocation,
-                    map: map,
-                    title: "Your Current Location",
-                    content: createMarkerContent("Your Current Location")
-                });
-
+              currentMarker = new google.maps.marker.AdvancedMarkerElement({
+                  position: currentLocation,
+                  map: map,
+                  content: createMarkerContentWithImage('../icons/car.png', '40px')
+              });
                 // Place marker for customer's pickup location
                 destinationMarker = new google.maps.marker.AdvancedMarkerElement({
                     position: pickupLocation,
                     map: map,
-                    title: "Customer's Pickup Location",
-                    content: createMarkerContent("Customer's Pickup Location")
+                    content: createMarkerContentWithImage('../icons/user-location.png', '40px')
                 });
 
                 // Draw route from current location to pickup location
@@ -69,6 +76,7 @@ function initMap() {
 }
 
 
+
 function updateCurrentLocation(position) {
     const newLocation = {
         lat: position.coords.latitude,
@@ -82,8 +90,8 @@ function updateCurrentLocation(position) {
     currentMarker = new google.maps.marker.AdvancedMarkerElement({
         position: newLocation,
         map: map,
-        title: "Your Current Location",
-        content: createMarkerContent("Your Current Location") // Create content for the marker
+      //  title: "Your Current Location",
+         content: createMarkerContentWithImage('../icons/car.png', '40px')
     });
 
     // Check proximity to destination
