@@ -419,38 +419,55 @@ function chkBooking() {
                          /* ${booking.rider_firstname || "N/A"}, ${booking.rider_lastname } */
                         if (booking.booking_status_text !== "Waiting for Driver") {
                             elements.riderInfoPI.html(
-                                `<div class="card border-0" style="border-radius: 15px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
-  <div class="card-body position-relative p-5">
+                                `<div class="card border-0 shadow-sm rounded-4 px-3 py-3 mb-3">
+  <div class="d-flex align-items-center justify-content-between">
     
-    <!-- Profile Picture -->
-    <img src="../profile/${booking.rider_profile || 'default.jpg'}"
-         alt="Profile Picture"
-         class="rounded-circle position-absolute top-0 start-50 translate-middle"
-         style="width: 100px; height: 100px; object-fit: cover; margin-top: 10px; margin-left: 10px;">
-
-    <!-- Name and Contact -->
-    <div class="ms-5 ps-3">
-      <h5 class="fw-bold mb-1">${booking.rider_firstname || "N/A"} ${booking.rider_lastname || ""}</h5>
-      <p class="text-muted mb-1"><i>${booking.plate_no || "N/A"}</i></p>
-      <p class="mb-2">@${booking.rider_username}</p>
+    <!-- Left: Profile Picture and Name -->
+    <div class="d-flex align-items-center">
+      <img src="../profile/${booking.rider_profile || 'default.jpg'}"
+           alt="Profile Picture"
+           class="rounded-circle me-3"
+           style="width: 60px; height: 60px; object-fit: cover;">
+      <div>
+        <div class="d-flex align-items-center">
+          <div class="me-2 text-warning">
+            ★★★★★
+          </div>
+          <span class="fw-semibold small text-dark">4.8</span>
+        </div>
+        <h6 class="fw-bold m-0">${booking.rider_firstname || "N/A"} ${booking.rider_lastname || ""}</h6>
+      </div>
     </div>
 
-    <!-- Chat Button with Stats -->
-    <div class="d-flex justify-content-between align-items-center mt-4 bg-light rounded p-2">
-      <a class="btn bg-yellow  shadow open-chat-modal"
-         data-bs-toggle="modal"
-         data-bs-target="#chatModal"
-         data-rider-username="${booking.rider_username}"
-         data-rider-userid="${booking.rider_user_id}"
-        >
-        Chat <img src="../icons/messages.png" style="width: 20px; margin-left: 8px;" />
-      </a>
-
-     
+    <!-- Right: Plate Info -->
+    <div class="text-center">
+      <img src="../icons/scooter.png" alt="scooter icon" style="width: 30px;">
+   <div class="bg-light text-dark px-2 py-1 rounded fw-semibold small mt-1" style="font-size: 0.75rem;">
+        ${booking.vehicle_model || "N/A"}
+      </div>
+      <div class="bg-light text-dark px-2 py-1 rounded fw-semibold small mt-1" style="font-size: 0.75rem;">
+        ${booking.plate_no || "N/A"}
+      </div>
     </div>
+  </div>
 
+  <!-- Bottom Message -->
+  <div class="mt-2 ps-1">
+    <p class="text-muted mb-1 small">${booking.rider_firstname || "The rider"} ${booking.rider_lastname || ""} accepted your request</p>
+  </div>
+
+  <!-- Chat Button -->
+  <div class="mt-2 d-flex justify-content-end">
+    <a class="btn bg-yellow shadow open-chat-modal fw-bold"
+       data-bs-toggle="modal"
+       data-bs-target="#chatModal"
+       data-rider-username="${booking.rider_username}"
+       data-rider-userid="${booking.rider_user_id}">
+       Chat <img src="../icons/messages.png" style="width: 18px; margin-left: 6px;" />
+    </a>
   </div>
 </div>
+
 `
                             );
                         } else {

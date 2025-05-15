@@ -132,60 +132,59 @@ query("UPDATE angkas_bookings SET booking_status='D' WHERE date_booked < (NOW() 
                                 <div class="row">
                                     <div class="col-lg-12 col-sm-12 col-md-12" id="currentBookingInfo">
 
-                                        <table class="table table-bordered d-none" id="BookingInfoTable">
-                                            <tbody>
-                                                <tr>
-                                                    <th scope="row">Booking #</th>
-                                                    <td id="BookingReferenceNumber" class="text-success fw-bold"></td>
-                                                </tr>
-                                                <tr>
-                                                    <th scope="row">Booked</th>
-                                                    <td class="text-success fw-bold" id="BookedElaseTime">${elapsedTimeInMinutes} min ago.</td>
-                                                </tr>
-                                                <tr>
-                                                    <th scope="row">Fare </th>
-                                                    <td class="text-secondary fw-bold">
-                                                        <span id="RideEstCost"></span>
-                                                        <span id="paymentStatus">( Checking... ) </span> <br>
+                                       <div id="BookingInfoTable" class="d-none card shadow-sm p-3 mb-3">
+    <div class="mb-2">
+        <small class="text-muted">Booking #</small><br>
+        <span id="BookingReferenceNumber" class="text-success fw-bold"></span>
+    </div>
 
-                                                        <button id="btnPayRider" data-payment-app="" class="btn-pay btn btn-outline-success d-none">Pay Now</button>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <th scope="row">Origin</th>
-                                                    <td class="fw-semibold" id="CustomerOrigin">{form_from_dest_name}</td>
-                                                </tr>
-                                                <tr>
-                                                    <th scope="row">Destination</th>
-                                                    <td class="fw-semibold" id="CustomerDestination">{form_to_dest_name}</td>
-                                                </tr>
-                                                <tr>
-                                                    <th scope="row">Booking Status</th>
-                                                    <td id="riderInfoBookingStatus" class="fw-semibold">{booking_status_text}</td>
-                                                </tr>
-                                                <tr>
-                                                    <th scope="row">Driver</th>
-                                                    <td class="fw-semibold" id="riderInfoPI">
-                                                        <div class="spinner-grow text-danger spinner-grow-sm" role="status"></div>
-                                                        <div class="spinner-grow text-danger spinner-grow-sm" role="status"></div>
-                                                        <div class="spinner-grow text-danger spinner-grow-sm" role="status"></div>
-                                                        {booking.rider_firstname}, {booking.rider_lastname}
-                                                    </td>
-                                                </tr>
+    <div class="mb-2">
+        <small class="text-muted">Booked</small><br>
+        <span class="text-success fw-bold" id="BookedElaseTime">${elapsedTimeInMinutes} min ago.</span>
+    </div>
 
-                                                <tr>
-                                                    <th scope="row">Rate</th>
-                                                    <td>
-                                                        <div class="d-flex align-items-center">
-                                                            <div id="myRatingCustomFeedbackStart" class="text-body-secondary me-3"></div>
-                                                            <div id="myRatingCustomFeedback"></div>
-                                                            <div id="myRatingCustomFeedbackEnd" class="badge text-bg-dark ms-3"></div>
-                                                        </div>
+    <div class="mb-2">
+        <small class="text-muted">Fare</small><br>
+        <span id="RideEstCost" class="text-secondary fw-bold"></span>
+        <span id="paymentStatus" class="text-secondary fw-bold">( Checking... )</span><br>
+        <button id="btnPayRider" data-payment-app="" class="btn-pay btn btn-outline-success btn-sm mt-2 d-none">Pay Now</button>
+    </div>
 
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
+    <div class="mb-2">
+        <small class="text-muted">Origin</small><br>
+        <span class="fw-semibold" id="CustomerOrigin">{form_from_dest_name}</span>
+    </div>
+
+    <div class="mb-2">
+        <small class="text-muted">Destination</small><br>
+        <span class="fw-semibold" id="CustomerDestination">{form_to_dest_name}</span>
+    </div>
+
+    <div class="mb-2">
+        <small class="text-muted">Booking Status</small><br>
+        <span class="fw-semibold" id="riderInfoBookingStatus">{booking_status_text}</span>
+    </div>
+
+    <div class="mb-2">
+        <small class="text-muted">Driver</small><br>
+        <span class="fw-semibold" id="riderInfoPI">
+            <div class="spinner-grow text-danger spinner-grow-sm me-1" role="status"></div>
+            <div class="spinner-grow text-danger spinner-grow-sm me-1" role="status"></div>
+            <div class="spinner-grow text-danger spinner-grow-sm me-1" role="status"></div>
+            {booking.rider_firstname}, {booking.rider_lastname}
+        </span>
+    </div>
+
+    <div class="mb-2">
+        <small class="text-muted">Rate</small>
+        <div class="d-flex align-items-center">
+            <div id="myRatingCustomFeedbackStart" class="text-body-secondary me-3"></div>
+            <div id="myRatingCustomFeedback"></div>
+            <div id="myRatingCustomFeedbackEnd" class="badge text-bg-dark ms-3"></div>
+        </div>
+    </div>
+</div>
+
 
 
                                     </div>
