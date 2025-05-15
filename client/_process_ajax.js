@@ -1130,13 +1130,15 @@ $(document).on("click", "#PayNowBtn, .PayNowBtn, .btn-pay", function (e) {
     let FShopCost, FDeliveryFee, FOrderRefNum, FBookingRefNum, walletBalance, estimatedCost, dataPaymentApp, row;
 
     if ($(this).attr('id') === 'btnPayRider') {
+      
         // For Ride Payment
         walletBalance = parseFloat(elements.walletBalance.text().replace('Php ', '').replace(',', '').trim());
         dataPaymentApp = elements.btnPayRider.attr('data-payment-app');
-        row = elements.btnPayRider.closest('tr');
-        estimatedCost = parseFloat(row.find('.text-secondary').text().replace('Php ', '').replace(',', '').trim());
+        //row = elements.btnPayRider.closest('tr');
+        estimatedCost = parseFloat($('#RideEstCost').text().replace('Php ', '').replace(',', '').trim());
 
         if (!isNaN(estimatedCost) && estimatedCost > 0 && walletBalance > estimatedCost) {
+            alert(1);
             console.log("::Payment:", estimatedCost, dataPaymentApp, 'R', 'Ride Payment');
             makePayment(estimatedCost, null, null, dataPaymentApp, 'R', 'Ride Payment');
             updatePaymentStatus(dataPaymentApp, 'C', 'A'); //for booking
