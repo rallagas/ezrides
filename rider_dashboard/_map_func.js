@@ -53,7 +53,7 @@ function initMap() {
                 destinationMarker = new google.maps.marker.AdvancedMarkerElement({
                     position: pickupLocation,
                     map: map,
-                    content: createMarkerContentWithImage('../icons/user-location.png', '40px')
+                    content: createMarkerContentWithImage('../icons/flag.png', '40px')
                 });
 
                 // Draw route from current location to pickup location
@@ -90,7 +90,6 @@ function updateCurrentLocation(position) {
     currentMarker = new google.maps.marker.AdvancedMarkerElement({
         position: newLocation,
         map: map,
-      //  title: "Your Current Location",
          content: createMarkerContentWithImage('../icons/car.png', '40px')
     });
 
@@ -379,8 +378,7 @@ document.getElementById("ConfirmArrivalButton").addEventListener("click", () => 
     currentMarker = new google.maps.marker.AdvancedMarkerElement({
         position: pickupLocation,
         map: map,
-        title: "Customer's Pickup Location",
-        content: createMarkerContent("Customer's Pickup Location")
+        content: createMarkerContentWithImage('../icons/originlocation.png', '40px')
     });
 
     // Hide confirm arrival button
@@ -404,8 +402,7 @@ document.getElementById("ConfirmArrivalButton").addEventListener("click", () => 
     destinationMarker = new google.maps.marker.AdvancedMarkerElement({
         position: intendedLocation,
         map: map,
-        title: "Customer's Intended Location",
-        content: createMarkerContent("Customer's Intended Location")
+        content:  createMarkerContentWithImage('../icons/flag.png', '40px')
     });
 
     // Calculate the new route based on the updated starting location

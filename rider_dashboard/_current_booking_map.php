@@ -149,8 +149,7 @@ if(!empty($myBooking)){
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EZ Rides</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="_map.css">
     <link rel="stylesheet" href="../style.css">
 </head>
@@ -166,14 +165,13 @@ if(!empty($myBooking)){
             <input type="hidden" id="form_customer_to_dest" value="<?php echo $user_to_loc_coor; ?>">
 
             <div class="col-sm-8 col-lg-8">
-                <div id="customerInfo" class="offcanvas offcanvas-end" tabindex="-1" id="customerInfo"
-                    aria-labelledby="customerInfo">
+                <div id="customerInfo" class="offcanvas offcanvas-end" tabindex="-1" id="customerInfo" aria-labelledby="customerInfo">
                     <div class="offcanvas-header" style="background-color:indigo; color: #fff">
                         <h5 class="offcanvas-title" id="offcanvasExampleLabel"><?php echo $cusName; ?></h5>
-<!--                        Customer Id for Chat as receipient-->
+                        <!--                        Customer Id for Chat as receipient-->
                         <span class="customer-id d-none" data-customer-userid="<?php echo $cus_user_id;?>"><?php echo $cus_user_id;?></span>
-<!--                        Customer Id for Chat as receipient-->
-                        <span class="rider-id  d-none" data-rider-userid="<?php echo USER_LOGGED;?>" ><?php echo USER_LOGGED;?></span>
+                        <!--                        Customer Id for Chat as receipient-->
+                        <span class="rider-id  d-none" data-rider-userid="<?php echo USER_LOGGED;?>"><?php echo USER_LOGGED;?></span>
                         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                     </div>
                     <div class="offcanvas-body">
@@ -194,54 +192,52 @@ if(!empty($myBooking)){
                             </table>
                         </div>
                         <div class="mb-3" id="conversation">
-                                    <div class="modal-content overflow-y-scroll">
-                                            <div class="modal-body overflow-y-scroll" id="conversation" style="height: 100%">
-                                               <small class="text-center text-body-tertiary">Start a conversation.</small>
-                                            </div>
-                                   
+                            <div class="modal-content overflow-y-scroll">
+                                <div class="modal-body overflow-y-scroll" id="conversation" style="height: 100%">
+                                    <small class="text-center text-body-tertiary">Start a conversation.</small>
+                                </div>
 
-                                    </div>
-                          
-                            
+
+                            </div>
+
+
                         </div>
                         <div class="mb-3">
-                               <form id="formChatCustomer">
-                                            <div class="p-0 bg-secondary bg-opacity-50">
-                                                   <div class="input-group">
-                                                        <input type="hidden" id="rideruserid" name="receiver_id" value="<?php echo $cus_user_id;?>">
-                                                       <input type="hidden"  id="senderuserid" name="sender_id" value="<?php echo USER_LOGGED;?>">
-                                                       <input type="text" id="messagecontent" class="form-control border-bottom-1 border-top-0 border-start-0 border-end-0 border-dark" name="message">
-                                                        <button type="submit" class="btn btn-light">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-send" viewBox="0 0 16 16">
-                                                              <path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.75.75 0 0 1-1.329.124l-3.178-4.995L.643 7.184a.75.75 0 0 1 .124-1.33L15.314.037a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 4.338L14.13 2.576zm6.787-8.201L1.591 6.602l4.339 2.76z"/>
-                                                            </svg>
-                                                        </button>
-                                                    </div>
-                                            </div>
-                                        </form>
+                            <form id="formChatCustomer">
+                                <div class="p-0 bg-secondary bg-opacity-50">
+                                    <div class="input-group">
+                                        <input type="hidden" id="rideruserid" name="receiver_id" value="<?php echo $cus_user_id;?>">
+                                        <input type="hidden" id="senderuserid" name="sender_id" value="<?php echo USER_LOGGED;?>">
+                                        <input type="text" id="messagecontent" class="form-control border-bottom-1 border-top-0 border-start-0 border-end-0 border-dark" name="message">
+                                        <button type="submit" class="btn btn-light">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-send" viewBox="0 0 16 16">
+                                                <path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.75.75 0 0 1-1.329.124l-3.178-4.995L.643 7.184a.75.75 0 0 1 .124-1.33L15.314.037a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 4.338L14.13 2.576zm6.787-8.201L1.591 6.602l4.339 2.76z" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
-                
+
             </div>
 
             <div class="col-12">
                 <div class="card border-0 shadow mb-1">
                     <div class="card-header pt-2" style="background-color:indigo">
                         <h5 class="fw-bold card-title text-white mb-0">
-                            <?php echo $angkas_book_ref . " <span class='badge text-bg-success'>+PHP ".$AmountToClaim."</span>"; 
+                            <?php echo $angkas_book_ref;
+                            echo $AmountToClaim > 0 ? " <span class='badge text-bg-success'>+PHP ".$AmountToClaim."</span>" : "";
                             if($hasShopList){?>
-                            <a class="btn btn-warning btn-sm" data-bs-toggle="collapse" href="#showList" role="button"
-                                aria-expanded="false" aria-controls="showList">
+                            <a class="btn btn-warning btn-sm" data-bs-toggle="collapse" href="#showList" role="button" aria-expanded="false" aria-controls="showList">
 
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                    class="bi bi-list-check" viewBox="0 0 16 16">
-                                    <path fill-rule="evenodd"
-                                        d="M5 11.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5M3.854 2.146a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 1 1 .708-.708L2 3.293l1.146-1.147a.5.5 0 0 1 .708 0m0 4a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 1 1 .708-.708L2 7.293l1.146-1.147a.5.5 0 0 1 .708 0m0 4a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 0 1 .708-.708l.146.147 1.146-1.147a.5.5 0 0 1 .708 0" />
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-list-check" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M5 11.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5M3.854 2.146a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 1 1 .708-.708L2 3.293l1.146-1.147a.5.5 0 0 1 .708 0m0 4a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 1 1 .708-.708L2 7.293l1.146-1.147a.5.5 0 0 1 .708 0m0 4a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 0 1 .708-.708l.146.147 1.146-1.147a.5.5 0 0 1 .708 0" />
                                 </svg>
                                 SHOPPING LIST
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-down-fill" viewBox="0 0 16 16">
-                                <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
+                                    <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
                                 </svg>
                             </a>
                             <?php }
@@ -249,12 +245,13 @@ if(!empty($myBooking)){
 
 
 
-                            <button style="width:5vw" id="viewCusProfile" class="float-end btn btn-sm btn-warning open-chat-modal position-relative" type="button"
-                                data-bs-toggle="offcanvas" data-bs-target="#customerInfo" aria-controls="customerInfo">
-                               Chat <img src="../icons/messages.png"  class="img-responsive float-right" style="width: 90%" />
-                               
+                            <button id="viewCusProfile" class="float-end btn btn-sm btn-warning open-chat-modal position-relative d-flex align-items-center gap-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#customerInfo" aria-controls="customerInfo">
+                                  <span class="d-none d-lg-inline">Chat</span>
+                                <img src="../icons/messages.png" alt="Messages" class="img-fluid" style="max-height: 20px;" />
+
                                 <span class="position-absolute msgCounter top-0 start-100 translate-middle badge rounded-pill"></span>
                             </button>
+
 
                         </h5>
                     </div>
@@ -281,23 +278,23 @@ if(!empty($myBooking)){
                                 <td><?php echo $sl['item_name'];?></td>
                                 <td><?php echo $sl['quantity'] . " pcs";?></td>
                                 <td><?php echo $sl['amount_to_pay'];?></td>
-                                <td><img src="../client/_shop/item-img/<?php echo $sl['item_img'];?>" alt=""
-                                        class="img-fluid" width="50vw"></td>
+                                <td><img src="../client/_shop/item-img/<?php echo $sl['item_img'];?>" alt="" class="img-fluid" width="50vw"></td>
                             </tr>
                             <?php $shopCost += $sl['amount_to_pay'];
                              } ?>
-                             <tr>
+                            <tr>
                                 <td colspan="2" class="text-end">TOTAL (Php)</td>
                                 <td colspan="2" class="fw-bold"><?php echo number_format(($shopCost ?? 0.00),2);?></td>
-                             </tr>
+                            </tr>
                             <tr>
                                 <td class="fw-bold">NOTE:</td>
                                 <td><?php echo $addedNotes; ?></td>
                                 <td class="fw-bold">ATTACHMENT:</td>
                                 <td>
                                     <?php if($attachmentFile != null){ ?>
-                                        <a href="../client/_shop/<?php echo $attachmentFile;?>" class="btn btn-secondary"> Link </a> </td>
-                                    <?php }
+                                    <a href="../client/_shop/<?php echo $attachmentFile;?>" class="btn btn-secondary"> Link </a>
+                                </td>
+                                <?php }
                                     else {
                                         echo "No File attached.";
                                     } ?>
@@ -307,42 +304,89 @@ if(!empty($myBooking)){
 
 
                     </div>
-                    <div class="card-footer p-0">
-                        <small class="fs-6 card-title">
-                            <span class="fw-bold">FROM: </span>
-                            <?php echo $user_from_loc_name;?>
-                            <span class="fw-bold"> TO: </span>
-                            <?php echo $user_to_loc_name;?>
-                        </small>
-                        <div class="input-group border-0 rounded-0 m-0 p-0 route-info">
-                            <?php switch($bookingStatus){ 
-                                case 'A': ?>
-                            <button class="btn btn-outline-warning bg-yellow  shadow rounded-4" id="ConfirmArrivalButton"> <img src="../icons/taxi-arrival.png" alt="Arrived" style="width: 3vh">Arrived</button>
-                            <button class="btn btn-secondary d-none shadow rounded-4" id="DropOffCustomer"> <img src="../icons/taxi-arrival.png" alt="" style="width: 3vh"> Drop Off</button>
-                            <?php break;
-                                case 'I': ?>
-                            <button class="btn btn-secondary shadow rounded-4 " id="DropOffCustomer"> <img src="../icons/taxi-arrival.png" alt="" style="width: 3vh"> Drop Off</button>
-                            <?php break; 
-                                case 'R': ?>
-                            <button class="btn btn-secondary shadow rounded-4" id="DropOffCustomer"> <img src="../icons/taxi-arrival.png" alt="" style="width: 3vh"> Drop Off</button>
-                            <?php break; 
-                                default: ?>
-
-                            <button class="btn btn-secondary shadow rounded-4" id="DropOffCustomer"><img src="../icons/taxi-arrival.png" alt="" style="width: 3vh"> Drop Off</button>
-                            <?php } ?>
-
-                            <span class="input-group-text border-0 fw-bold">ETA:</span>
-                            <input type="text" class="form-control  border-0" id="form_ETA_duration" readonly>
-
-                            <span class="input-group-text  border-0 fw-bold">DISTANCE (km):</span>
-                            <input type="text" class="form-control rounded-0  border-0" id="form_TotalDistance"
-                                readonly>
-                            <a href="?cancelBooking=<?php echo $angkas_book_ref;?>" class="btn btn-danger"
-                                onclick="confirm('Do you really want to cancel this booking?')"
-                                id="CancelBooking">Cancel</a>
-                        </div>
-                    </div>
+                 
                 </div>
+                <!-- Responsive Floating Card -->
+<div class="position-absolute bottom-0 start-50 translate-middle-x mb-3 px-2 w-100 w-sm-auto" style="z-index: 5;">
+    <div class="card shadow rounded-4 p-1 bg-white route-info w-100 w-md-auto">
+   <div class="card shadow-sm rounded-4 p-1 mb-1">
+    <!-- Pickup Point -->
+    <div class="d-flex align-items-start mb-1">
+        <div class="me-3">
+            <div class="bg-light rounded-circle d-flex justify-content-center align-items-center" style="width: 32px; height: 32px;">
+                 <img src="../icons/originlocation.png" alt="" class="img-fluid pt-2 ps-2">
+            </div>
+        </div>
+        <div>
+            <div class="text-muted small fw-semibold">Pickup point</div>
+            <div class="fw-bold"><?php echo $user_from_loc_name; ?></div>
+        </div>
+    </div>
+
+    <hr class="my-2" />
+
+    <!-- Destination -->
+    <div class="d-flex align-items-start">
+        <div class="me-3">
+            <div class="bg-light rounded-circle d-flex justify-content-center align-items-center" style="width: 32px; height: 32px;">
+               <img src="../icons/flag.png" alt="" class="img-fluid pt-2 ps-2">
+            </div>
+        </div>
+        <div>
+            <div class="text-muted small fw-semibold">Where to go?</div>
+            <div class="fw-bold"><?php echo $user_to_loc_name; ?></div>
+        </div>
+    </div>
+</div>
+
+
+        <!-- Button Group -->
+        <div class="d-flex flex-wrap gap-2 mb-3">
+            <?php switch($bookingStatus){ 
+                case 'A': ?>
+                <button class="btn btn-outline-warning bg-yellow shadow rounded-4 d-flex align-items-center gap-1" id="ConfirmArrivalButton">
+                    <img src="../icons/taxi-arrival.png" alt="Arrived" style="width: 3vh"> Arrived
+                </button>
+                <button class="btn btn-secondary d-none shadow rounded-4 d-flex align-items-center gap-1" id="DropOffCustomer">
+                    <img src="../icons/taxi-arrival.png" alt="" style="width: 3vh"> Drop Off
+                </button>
+            <?php break;
+                case 'I':
+            ?>
+                <button class="btn btn-secondary shadow rounded-4 d-flex align-items-center gap-1" id="DropOffCustomer">
+                    <img src="../icons/taxi-arrival.png" alt="" style="width: 3vh"> Drop Off
+                </button>
+            <?php break;
+                case 'R':
+            ?>
+                <button class="btn btn-secondary shadow rounded-4 d-flex align-items-center gap-1" id="DropOffCustomer">
+                    <img src="../icons/taxi-arrival.png" alt="" style="width: 3vh"> Drop Off
+                </button>
+            <?php break;
+                default:
+            ?>
+                <button class="btn btn-secondary shadow rounded-4 d-flex align-items-center gap-1" id="DropOffCustomer">
+                    <img src="../icons/taxi-arrival.png" alt="" style="width: 3vh"> Drop Off
+                </button>
+            <?php } ?>
+
+            <a href="?cancelBooking=<?php echo $angkas_book_ref;?>" class="btn btn-danger shadow rounded-4" onclick="confirm('Do you really want to cancel this booking?')" id="CancelBooking">Cancel</a>
+        </div>
+
+        <!-- ETA & Distance -->
+        <div class="d-flex flex-wrap gap-3 align-items-center">
+            <div class="d-flex align-items-center gap-2">
+                <span class="fw-bold">ETA:</span>
+                <input type="text" class="form-control border-0 p-0" id="form_ETA_duration" readonly style="width: 6rem;">
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <span class="fw-bold">DISTANCE (km):</span>
+                <input type="text" class="form-control border-0 p-0" id="form_TotalDistance" readonly style="width: 6rem;">
+            </div>
+        </div>
+    </div>
+</div>
+
             </div>
             <div class="col-12">
                 <div id="map" style="width: 100%; height: 550px;">
@@ -356,8 +400,7 @@ if(!empty($myBooking)){
             </div>
 
             <!-- Drop-Off Confirmation Modal -->
-            <div class="modal fade" id="dropOffModal" tabindex="-1" aria-labelledby="dropOffModalLabel"
-                aria-hidden="true">
+            <div class="modal fade" id="dropOffModal" tabindex="-1" aria-labelledby="dropOffModalLabel" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -374,8 +417,7 @@ if(!empty($myBooking)){
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                             <button type="button" id="confirmDropOffBtn" class="btn btn-primary">Confirm
                                 Drop-Off</button>
-                            <button type="button" id="confirmPaymentBtn" class="btn btn-success"
-                                style="display: none;">Confirm Payment</button>
+                            <button type="button" id="confirmPaymentBtn" class="btn btn-success" style="display: none;">Confirm Payment</button>
                         </div>
                     </div>
                 </div>
@@ -390,13 +432,11 @@ if(!empty($myBooking)){
 </body>
 
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
 </script>
 <script src="_map_config.js"></script>
 <script src="_map_func.js"></script>
-<script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBWi3uSAaNEmBLrAdLt--kMWsoN4lKm9Hs&libraries=places,geometry,marker&callback=initMap&loading=async">
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBWi3uSAaNEmBLrAdLt--kMWsoN4lKm9Hs&libraries=places,geometry,marker&callback=initMap&loading=async">
 </script>
 <script src="../js/jquery-3.5.1.min.js"></script>
 <script src="chat.js"></script>
