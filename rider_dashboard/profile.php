@@ -126,8 +126,8 @@ require_once __DIR__ . "/../_sql_utility.php";?>
             <!-- Overview Tab -->
             <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">
      <?php
-$photo1_exists = !empty($vehicle_photo_1) && file_exists("../profile/" . USER_LOGGED . "/" . $vehicle_photo_1);
-$photo2_exists = !empty($vehicle_photo_2) && file_exists("../profile/" . USER_LOGGED . "/" . $vehicle_photo_2);
+$photo1_exists = !empty($vehicle_photo_1) && file_exists("../profile/" . $vehicle_photo_1);
+$photo2_exists = !empty($vehicle_photo_2) && file_exists("../profile/" . $vehicle_photo_2);
 ?>
 
 <div class="card">
@@ -147,7 +147,7 @@ $photo2_exists = !empty($vehicle_photo_2) && file_exists("../profile/" . USER_LO
             <div class="col-md-6 mb-3">
                 <label><strong>Vehicle Photo 1:</strong></label><br>
                 <?php if ($photo1_exists): ?>
-                    <img src="<?php echo "../profile/" . USER_LOGGED . "/" . $vehicle_photo_1; ?>" class="img-fluid rounded border" alt="Vehicle Photo 1">
+                    <img src="<?php echo "../profile/" . $vehicle_photo_1; ?>" class="img-fluid rounded border" alt="Vehicle Photo 1">
                 <?php else: ?>
                     <form action="upload_vehicle_photo.php" method="post" enctype="multipart/form-data">
                         <input type="hidden" name="photo_slot" value="1">
@@ -160,7 +160,7 @@ $photo2_exists = !empty($vehicle_photo_2) && file_exists("../profile/" . USER_LO
             <div class="col-md-6 mb-3">
                 <label><strong>Vehicle Photo 2:</strong></label><br>
                 <?php if ($photo2_exists): ?>
-                    <img src="<?php echo "../profile/" . USER_LOGGED . "/" . $vehicle_photo_2; ?>" class="img-fluid rounded border" alt="Vehicle Photo 2">
+                    <img src="<?php echo "../profile/" . $vehicle_photo_2; ?>" class="img-fluid rounded border" alt="Vehicle Photo 2">
                 <?php else: ?>
                     <form action="upload_vehicle_photo.php" method="post" enctype="multipart/form-data">
                         <input type="hidden" name="photo_slot" value="2">

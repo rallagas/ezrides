@@ -24,7 +24,7 @@ if (!in_array($file['type'], $allowed_types)) {
 }
 
 if (move_uploaded_file($file['tmp_name'], $target_path)) {
-    $db_path = $new_filename;
+    $db_path = $user_id . "/" . $new_filename;
     $column = $photo_slot == 1 ? 'vehicle_photo_1' : 'vehicle_photo_2';
 
    

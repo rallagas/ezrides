@@ -417,58 +417,101 @@ function chkBooking() {
 
                         // Handle driver info
                          /* ${booking.rider_firstname || "N/A"}, ${booking.rider_lastname } */
+                        let rawModel = booking.vehicle_model;
+                        let match = rawModel.match(/\(([^)]+)\)/);
+                        let vehicleModel = match ? match[1].trim() : '';
+                        
                         if (booking.booking_status_text !== "Waiting for Driver") {
                             elements.riderInfoPI.html(
-                                `<div class="card border-0 shadow-sm rounded-4 px-3 py-3 mb-3">
-  <div class="d-flex align-items-center justify-content-between">
-    
-    <!-- Left: Profile Picture and Name -->
-    <div class="d-flex align-items-center">
-      <img src="../profile/${booking.rider_profile || 'default.jpg'}"
-           alt="Profile Picture"
-           class="rounded-circle me-3"
-           style="width: 60px; height: 60px; object-fit: cover;">
-      <div>
-        <div class="d-flex align-items-center">
-          <div class="me-2 text-warning">
-            ★★★★★
-          </div>
-          <span class="fw-semibold small text-dark">4.8</span>
-        </div>
-        <h6 class="fw-bold m-0">${booking.rider_firstname || "N/A"} ${booking.rider_lastname || ""}</h6>
-      </div>
-    </div>
+                           `<div class="card border-0 shadow rounded-4 px-3 py-3 mb-3 w-100">
+                              <div class="d-flex align-items-center justify-content-between">
 
-    <!-- Right: Plate Info -->
-    <div class="text-center">
-      <img src="../icons/scooter.png" alt="scooter icon" style="width: 30px;">
-   <div class="bg-light text-dark px-2 py-1 rounded fw-semibold small mt-1" style="font-size: 0.75rem;">
-        ${booking.vehicle_model || "N/A"}
-      </div>
-      <div class="bg-light text-dark px-2 py-1 rounded fw-semibold small mt-1" style="font-size: 0.75rem;">
-        ${booking.plate_no || "N/A"}
-      </div>
-    </div>
-  </div>
+                                <!-- Left: Profile Picture and Name -->
+                                <div class="d-flex align-items-center">
+                                  <img src="../profile/${booking.rider_profile || 'default.jpg'}"
+                                       alt="Profile Picture"
+                                       class="rounded-circle me-3"
+                                       style="width: 60px; height: 60px; object-fit: cover;">
+                                  <div>
+                                    <div class="d-flex align-items-center">
+                                      <div class="me-2 text-warning">
+                                        ★★★★★
+                                      </div>
+                                      <span class="fw-semibold small text-dark">4.8</span>
+                                    </div>
+                                    <h6 class="fw-bold m-0">${booking.rider_firstname || "N/A"} ${booking.rider_lastname || ""}</h6>
+                                  </div>
+                                </div>
 
-  <!-- Bottom Message -->
-  <div class="mt-2 ps-1">
-    <p class="text-muted mb-1 small">${booking.rider_firstname || "The rider"} ${booking.rider_lastname || ""} accepted your request</p>
-  </div>
+                                <!-- Right: Plate Info -->
+                                <div class="text-center">
+                                  <img src="../icons/vehicle_models/${vehicleModel}.png" alt="scooter icon" style="width: 60px;">
+                               <div class="bg-light text-dark px-2 py-1 rounded fw-semibold small mt-1" style="font-size: 0.75rem;">
+                                    ${booking.vehicle_model || "N/A"}
+                                  </div>
+                                  <div class="bg-light text-dark px-2 py-1 rounded fw-semibold small mt-1" style="font-size: 0.75rem;">
+                                    ${booking.plate_no || "N/A"}
+                                  </div>
+                                </div>
+                              </div>
 
-  <!-- Chat Button -->
-  <div class="mt-2 d-flex justify-content-end">
-    <a class="btn bg-yellow shadow open-chat-modal fw-bold"
-       data-bs-toggle="modal"
-       data-bs-target="#chatModal"
-       data-rider-username="${booking.rider_username}"
-       data-rider-userid="${booking.rider_user_id}">
-       Chat <img src="../icons/messages.png" style="width: 18px; margin-left: 6px;" />
-    </a>
-  </div>
-</div>
+                              <!-- Bottom Message -->
+                            <div class="mt-2 ps-1">
+                              <p class="text-muted mb-1 small">
+                                ${booking.rider_firstname || "The rider"} ${booking.rider_lastname || ""} accepted your booking request
+                              </p>
+                              <hr class="my-1">
 
-`
+                           ${
+                              booking.vehicle_photo_1 || booking.vehicle_photo_2 
+                              ? `<div class="d-flex gap-2 flex-wrap">
+                                    ${
+                                      booking.vehicle_photo_1 
+                                      ? `<img src="../profile/${booking.vehicle_photo_1}" 
+                                               class="img-thumbnail vehicle-preview" 
+                                               style="width: 100px; max-width: 100%; cursor: pointer;" 
+                                               data-bs-toggle="popover" 
+                                               data-bs-trigger="hover focus" 
+                                               data-bs-html="true" 
+                                               data-bs-content="<img src='../profile/${booking.vehicle_photo_1}' style='width: 200px;' />" />`
+                                      : ''
+                                    }
+                                    ${
+                                      booking.vehicle_photo_2 
+                                      ? `<img src="../profile/${booking.vehicle_photo_2}" 
+                                               class="img-thumbnail vehicle-preview" 
+                                               style="width: 100px; max-width: 100%; cursor: pointer;" 
+                                               data-bs-toggle="popover" 
+                                               data-bs-trigger="hover focus" 
+                                               data-bs-html="true" 
+                                               data-bs-content="<img src='../profile/${booking.vehicle_photo_2}' style='width: 200px;' />" />`
+                                      : ''
+                                    }
+                                 </div>` 
+                              : ''
+                            }
+
+
+                              <hr class="my-1">
+                            </div>
+
+                              
+
+                              <!-- Chat Button -->
+                              <div class="mt-2 d-flex justify-content-end">
+                                <a class="btn bg-yellow shadow open-chat-modal fw-bold"
+                                   data-bs-toggle="modal"
+                                   data-bs-target="#chatModal"
+                                   data-rider-username="${booking.rider_username}"
+                                   data-rider-userid="${booking.rider_user_id}">
+                                   Chat <img src="../icons/messages.png" style="width: 18px; margin-left: 6px;" />
+                                </a>
+                              </div>
+                            </div>
+
+
+
+                            `
                             );
                         } else {
                             elements.riderInfoPI.html(CreateHtml.loadingGrower);
@@ -946,7 +989,7 @@ $(document).ready(function () {
                 chkBookingStatus(bookingNum);
             }
         }
-    }, 5000);
+    }, 15000);
     
     if (elements.transactionHistoryTable.length) {
         console.log("Transaction history table loaded. Initializing data load...");
@@ -968,158 +1011,11 @@ $(document).ready(function () {
         $('#riderNameModal').text(riderUsername);
         $('#rideruserid').val(riderUserId);
     });
-
-//
-//    $('#formChatRider').on('submit', async function (e) {
-//        e.preventDefault(); // Prevent default form submission behavior
-//
-//        // Collect form data
-//        const formData = $(this).serialize();
-//
-//        try {
-//            // Perform AJAX request to send the message
-//            const response = await $.ajax({
-//                url: '_ajax_send_message.php', // Backend script to handle message sending
-//                type: 'POST',
-//                data: formData
-//            });
-//
-//            const result = JSON.parse(response);
-//
-//            if (result.status === 'success') {
-//                // Clear the message input field
-//                $('#formChatRider #messagecontent').val('');
-//
-//                // Re-fetch and update the chat messages
-//                const senderId = $('input[name="sender_id"]').val();
-//                const receiverId = $('input[name="receiver_id"]').val();
-//
-//                const messages = await fetchChatMessages(senderId, receiverId);
-//
-//                // Clear the chat container
-//                $('#conversation').empty();
-//
-//                // Format and append messages to the chat container
-//                messages.forEach((message) => {
-//                    const messageClass = message.sender_id === senderId ? 'btn-secondary' : 'btn-primary';
-//                    // timeAlignment = message.sender_id === senderId ? 'text-end' : 'text-start';
-//                    const     alignment = message.sender_id === senderId ? 'ms-auto' : 'me-auto';
-//                   const     timeAlignment = message.sender_id === senderId ? 'ms-auto' : 'me-auto';
-//                    $('#conversation').append(`
-//                         <div class="d-flex mb-1">
-//                        <div class="p-2 ${alignment}">
-//                            <p class="btn ${messageClass}"> ${message.message} </p>
-//                        </div>
-//                        <div class="p-2 ${timeAlignment}">
-//                            <small class="small">${message.date_received}</small>
-//                        </div>
-//                    </div>
-//                    `);
-//                });
-//            } else {
-//                console.log('Failed to send the message. Please try again.');
-//            }
-//        } catch (error) {
-//            console.error('An error occurred while sending the message. Please try again.',error);
-//        }
-//    });
-//
-//    
-//
+     
+    $('[data-bs-toggle="popover"]').each(function () {
+    new bootstrap.Popover(this);
+  });
 });
-//
-//
-//async function fetchChatMessages(senderId, receiverId) {
-//    return new Promise((resolve, reject) => {
-//        $.ajax({
-//            url: '_ajax_fetch_messages.php', // Backend script to fetch messages
-//            method: 'POST',
-//            data: {
-//                sender_id: senderId,
-//                receiver_id: receiverId
-//            },
-//            dataType: 'json',
-//            success: function (response) {
-//                if (response.status === 'success') {
-//                    resolve(response.messages); // Return messages on success
-//                } else {
-//                    reject(response.error || 'Failed to fetch messages.');
-//                }
-//            },
-//            error: function (xhr, status, error) {
-//                reject(error || 'An error occurred while fetching messages.');
-//            }
-//        });
-//    });
-//}
-//
-//$(document).on('click', '.open-chat-modal', async function () {
-//    const senderId = $('#senderuserid').val();
-//    const receiverId = $(this).data('rider-userid');
-//    
-//  e.preventDefault(); // Prevent default form submission behavior
-//
-//    // Collect form data
-//    const formData = $(this).serialize();
-//    const conversationDiv = $('#conversation');
-//
-//    try {
-//        // Perform AJAX request to send the message
-//        const response = await $.ajax({
-//            url: '_ajax_send_message.php', // Backend script to handle message sending
-//            type: 'POST',
-//            data: formData
-//        });
-//
-//        const result = JSON.parse(response);
-//
-//        if (result.status === 'success') {
-//            // Clear the message input field
-//            $('#messagecontent').val('');
-//
-//            // Re-fetch and update the chat messages
-//            // const senderId = $('input[name="sender_id"]').val();
-//            //    const receiverId = $('input[name="receiver_id"]').val();
-//
-////            const senderId = $(".rider-id").data('rider-userid');
-////            const receiverId = $(".customer-id").data('customer-userid');
-//
-//            const messages = await fetchChatMessages(senderId, receiverId);
-//
-//            // Clear the chat container
-//            $('#conversation').empty();
-//
-//            // Format and append messages to the chat container
-//            if (messages.length > 0) {
-//                messages.forEach(msg => {
-//                    const isSender = msg.sender_id === senderId;
-//
-//                    const alignmentClass = isSender ? 'justify-content-end' : 'justify-content-start';
-//                    const bubbleClass = isSender ? 'bg-primary text-white' : 'bg-light text-dark';
-//
-//                    const messageHtml = `
-//            <div class="d-flex ${alignmentClass} mb-1">
-//                <div class="p-2 rounded-3 ${bubbleClass}">
-//                    ${msg.message}
-//                </div>
-//            </div>
-//        `;
-//
-//                    conversationDiv.append(messageHtml);
-//                });
-//            } else {
-//                conversationDiv.html('<small class="text-center text-body-tertiary">No messages yet for today. Start the conversation!</small>');
-//            }
-//
-//
-//        } else {
-//            console.log('Failed to send the message. Please try again.');
-//        }
-//    } catch (error) {
-//        console.error('An error occurred while sending the message. Please try again.', error);
-//    }
-//});
-
 
 
 
