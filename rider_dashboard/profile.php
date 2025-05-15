@@ -125,20 +125,54 @@ require_once __DIR__ . "/../_sql_utility.php";?>
         <div class="tab-content mt-4" id="profileTabContent">
             <!-- Overview Tab -->
             <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">
-                <div class="card">
-                    <div class="card-body mb-3">
-                        <h5 class="card-title">Profile Overview</h5>
-                        <p><strong>Full Name:</strong> <?php echo $user_firstname . " " . $user_lastname . ", " . "$user_mi"?></p>
-                        <p><strong>Email:</strong><?php echo $user_email_address; ?></p>
-                        <p><strong>Phone:</strong> <?php echo $user_contact_no; ?></p>
-                    </div>
-                    
-                       <div class="card-body">
-                            <h5 class="card-title">Vehicle Information</h5>
-                            <p><strong>Plate Number</strong> <?php echo $rider_plate_no; ?></p>
-                            
-                    </div>
-                </div>
+     <?php
+$photo1_exists = !empty($vehicle_photo_1) && file_exists("../profile/" . USER_LOGGED . "/" . $vehicle_photo_1);
+$photo2_exists = !empty($vehicle_photo_2) && file_exists("../profile/" . USER_LOGGED . "/" . $vehicle_photo_2);
+?>
+
+<div class="card">
+    <div class="card-body mb-3">
+        <h5 class="card-title">Profile Overview</h5>
+        <p><strong>Full Name:</strong> <?php echo $user_firstname . " " . $user_lastname . ", " . "$user_mi"; ?></p>
+        <p><strong>Email:</strong> <?php echo $user_email_address; ?></p>
+        <p><strong>Phone:</strong> <?php echo $user_contact_no; ?></p>
+    </div>
+
+    <div class="card-body">
+        <h5 class="card-title">Vehicle Information</h5>
+        <p><strong>Plate Number:</strong> <?php echo $rider_plate_no; ?></p>
+        <p><strong>Vehicle Model:</strong> <?php echo $vehicle_model_id; ?></p>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label><strong>Vehicle Photo 1:</strong></label><br>
+                <?php if ($photo1_exists): ?>
+                    <img src="<?php echo "../profile/" . USER_LOGGED . "/" . $vehicle_photo_1; ?>" class="img-fluid rounded border" alt="Vehicle Photo 1">
+                <?php else: ?>
+                    <form action="upload_vehicle_photo.php" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="photo_slot" value="1">
+                        <input type="file" name="vehicle_photo" accept="image/*" required class="form-control mb-2">
+                        <button type="submit" class="btn btn-primary btn-sm">Upload Vehicle Photo 1</button>
+                    </form>
+                <?php endif; ?>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label><strong>Vehicle Photo 2:</strong></label><br>
+                <?php if ($photo2_exists): ?>
+                    <img src="<?php echo "../profile/" . USER_LOGGED . "/" . $vehicle_photo_2; ?>" class="img-fluid rounded border" alt="Vehicle Photo 2">
+                <?php else: ?>
+                    <form action="upload_vehicle_photo.php" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="photo_slot" value="2">
+                        <input type="file" name="vehicle_photo" accept="image/*" required class="form-control mb-2">
+                        <button type="submit" class="btn btn-primary btn-sm">Upload Vehicle Photo 2</button>
+                    </form>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
+</div>
+
             </div>
 
             <!-- Settings Tab -->
