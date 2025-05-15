@@ -154,6 +154,7 @@ function Commutes(configuration) {
         configuration.defaultTravelModeEnum = parseTravelModeEnum(configuration.defaultTravelMode);
         setTravelModeLayer(configuration.defaultTravelModeEnum);
         createMarker(origin);
+           createMarker(destinations);
     }
 
     /**
@@ -237,222 +238,6 @@ function Commutes(configuration) {
         });
     }
 
-    /**
-   * Initializes commutes modal to gathering destination inputs. Configures the
-   * event target listeners to update view and behaviors on the modal.
-   */
-//     function initCommutesModal() {
-//         const BIAS_BOUND_DISTANCE = 0.1; // Adjust if needed, but not used for fixed bounds
-
-//         // Albay Province bounding box coordinates
-//         const albayBounds = {
-//             north: 13.4425, // Approximate northern latitude
-//             south: 12.7850, // Approximate southern latitude
-//             east: 124.3620, // Approximate eastern longitude
-//             west: 123.5740  // Approximate western longitude
-//         };
-        
-//         const destinationFormReset = function () {
-//             destinationModalEl.errorMessage.innerHTML = '';
-//             destinationModalEl.form.reset();
-//             destinationToAdd = null;
-//         };
-        
-//         const autocompleteOptions = {
-//             bounds: albayBounds,  // Use Albay Province bounds
-//             strictBounds: true,   // Restrict results to within bounds
-//             componentRestrictions: { country: 'ph' }, // Restrict to the Philippines
-//             fields: ['place_id', 'geometry', 'name']
-//         };
-        
-//         const autocomplete = new google.maps.places.Autocomplete(destinationModalEl.destinationInput, autocompleteOptions);
-//         let destinationToAdd;
-        
-//         autocomplete.addListener('place_changed', () => {
-//             const place = autocomplete.getPlace();
-//             if (!place.geometry || !place.geometry.location) {
-//                 return;
-//             } else {
-//                 destinationToAdd = place;
-//                 destinationModalEl.getTravelModeInput().focus();
-//             }
-//             destinationModalEl.errorMessage.innerHTML = '';
-//         });
-        
-
-//         destinationModalEl.addButton.addEventListener('click', () => {
-//             const isValidInput = validateDestinationInput(destinationToAdd);
-//             if (!isValidInput)
-//                 return;
-
-//             const selectedTravelMode = destinationModalEl.getTravelModeInput().value;
-//             addDestinationToList(destinationToAdd, selectedTravelMode);
-            
-//               //check destination's Coordinates
-//               if (destinationToAdd) {
-//                 console.log('Destination object:', destinationToAdd); // Log destination object
-        
-//                 if (destinationToAdd.geometry && destinationToAdd.geometry.location) {
-//                     console.log('Location object:', destinationToAdd.geometry.location); // Log location
-                    
-//                     // Make sure lat() and lng() methods are available
-//                     setDestinationLatLng(destinationToAdd.geometry.location, 'formToDest_lat','formToDest_long');
-//                 } else {
-//                     console.error('Geometry or location is not defined.');
-//                 }
-//             } else {
-//                 console.error('Destination is not defined.');
-//             }
-//             destinationFormReset();
-//             hideModal();
-//         });
-
-//         destinationModalEl.editButton.addEventListener('click', () => {
-//             const destination = {
-//                 ...destinations[activeDestinationIndex]
-//             };
-//             const selectedTravelMode = destinationModalEl.getTravelModeInput().value;
-//             const isSameDestination = destination.name === destinationModalEl.destinationInput.value;
-//             const isSameTravelMode = destination.travelModeEnum === selectedTravelMode;
-//             // if (isSameDestination && isSameTravelMode) {
-//             //     hideModal();
-//             //     return;
-//             // }
-//             if (!isSameDestination) {
-//                 const isValidInput = validateDestinationInput(destinationToAdd);
-//                 if (!isValidInput)
-//                     return;
-
-//                 destination.name = destinationToAdd.name;
-//                 destination.place_id = destinationToAdd.place_id;
-//                 destination.url = generateMapsUrl(destinationToAdd, selectedTravelMode);
-//             }
-//             if (!isSameTravelMode) {
-//                 destination.travelModeEnum = selectedTravelMode;
-//                 destination.url = generateMapsUrl(destination, selectedTravelMode);
-//             }
-//             destinationFormReset();
-//             getDirections(destination).then((response) => {
-//                 if (!response)
-//                     return;
-
-//                 const currentIndex = activeDestinationIndex;
-//                 // Remove current active direction before replacing it with updated
-//                 // routes.
-//                 removeDirectionsFromMapView(destination);
-//                 destinations[activeDestinationIndex] = destination;
-//                 getCommutesInfo(response, destination);
-//                 assignMapObjectListeners(destination, activeDestinationIndex);
-//                 updateCommutesPanel(destination, activeDestinationIndex, DestinationOperation.EDIT);
-//                 handleRouteClick(destination, activeDestinationIndex);
-//                 const newEditButton = destinationPanelEl.list.children.item(activeDestinationIndex).querySelector('.edit-button');
-//                 newEditButton.focus();
-//             }).catch((e) => console.error('Editing directions failed due to ' + e));
-//             //hideModal();
-//         });
-
-//         destinationModalEl.cancelButton.addEventListener('click', () => {
-//             destinationFormReset();
-//             hideModal();
-//         });
-
-//         destinationModalEl.deleteButton.addEventListener('click', () => {
-//             removeDirectionsFromMapView(destinations[activeDestinationIndex]);
-//             updateCommutesPanel(destinations[activeDestinationIndex], activeDestinationIndex, DestinationOperation.DELETE);
-//             activeDestinationIndex = undefined;
-//             destinationFormReset();
-//             let elToFocus;
-//             if (destinations.length) {
-//                 const lastIndex = destinations.length - 1;
-//                 handleRouteClick(destinations[lastIndex], lastIndex);
-//                 elToFocus = destinationPanelEl.getActiveDestination();
-//             } else {
-//                 elToFocus = commutesEl.initialStatePanel.querySelector('.add-button');
-//             } hideModal(elToFocus);
-//         });
-
-//         window.onmousedown = function (event) {
-//             if (event.target === commutesEl.modal) {
-//                 destinationFormReset();
-//                 hideModal();
-//             }
-//         };
-
-//         commutesEl.modal.addEventListener('keydown', (e) => {
-//             switch (e.key) {
-//                 case 'Enter':
-//                     if (e.target === destinationModalEl.cancelButton || e.target === destinationModalEl.deleteButton) {
-//                         return;
-//                     }
-//                     if (destinationModalEl.addButton.style.display !== 'none') {
-//                         destinationModalEl.addButton.click();
-//                     } else if (destinationModalEl.editButton.style.display !== 'none') {
-//                         destinationModalEl.editButton.click();
-//                     }
-//                     break;
-//                 case "Esc":
-//                 case "Escape": hideModal();
-//                     break;
-//                 default:
-//                     return;
-//             }
-//             e.preventDefault();
-//         });
-
-//         // Trap focus in the modal so that tabbing on the last interactive element
-//         // focuses on the first, and shift-tabbing on the first interactive element
-//         // focuses on the last.
-
-//         const firstInteractiveElement = destinationModalEl.destinationInput;
-//         const lastInteractiveElements = [destinationModalEl.addButton, destinationModalEl.editButton,];
-
-//         firstInteractiveElement.addEventListener('keydown', handleFirstInteractiveElementTab);
-//         for (const el of lastInteractiveElements) {
-//             el.addEventListener('keydown', handleLastInteractiveElementTab);
-//         }
-
-//         function handleFirstInteractiveElementTab(event) {
-//             if (event.key === 'Tab' && event.shiftKey) {
-//                 for (const el of lastInteractiveElements) {
-//                     if (el.style.display !== 'none') {
-//                         event.preventDefault();
-//                         el.focus();
-//                         return;
-//                     }
-//                 }
-//             }
-//         }
-
-//         function handleLastInteractiveElementTab(event) {
-//             if (event.key === 'Tab' && !event.shiftKey) {
-//                 event.preventDefault();
-//                 firstInteractiveElement.focus();
-//             }
-//         }
-//     }
-
-//     /**
-//    * Checks if destination input is valid and ensure no duplicate places or more
-//    * than max number places are added.
-//    */
-//     function validateDestinationInput(destinationToAdd) {
-//         let errorMessage;
-//         let isValidInput = false;
-//         if (!destinationToAdd) {
-//             errorMessage = 'No details available for destination input';
-//         } else if (destinations.length > MAX_NUM_DESTINATIONS) {
-//             errorMessage = 'Cannot add more than ' + MAX_NUM_DESTINATIONS + ' destinations';
-//         } else if (destinations && destinations.find(destination => destination.place_id === destinationToAdd.place_id)) {
-//             errorMessage = 'Destination is already added';
-//         } else {
-//             isValidInput = true;
-//         }
-//         if (!isValidInput) {
-//             destinationModalEl.errorMessage.innerHTML = errorMessage;
-//             // destinationModalEl.destinationInput.classList.add('error');
-//         }
-//         return isValidInput;
-//     }
 
 function initCommutesModal() {
     const albayBounds = {
@@ -657,12 +442,6 @@ function validateDestinationInput(destinationToAdd) {
                 const destinationTemplate = await generateDestinationTemplate(destination); // Await the template generation
                 destinationPanelEl.list.insertAdjacentHTML('beforeend', `<div class="destination-container">${destinationTemplate}</div>`);
     
-                //const destinationContainerEl = destinationPanelEl.list.lastElementChild;
-                // destinationContainerEl.addEventListener('click', () => {
-                //     handleRouteClick(destination, destinationIdx);
-                // });
-                // editButtonEl = destinationContainerEl.querySelector('.edit-button');
-                // destinationPanelEl.container.scrollLeft = destinationPanelEl.container.scrollWidth;
                 break;
     
             case DestinationOperation.EDIT:
@@ -670,10 +449,6 @@ function validateDestinationInput(destinationToAdd) {
                 const updatedTemplate = await generateDestinationTemplate(destination); // Await the updated template generation
                 activeDestinationContainerEl.innerHTML = updatedTemplate;
     
-                // activeDestinationContainerEl.addEventListener('click', () => {
-                //     handleRouteClick(destination, destinationIdx);
-                // });
-                // editButtonEl = activeDestinationContainerEl.querySelector('.edit-button');
                 break;
     
             case DestinationOperation.DELETE:
@@ -800,31 +575,6 @@ function validateDestinationInput(destinationToAdd) {
             url: generateMapsUrl(destinationToAdd, travelModeEnum)
         };
     }
-//     /**
-//  * Converts latitude and longitude coordinates into a readable address.
-//  * ...
-//  */
-//     function getReadableAddress(coordinates, callback) {
-//         const geocoder = new google.maps.Geocoder();
-//         const latLng = {
-//             lat: coordinates.lat,
-//             lng: coordinates.lng
-//         };
-
-//         geocoder.geocode({
-//             location: latLng
-//         }, (results, status) => {
-//             if (status === google.maps.GeocoderStatus.OK) {
-//                 if (results[0]) {
-//                     callback(null, results[0].formatted_address);
-//                 } else {
-//                     callback('No results found', null);
-//                 }
-//             } else {
-//                 callback('Geocoder failed due to: ' + status, null);
-//             }
-//         });
-//     }
 
     /**
    * Gets directions to destination from origin, add route to map view, and
