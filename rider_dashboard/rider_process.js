@@ -358,46 +358,98 @@ else if (elapsedTimeInMinutes <= 10) {
     colorText = "text-success";
 }
    return `
-      <div class="row d-flex align-items-start mb-4 p-3 rounded bg-white">
-        <div class="col-md-3 d-none d-md-block position-relative">
-            <img src="${window.location.origin}/ezrides/profile/${booking.user_profile_image}"  class="img-fluid rounded-start"  alt="${booking.user_firstname} ${booking.user_lastname}"  style="object-fit: cover; height: 200px; width: 100%;">
-        </div>
-        <div class="col-md-6">
-            <div class="card-body">
-<h5 class="text-primary">${booking.angkas_booking_reference}</h5>
+     <div class="row d-flex align-items-start border-1 shadow mb-4 p-3 rounded bg-white">
 
-${booking.angkas_booking_reference.startsWith("GRX") ? `<span class="badge rounded-pill bg-danger text-white"> PABILI </span>` : `<span class="badge rounded-pill bg-danger p-3 text-white"> ANGKAS </span>`}
+  <!-- Customer Details -->
+  <div class="col-12 mb-1 d-flex align-items-center">
+    <img src="../profile/${booking.user_profile_image}" 
+         class="rounded-circle me-3" 
+         alt="${booking.user_firstname} ${booking.user_lastname}" 
+         style="width: 60px; height: 60px; object-fit: cover;">
+    <div>
+      <h6 class="mb-0">${booking.user_firstname} ${booking.user_lastname}</h6>
+      <p class="mb-0 small text-muted">${booking.angkas_booking_reference}</p>
+      ${booking.angkas_booking_reference.startsWith("GRX") 
+        ? `<span class="badge rounded-pill bg-danger text-white">PABILI</span>` 
+        : `<span class="badge rounded-pill bg-danger p-3 text-white">ANGKAS</span>`}
+    </div>
+  </div>
 
-<p class="small fw-light mb-0 ${colorText}">Booked ${elapsedTimeInMinutes} min ago</p>
+  <!-- Address Section -->
+  <div class="col-12 mb-1">
+    <div class="d-flex justify-content-between align-items-center">
+      <div>
+        <p class="mb-1 fw-bold">${booking.form_from_dest_name}</p>
+        <p class="small text-muted">Pickup point</p>
+      </div>
+      <div class="text-end">
+        <p class="mb-1 text-muted">Distance</p>
+        <p class="fw-bold">${booking.form_TotalDistance} km</p>
+      </div>
+    </div>
+    <div class="d-flex justify-content-between align-items-center pt-1 mt-1">
+      <div>
+        <p class="mb-1 fw-bold">${booking.form_to_dest_name}</p>
+        <p class="small text-muted">Destination</p>
+      </div>
+      <div class="text-end">
+        <p class="mb-1 text-muted">Payment</p>
+        <span class="badge rounded-pill bg-success text-white">Php ${booking.form_Est_Cost}</span>
+      </div>
+    </div>
+  </div>
 
-                <hr class="my-0">
-                <p class="mb-1"><strong>From:</strong> ${booking.form_from_dest_name}</p>
-                <p class="mb-1"><strong>To:</strong> ${booking.form_to_dest_name}</p>
-                <p class="mb-1">
-                    <strong>ETA Duration:</strong> ${booking.form_ETA_duration} mins 
-                    <strong>Total Distance:</strong> ${booking.form_TotalDistance} km
-                </p>
-                <p class="mb-0">
-                    <strong>Contact:</strong> ${booking.user_contact_no} 
-                    <span class="text-muted">(${booking.user_email_address})</span>
-                </p>
-        ${booking.angkas_booking_reference.startsWith("GRX") ? 
-       `<a href="#" class="badge rounded-pill bg-danger text-white showPabiliItems" data-ref="${booking.shop_order_reference_number}">
-            SHOW ITEMS
-        </a>` : ''}
-            </div>
-        </div>
-        <div class="col-md-3 d-flex align-items-center justify-content-center">
-                <form id="map${booking.angkas_booking_reference}" class="booking_form w-100" method="POST">
-                    <input type="hidden" value="${booking.angkas_booking_reference}" name="booking_ref" />
-                    <button type="submit" class="shadow btn btn-success w-100 text-center py-3">
-                        Accept Booking
-                        (<strong>Php ${booking.form_Est_Cost}</strong>)
-                    </button>
-                </form>
-        </div>
+  <!-- Ride Info -->
+  <div class="col-12 d-flex justify-content-between mt-2">
+    <div>
+      <p class="mb-1 text-muted">Rating</p>
+      <p class="mb-0">⭐⭐⭐⭐⭐</p>
+    </div>
+    <div>
+      <p class="mb-1 text-muted">Booked</p>
+      <p class="mb-0">${elapsedTimeInMinutes} minutes ago</p>
+    </div>
+    <div>
+      <p class="mb-1 text-muted">Travel Duration</p>
+      <p class="mb-0">${booking.form_ETA_duration} mins</p>
+    </div>
+  </div>
 
+  <!-- Fare Info -->
+  <div class="col-12 d-flex justify-content-between mt-3">
+    <div>
+      <p class="mb-1 text-muted">Ride Fare</p>
+      <p class="mb-0">Php ${booking.form_Est_Cost}</p>
+    </div>
+    <div>
+      <p class="mb-1 text-muted">Discount</p>
+      <p class="mb-0">--</p>
+    </div>
+    <div>
+      <p class="mb-1 text-muted">Total Fare</p>
+      <p class="mb-0">Php ${booking.form_Est_Cost}</p>
+    </div>
+  </div>
+
+  <!-- Optional Pabili Items Button -->
+  ${booking.angkas_booking_reference.startsWith("GRX") ? 
+  `<div class="col-12 mt-3">
+    <a href="#" class="badge rounded-pill bg-danger text-white showPabiliItems" data-ref="${booking.shop_order_reference_number}">
+      SHOW ITEMS
+    </a>
+  </div>` : ''}
+
+  <!-- Action Button -->
+  <div class="col-12 mt-3">
+    <form id="map${booking.angkas_booking_reference}" class="booking_form w-100" method="POST">
+      <input type="hidden" value="${booking.angkas_booking_reference}" name="booking_ref" />
+      <button type="submit" class="shadow btn btn-success w-100 text-center py-3">
+        Accept Booking (<strong>Php ${booking.form_Est_Cost}</strong>)
+      </button>
+    </form>
+  </div>
 </div>
+
 
    `;
 }
@@ -428,52 +480,147 @@ ${booking.angkas_booking_reference.startsWith("GRX") ? `<span class="badge round
     
         // Create the action button only if hist is true
         const actionButton = (isHist === false)
-            ? "" : `<div class="col-md-3 d-flex align-items-center justify-content-center">
-                    <a href="_current_booking_map.php" 
-                       class="btn shadow btn-success w-75">
-                       Show Location
-                    </a>
-               </div>`
+            ? "" : `<div class="col-12 mt-3">
+  <a href="_current_booking_map.php" 
+     class="shadow btn btn-success w-100 text-center py-3">
+     Show Location
+  </a>
+</div>
+`
             ;
     
         // Return the booking card HTML
-        return `
-          <div class="row d-flex align-items-start mb-4 p-3 shadow-sm border-0 rounded bg-white">
-            <!-- Image Section -->
-            <div class="col-md-3 col-sm-12">
-                <img src="${window.location.origin}/ezrides/profile/${booking.user_profile_image}" 
-                     class="img-fluid rounded-start" 
-                     alt="${booking.user_firstname} ${booking.user_lastname}" 
-                     style="object-fit: cover; height: 200px; width: 100%;">
-            </div>
-    
-            <!-- Info Section -->
-            <div class="col-md-6">
-                <div class="row mb-2">
-                    <h5 class="text-primary">${booking.angkas_booking_reference}</h5>
-${booking.angkas_booking_reference.startsWith("GRX") ? `<span class="badge rounded-pill bg-danger text-white"> PABILI </span>` : `<span class="badge rounded-pill bg-danger text-white"> ANGKAS </span>`}
-                    <p class="small text-muted">Booked ${elapsedTimeInMinutes} minutes ago</p>
-                </div>
-                <hr class="my-2">
-                <div class="row">
-                    <p class="mb-1"><strong>From:</strong> ${booking.form_from_dest_name}</p>
-                    <p class="mb-1"><strong>To:</strong> ${booking.form_to_dest_name}</p>
-                    <p class="mb-1">
-                        <strong>ETA Duration:</strong> ${booking.form_ETA_duration} mins 
-                        <strong>Total Distance:</strong> ${booking.form_TotalDistance} km
-                    </p>
-                    <p class="mb-0">
-                        <strong>Contact:</strong> ${booking.user_contact_no} 
-                        <span class="text-muted">(${booking.user_email_address})</span>
-                    </p>
-           ${booking.angkas_booking_reference.startsWith("GRX") ? 
-               `<a href="#" class="badge rounded-pill bg-danger text-white showPabiliItems" data-ref="${booking.shop_order_reference_number}">
-                    SHOW ITEMS
-                </a>` : ''}
-                </div>
-            </div>
-            ${actionButton}
-          </div>`;
+        return`
+<div class="row d-flex align-items-start border-1 shadow mb-4 p-3 rounded bg-white">
+
+  
+  <!-- Customer Details -->
+  <div class="col-12 mb-1 d-flex align-items-center">
+    <img src="../profile/${booking.user_profile_image}" 
+         class="rounded-circle me-3" 
+         alt="${booking.user_firstname} ${booking.user_lastname}" 
+         style="width: 60px; height: 60px; object-fit: cover;">
+    <div>
+      <h6 class="mb-0">${booking.user_firstname} ${booking.user_lastname}</h6>
+      <p class="mb-0 small text-muted">${booking.angkas_booking_reference}</p>
+    </div>
+  </div>
+
+  <!-- Address Section -->
+  <div class="col-12 mb-1">
+    <div class="d-flex justify-content-between align-items-center">
+      <div>
+        <p class="mb-1 fw-bold">${booking.form_from_dest_name}</p>
+        <p class="small text-muted">Pickup point</p>
+      </div>
+      <div class="text-end">
+        <p class="mb-1 text-muted">Distance</p>
+        <p class="fw-bold">${booking.form_TotalDistance} km</p>
+      </div>
+    </div>
+    <div class="d-flex justify-content-between align-items-center pt-1 mt-1">
+      <div>
+        <p class="mb-1 fw-bold">${booking.form_to_dest_name}</p>
+        <p class="small text-muted">Destination</p>
+      </div>
+      <div class="text-end">
+        <p class="mb-1 text-muted">Payment</p>
+        <span class="badge rounded-pill bg-success text-white">Php ${booking.form_Est_Cost}</span>
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- Ride Info -->
+  <div class="col-12 d-flex justify-content-between">
+    <div>
+      <p class="mb-1 text-muted">Rating</p>
+      <p class="mb-0">⭐⭐⭐⭐⭐</p>
+    </div>
+    <div>
+      <p class="mb-1 text-muted">Booked</p>
+      <p class="mb-0">${elapsedTimeInMinutes} minutes ago</p>
+    </div>
+    <div>
+      <p class="mb-1 text-muted">Travel Duration</p>
+      <p class="mb-0">${booking.form_ETA_duration} mins</p>
+    </div>
+  </div>
+
+  <div class="col-12 d-flex justify-content-between mt-3">
+    <div>
+      <p class="mb-1 text-muted">Ride Fare</p>
+      <p class="mb-0">Php ${booking.form_Est_Cost}</p>
+    </div>
+    <div>
+      <p class="mb-1 text-muted">Discount</p>
+      <p class="mb-0">--</p>
+    </div>
+    <div>
+      <p class="mb-1 text-muted">Total Fare</p>
+      <p class="mb-0">Php ${booking.form_Est_Cost}</p>
+    </div>
+  </div>
+
+  <!-- Optional Pabili Items Button -->
+  ${booking.angkas_booking_reference.startsWith("GRX") ? 
+  `<div class="col-12 mt-3">
+    <a href="#" class="badge rounded-pill bg-danger text-white showPabiliItems" data-ref="${booking.shop_order_reference_number}">
+      SHOW ITEMS
+    </a>
+  </div>` : ''}
+
+  <!-- Action Button -->
+  ${actionButton}
+
+</div>
+
+                
+        `;
+        
+        
+        
+//        
+//        return `
+//          <div class="row d-flex align-items-start mb-4 p-3 shadow-sm border-0 rounded bg-white">
+//            <!-- Image Section -->
+//            <div class="col-md-3 col-sm-12">
+//                <img src="../profile/${booking.user_profile_image}" 
+//                     class="img-fluid rounded-start" 
+//                     alt="${booking.user_firstname} ${booking.user_lastname}" 
+//                     style="object-fit: cover; height: 200px; width: 100%;">
+//            </div>
+//    
+//            <!-- Info Section -->
+//            <div class="col-md-6">
+//                <div class="mb-2">
+//                    <h5 class="text-primary">${booking.angkas_booking_reference}</h5>
+//${booking.angkas_booking_reference.startsWith("GRX") ? `<span class="badge rounded-pill bg-danger text-white"> PABILI </span>` : `<span class="badge rounded-pill bg-danger text-white"> ANGKAS </span>`}
+//                    <p class="small text-muted">Booked ${elapsedTimeInMinutes} minutes ago</p>
+//                </div>
+//                <hr class="my-2">
+//                <div class="mb-3">
+//                    <p class="mb-1"><strong>From:</strong> ${booking.form_from_dest_name}</p>
+//                    <p class="mb-1"><strong>To:</strong> ${booking.form_to_dest_name}</p>
+//                    <p class="mb-1">
+//                        <strong>ETA Duration:</strong> ${booking.form_ETA_duration} mins 
+//                        <strong>Total Distance:</strong> ${booking.form_TotalDistance} km
+//                    </p>
+//                    
+//                    <p class="mb-0">
+//                        <strong>Contact:</strong> ${booking.user_contact_no} 
+//                        <span class="text-muted">(${booking.user_email_address})</span>
+//                    </p>
+//                <span class="badge rounded-pill text-bg-success text-white small">Php ${booking.form_Est_Cost}</span>
+//           ${booking.angkas_booking_reference.startsWith("GRX") ? 
+//               `<a href="#" class="badge rounded-pill bg-danger text-white showPabiliItems" data-ref="${booking.shop_order_reference_number}">
+//                    SHOW ITEMS
+//                </a>` : ''}
+//                </div>
+//            </div>
+//            ${actionButton}
+//          </div>`;
     }
     
 

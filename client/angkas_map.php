@@ -132,6 +132,7 @@ include_once "../_sql_utility.php";
     </div>
 
     <?php include_once "../top_up_modal.php" ;?>
+    
 
     <nav class="navbar fixed-bottom bg-purple rideInfoContainer d-none" style="height:10vh">
         <div class="container h-100">
