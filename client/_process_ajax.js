@@ -513,6 +513,50 @@ function chkBooking() {
 
                             `
                             );
+                         const formRating = `
+
+     <form id="ratingForm" method="POST">
+          <input type="hidden" name="bookingrefnumber" value="${booking.angkas_booking_reference}">
+            <div class="rating">
+              <input type="radio" name="rideRating" id="star5" value="5">
+              <label for="star5" title="5 stars">★</label>
+              <input type="radio" name="rideRating" id="star4" value="4">
+              <label for="star4" title="4 stars">★</label>
+              <input type="radio" name="rideRating" id="star3" value="3">
+              <label for="star3" title="3 stars">★</label>
+              <input type="radio" name="rideRating" id="star2" value="2">
+              <label for="star2" title="2 stars">★</label>
+              <input type="radio" name="rideRating" id="star1" value="1">
+              <label for="star1" title="1 star">★</label>
+      <span class="text-muted small mt-1">Rate this Ride </span>
+            </div>
+</form>
+  <style>
+    .rating {
+      direction: rtl;
+      justify-content: end;
+    }
+    .rating input[type="radio"] {
+      display: none;
+    }
+    .rating label {
+      font-size: 1rem;
+      color: #ccc;
+      cursor: pointer;
+    }
+    .rating input[type="radio"]:checked ~ label {
+      color: gold;
+    }
+    .rating label:hover,
+    .rating label:hover ~ label {
+      color: gold;
+    }
+  </style>
+`;
+
+$('#ratingcontainer').html(formRating);
+
+                            
                         } else {
                             elements.riderInfoPI.html(CreateHtml.loadingGrower);
                         }
@@ -536,6 +580,38 @@ function chkBooking() {
         });
     });
 }
+$(document).on('change', '#ratingForm input[name="rideRating"]', function () {
+  $('#ratingForm').trigger('submit');
+});
+
+$(document).on('submit', '#ratingForm', function (e) {
+  e.preventDefault();
+
+  const $form = $(this);
+
+  $.post('_rate_ride.php', $form.serialize())
+    .done(function (response) {
+      try {
+        const res = typeof response === 'string' ? JSON.parse(response) : response;
+        if (res.success) {
+          console.log('Rating submitted successfully!');
+          // Set the checked radio button based on returned rating
+          $form.find(`input[name="rideRating"][value="${res.rating}"]`).prop('checked', true);
+        } else {
+          console.log('Failed to submit rating:', res.message || 'Unknown error');
+        }
+      } catch (err) {
+        console.error('Invalid JSON:', response);
+        console.log('An unexpected error occurred.');
+      }
+    })
+    .fail(function () {
+      alert('Server error. Please try again.');
+    });
+});
+
+
+
 
 function checkPendingBooking() {
     return $.ajax({
