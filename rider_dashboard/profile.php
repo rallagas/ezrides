@@ -126,11 +126,17 @@ require_once __DIR__ . "/../_sql_utility.php";?>
             <!-- Overview Tab -->
             <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">
                 <div class="card">
-                    <div class="card-body">
+                    <div class="card-body mb-3">
                         <h5 class="card-title">Profile Overview</h5>
                         <p><strong>Full Name:</strong> <?php echo $user_firstname . " " . $user_lastname . ", " . "$user_mi"?></p>
                         <p><strong>Email:</strong><?php echo $user_email_address; ?></p>
                         <p><strong>Phone:</strong> <?php echo $user_contact_no; ?></p>
+                    </div>
+                    
+                       <div class="card-body">
+                            <h5 class="card-title">Vehicle Information</h5>
+                            <p><strong>Plate Number</strong> <?php echo $rider_plate_no; ?></p>
+                            
                     </div>
                 </div>
             </div>
