@@ -146,12 +146,13 @@ function handleQueueData(data) {
 
     //$("#availableBookings").html(`<span class="badge text-bg-info">Current Queue: ${currentQueue}, Status: ${status} </span>`);
     $("#bookingCards").remove(); // Remove previous cards
-    $("#availableBookings").append('<div id="bookingCards" class="col-12"></div>');
+   // $("#availableBookings").append('<div id="bookingCards" class="col-12"></div>');
 
     if (status !== "in transit" && Array.isArray(queueList) && queueList.length > 0) {
+        $("#availableBookings").empty();
         queueList.forEach((booking) => {
             const card = createBookingCard(booking);
-            $("#bookingCards").append(card);
+            $("#availableBookings").append(card);
         });
     }
 }
@@ -171,15 +172,17 @@ function fetchCurrentBookings() {
 
             if (data && Array.isArray(data.queue_list) && data.queue_list.length > 0) {
                 bookingCards.remove();
-                availableBookings.append('<div id="bookingCards" class="col-12"></div>');
+        //        availableBookings.append('<div id="bookingCards" class="col-12"></div>');
+        
                 data.queue_list.forEach((booking) => {
                     const card = ViewBookingCard(booking, false); // Use the accepted booking card view
-                    $("#bookingCards").append(card);
+                   // $("#bookingCards").append(card);
+                    $("#availableBookings").append(card);
                 });
             } 
-            // else {
-            //     availableBookings.html('<div class="alert alert-warning">No Current Bookings available. Checking for new Bookings ' + loadingIcon + '</div>');
-            // }
+             else {
+                 availableBookings.html('<div class="alert alert-warning">No Current Bookings available. Please wait for a while' + loadingIcon + '</div>');
+             }
         },
         error: function (xhr, status, error) {
             console.error("Error fetching current bookings:", error);

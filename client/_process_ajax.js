@@ -6,17 +6,17 @@ let lastBookingStatus = null; // Store the last known value
 let debounceTimeout = null;
 const LoadingIcon = `<span class="spinner-border spinner-border-sm ms-auto" aria-hidden="true"></span>`;
 const CreateHtml = {
-    loadingGrower : `<div class="spinner-grow text-danger spinner-grow-sm" role="status"></div><div class="spinner-grow text-danger spinner-grow-sm" role="status"></div><div class="spinner-grow text-danger spinner-grow-sm" role="status"></div>`
+    loadingGrower: `<div class="spinner-grow text-danger spinner-grow-sm" role="status"></div><div class="spinner-grow text-danger spinner-grow-sm" role="status"></div><div class="spinner-grow text-danger spinner-grow-sm" role="status"></div>`
 }
 const chkIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
   <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
 </svg>`;
 
 const elements = {
-    orderStatus : $(".order-status"),
-    rideInfoContainer : $(".rideInfoContainer"),
-    btnRideInfo : $(".btnRideInfo"),
-    commutesInfo : $('.commutes-info'),
+    orderStatus: $(".order-status"),
+    rideInfoContainer: $(".rideInfoContainer"),
+    btnRideInfo: $(".btnRideInfo"),
+    commutesInfo: $('.commutes-info'),
     formFindAngkas: $('#formFindAngkas'),
     transactionHistoryTable: $('#transactionHistoryTable'),
     walletBalance: $('.walletbalance'),
@@ -26,12 +26,12 @@ const elements = {
     btnPayRider: $('#btnPayRider'),
     findMeARiderBTN: $('#findMeARiderBTN'),
     bookingHistoryContent: $('#BookingHistoryContent'),
-    bookingInfoTable : $('#bookingInfoTable'),
+    bookingInfoTable: $('#bookingInfoTable'),
     rentalAlert: $('#RentalAlert'),
     topUpForm: $('#topUpForm'),
     topUpAmount: $('#topUpAmount'),
     topUpModal: $('#topUpModal'),
-//    userLogOut: $('#userLogOut'),
+    //    userLogOut: $('#userLogOut'),
     pagination: $('#pagination'),
     transactionStatus: $('#TransactionStatus'),
     appMenuBtn: $('#appMenuBtn'),
@@ -44,10 +44,10 @@ const elements = {
     customerDestination: $('#CustomerDestination'),
     riderInfoBookingStatus: $('#riderInfoBookingStatus'),
     riderInfoPI: $('#riderInfoPI'),
-    addDestinationButton : $(".add-destination-button"),
+    addDestinationButton: $(".add-destination-button"),
 };
 
-$(document).on('click','#userLogOut',function(e){
+$(document).on('click', '#userLogOut', function (e) {
     e.preventDefault;
     console.log("Logout button clicked");
     $.ajax({
@@ -58,9 +58,9 @@ $(document).on('click','#userLogOut',function(e){
 
             $('body').html(LoadingIcon + " Heading Out so Soon?").addClass('text-center mt-5');
             setTimeout(() => {
-                    window.location.href = '../index.php?page=login';
+                window.location.href = '../index.php?page=login';
             }, 3000);
-            
+
         },
         error: function (xhr, status, error) {
             console.error('Failed to end session:', error);
@@ -72,6 +72,7 @@ $(document).on('click','#userLogOut',function(e){
 function clog(logMsg) {
     console.log(logMsg);
 }
+
 function updateRatingInDatabase(bookingRefNum, ratingValue) {
     $.ajax({
         url: 'ajax_update_rating.php', // Backend URL for updating the rating
@@ -186,7 +187,7 @@ function makePayment(estimatedCost, payFrom = null, payTo = null, referenceNum =
                 console.log("Payment Successful.");
                 elements.orderStatus.append("<br>Paid Php " + parseFloat(response.amount).toFixed(2) + " for " + referenceNum + "<br>");
                 triggerElement.prop('disabled', true); // Disable the triggering element
-                
+
                 fetchAndAssignWalletBalance(walletBalanceElement);
             } else {
                 elements.orderStatus
@@ -207,10 +208,10 @@ function getWalletBalance() {
         $.ajax({
             url: 'ajax_get_balance.php',
             type: 'GET',
-            dataType: 'json',  // Expect JSON response
+            dataType: 'json', // Expect JSON response
             contentType: 'application/json',
             success: function (response) {
-                resolve(response);  // Resolve with the response data
+                resolve(response); // Resolve with the response data
             },
             error: function (xhr, status, error) {
                 console.error('Error fetching wallet balance:', error);
@@ -235,7 +236,7 @@ async function fetchAndAssignWalletBalance(elements) {
                 // Check if the element is an input or textarea (elements that use val())
                 if (element.is("input, textarea")) {
                     element.val(formattedBalance);
-                } 
+                }
                 // Otherwise, use text() for other elements
                 else {
                     element.text(formattedBalance);
@@ -250,7 +251,9 @@ async function fetchAndAssignWalletBalance(elements) {
         return data; // Return the full response data for further usage if needed
     } catch (error) {
         console.error("Error:", error);
-        return { error: error.message }; // Return an error message in case of failure
+        return {
+            error: error.message
+        }; // Return an error message in case of failure
     }
 }
 
@@ -307,6 +310,61 @@ function updateShopPaymentStatus(shopReferenceNum, status) {
     });
 }
 
+function getRiderRating(rideruserid) {
+  return new Promise(function (resolve, reject) {
+    $.ajax({
+      url: '_get_rider_rating.php',
+      type: 'POST',
+      data: { rideruserid },
+      success: function (response) {
+        try {
+          const res = typeof response === 'string' ? JSON.parse(response) : response;
+
+          if (res.success) {
+            const rating = res.rating !== null ? parseFloat(res.rating).toFixed(2) : null;
+            resolve(rating);
+          } else {
+            reject(new Error(res.message || 'Unknown error'));
+          }
+        } catch (e) {
+          reject(new Error('Invalid JSON response: ' + response));
+        }
+      },
+      error: function () {
+        reject(new Error('Server error during request'));
+      }
+    });
+  });
+}
+
+async function displayRiderRating(rideruserid) {
+  try {
+    const rating = await getRiderRating(rideruserid);
+
+    if (rating == 0) {
+      $('#riderRatingDisplay').text('No Rating yet');
+      $('#riderStarRating').html('★★★★★').addClass('text-muted').removeClass('text-warning');
+    } else {
+      const rounded = Math.round(rating);
+      let stars = '';
+
+      for (let i = 1; i <= 5; i++) {
+        stars += i <= rounded ? '★' : '☆';
+      }
+
+      $('#riderRatingDisplay').text(`Rating: ${parseFloat(rating).toFixed(2)}`);
+      $('#riderStarRating').html(stars).addClass('text-warning').removeClass('text-muted');
+    }
+  } catch (err) {
+    console.error('Error displaying rider rating:', err.message);
+    $('#riderRatingDisplay').text('Error loading rating');
+    $('#riderStarRating').html('★★★★★').addClass('text-muted').removeClass('text-warning');
+  }
+}
+
+
+
+
 // Check booking status
 function chkBookingStatus() {
     // Check if the necessary elements are loaded and have valid text content
@@ -336,7 +394,7 @@ function chkBookingStatus() {
                     // Update booking status
                     $('#riderInfoBookingStatus').html(
                         bookingStatusText === 'Waiting for Driver' ? CreateHtml.loadingGrower :
-                            bookingStatusText
+                        bookingStatusText
                     );
                     console.log("Start count down to update booking info.");
                     setTimeout(() => {
@@ -349,11 +407,10 @@ function chkBookingStatus() {
                     }
                     //disable if wallet balance is below cost
                     if (EstCost > walletBalance) {
-                        $('#btnPayRider').prop('disabled',true);
-                    
-                    }
-                    else{
-                        $('#btnPayRider').prop('disabled',false);
+                        $('#btnPayRider').prop('disabled', true);
+
+                    } else {
+                        $('#btnPayRider').prop('disabled', false);
                     }
 
 
@@ -373,6 +430,7 @@ function chkBookingStatus() {
         console.warn("Necessary elements are not fully loaded or don't have valid text content. Skipping status check.");
     }
 }
+
 function chkBooking() {
     return new Promise((resolve, reject) => {
         $.ajax({
@@ -392,8 +450,7 @@ function chkBooking() {
                         //elements.formFindAngkas.removeClass("d-none").show();
                         resolve(0); // Indicate no active booking
                         return;
-                    }
-                    else{
+                    } else {
                         // Update BookingInfoTable with current booking details
                         elements.commutesInfo.addClass("d-none");
                         elements.rideInfoContainer.removeClass("d-none");
@@ -416,14 +473,17 @@ function chkBooking() {
                         }
 
                         // Handle driver info
-                         /* ${booking.rider_firstname || "N/A"}, ${booking.rider_lastname } */
+                        /* ${booking.rider_firstname || "N/A"}, ${booking.rider_lastname } */
                         let rawModel = booking.vehicle_model;
                         let match = rawModel.match(/\(([^)]+)\)/);
                         let vehicleModel = match ? match[1].trim() : '';
+                   
                         
                         if (booking.booking_status_text !== "Waiting for Driver") {
+                            
+                            let riderRating = 0.0;
                             elements.riderInfoPI.html(
-                           `<div class="card border-0 shadow rounded-4 px-3 py-3 mb-3 w-100">
+                                `<div class="card border-0 shadow rounded-4 px-3 py-3 mb-3 w-100">
                               <div class="d-flex align-items-center justify-content-between">
 
                                 <!-- Left: Profile Picture and Name -->
@@ -434,10 +494,10 @@ function chkBooking() {
                                        style="width: 60px; height: 60px; object-fit: cover;">
                                   <div>
                                     <div class="d-flex align-items-center">
-                                      <div class="me-2 text-warning">
+                                      <div id="riderStarRating" class="me-2 text-warning">
                                         ★★★★★
                                       </div>
-                                      <span class="fw-semibold small text-dark">4.8</span>
+                                      <span id="riderRatingDisplay" class="fw-semibold small text-dark">${riderRating}</span>
                                     </div>
                                     <h6 class="fw-bold m-0">${booking.rider_firstname || "N/A"} ${booking.rider_lastname || ""}</h6>
                                   </div>
@@ -490,14 +550,9 @@ function chkBooking() {
                                  </div>` 
                               : ''
                             }
-
-
-                              <hr class="my-1">
+                        <hr class="my-1">
                             </div>
-
-                              
-
-                              <!-- Chat Button -->
+                            <!-- Chat Button -->
                               <div class="mt-2 d-flex justify-content-end">
                                 <a class="btn bg-yellow shadow open-chat-modal fw-bold"
                                    data-bs-toggle="modal"
@@ -508,61 +563,57 @@ function chkBooking() {
                                 </a>
                               </div>
                             </div>
-
-
-
                             `
                             );
-                         const formRating = `
+                            const formRating = `<form id="ratingForm" method="POST">
+                                      <input type="hidden" name="bookingrefnumber" value="${booking.angkas_booking_reference}">
+                                        <div class="rating">
+                                          <input type="radio" name="rideRating" id="star5" value="5">
+                                          <label for="star5" title="5 stars">★</label>
+                                          <input type="radio" name="rideRating" id="star4" value="4">
+                                          <label for="star4" title="4 stars">★</label>
+                                          <input type="radio" name="rideRating" id="star3" value="3">
+                                          <label for="star3" title="3 stars">★</label>
+                                          <input type="radio" name="rideRating" id="star2" value="2">
+                                          <label for="star2" title="2 stars">★</label>
+                                          <input type="radio" name="rideRating" id="star1" value="1">
+                                          <label for="star1" title="1 star">★</label>
+                                  <span class="text-muted small mt-1">Rate this Ride </span>
+                                        </div>
+                            </form>
+                              <style>
+                                .rating {
+                                  direction: rtl;
+                                  justify-content: end;
+                                }
+                                .rating input[type="radio"] {
+                                  display: none;
+                                }
+                                .rating label {
+                                  font-size: 1rem;
+                                  color: #ccc;
+                                  cursor: pointer;
+                                }
+                                .rating input[type="radio"]:checked ~ label {
+                                  color: gold;
+                                }
+                                .rating label:hover,
+                                .rating label:hover ~ label {
+                                  color: gold;
+                                }
+                              </style>
+                            `;
 
-     <form id="ratingForm" method="POST">
-          <input type="hidden" name="bookingrefnumber" value="${booking.angkas_booking_reference}">
-            <div class="rating">
-              <input type="radio" name="rideRating" id="star5" value="5">
-              <label for="star5" title="5 stars">★</label>
-              <input type="radio" name="rideRating" id="star4" value="4">
-              <label for="star4" title="4 stars">★</label>
-              <input type="radio" name="rideRating" id="star3" value="3">
-              <label for="star3" title="3 stars">★</label>
-              <input type="radio" name="rideRating" id="star2" value="2">
-              <label for="star2" title="2 stars">★</label>
-              <input type="radio" name="rideRating" id="star1" value="1">
-              <label for="star1" title="1 star">★</label>
-      <span class="text-muted small mt-1">Rate this Ride </span>
-            </div>
-</form>
-  <style>
-    .rating {
-      direction: rtl;
-      justify-content: end;
-    }
-    .rating input[type="radio"] {
-      display: none;
-    }
-    .rating label {
-      font-size: 1rem;
-      color: #ccc;
-      cursor: pointer;
-    }
-    .rating input[type="radio"]:checked ~ label {
-      color: gold;
-    }
-    .rating label:hover,
-    .rating label:hover ~ label {
-      color: gold;
-    }
-  </style>
-`;
+                            $('#ratingcontainer').html(formRating);
+                            displayRiderRating(booking.rider_user_id);
 
-$('#ratingcontainer').html(formRating);
 
-                            
                         } else {
                             elements.riderInfoPI.html(CreateHtml.loadingGrower);
                         }
                     }
-                    
-                    
+
+
 
                     resolve(1); // Indicate an active booking exists
                 } else {
@@ -581,33 +632,33 @@ $('#ratingcontainer').html(formRating);
     });
 }
 $(document).on('change', '#ratingForm input[name="rideRating"]', function () {
-  $('#ratingForm').trigger('submit');
+    $('#ratingForm').trigger('submit');
 });
 
 $(document).on('submit', '#ratingForm', function (e) {
-  e.preventDefault();
+    e.preventDefault();
 
-  const $form = $(this);
+    const $form = $(this);
 
-  $.post('_rate_ride.php', $form.serialize())
-    .done(function (response) {
-      try {
-        const res = typeof response === 'string' ? JSON.parse(response) : response;
-        if (res.success) {
-          console.log('Rating submitted successfully!');
-          // Set the checked radio button based on returned rating
-          $form.find(`input[name="rideRating"][value="${res.rating}"]`).prop('checked', true);
-        } else {
-          console.log('Failed to submit rating:', res.message || 'Unknown error');
-        }
-      } catch (err) {
-        console.error('Invalid JSON:', response);
-        console.log('An unexpected error occurred.');
-      }
-    })
-    .fail(function () {
-      alert('Server error. Please try again.');
-    });
+    $.post('_rate_ride.php', $form.serialize())
+        .done(function (response) {
+            try {
+                const res = typeof response === 'string' ? JSON.parse(response) : response;
+                if (res.success) {
+                    console.log('Rating submitted successfully!');
+                    // Set the checked radio button based on returned rating
+                    $form.find(`input[name="rideRating"][value="${res.rating}"]`).prop('checked', true);
+                } else {
+                    console.log('Failed to submit rating:', res.message || 'Unknown error');
+                }
+            } catch (err) {
+                console.error('Invalid JSON:', response);
+                console.log('An unexpected error occurred.');
+            }
+        })
+        .fail(function () {
+            alert('Server error. Please try again.');
+        });
 });
 
 
@@ -699,7 +750,7 @@ async function handleCheckPendingBooking() { //in the app button
                 finalAmountToPay += response.bookingDetails.total_amount_to_pay; //shop amount
             }
 
-           
+
 
             var bookingCardView = `
             <div class="card-header bg-warning clear-fix">
@@ -748,17 +799,17 @@ async function handleCheckPendingBooking() { //in the app button
             </div>
             `;
 
-            
+
 
             // Ensure the element with id 'bookingDetails' exists in the DOM
             $('#BookingDetails').html(bookingCardView); // Set the content to the container
-             // Construct the booking card view dynamically
-             const itemData = await loadItemFromReference(response.bookingDetails.shop_order_reference_number);
-             if (itemData) {
-                 const tableHTML = generateItemTable(itemData);
-                 // Insert table into the corresponding shop order content
-                 $("div#" + response.bookingDetails.shop_order_reference_number).html(tableHTML);
-             }
+            // Construct the booking card view dynamically
+            const itemData = await loadItemFromReference(response.bookingDetails.shop_order_reference_number);
+            if (itemData) {
+                const tableHTML = generateItemTable(itemData);
+                // Insert table into the corresponding shop order content
+                $("div#" + response.bookingDetails.shop_order_reference_number).html(tableHTML);
+            }
             return true;
         } else {
             console.log("No pending bookings.");
@@ -802,6 +853,7 @@ function updateBookingStatus(newStatus) {
     statusElement.removeClass().addClass(textColor + " badge fw-bold float-end");
     //  console.log("Booking status updated:", newStatus);
 }
+
 function loadBookingInfo() {
     $.ajax({
         type: "GET",
@@ -816,8 +868,8 @@ function loadBookingInfo() {
                     // Dynamically create a card for each booking
                     const defaultImage =
                         booking.customer_gender === 'M' ? '../icons/male_person1.jpg' :
-                            booking.customer_gender === 'F' ? '../icons/female_person1.jpg' :
-                                '../icons/male_person2.jpg';
+                        booking.customer_gender === 'F' ? '../icons/female_person1.jpg' :
+                        '../icons/male_person2.jpg';
 
                     const bookingCard = ` 
                           <div class="card mb-3 w-100 mx-1">
@@ -855,6 +907,7 @@ function loadBookingInfo() {
         }
     });
 }
+
 function processAngkasBooking(data) {
     return new Promise((resolve, reject) => {
         $.ajax({
@@ -865,10 +918,16 @@ function processAngkasBooking(data) {
             success: function (response) {
                 if (response.hasPendingBooking) {
                     console.log("Pending booking exists:", response.pendingBookings);
-                    resolve({ status: "pending", data: response });
+                    resolve({
+                        status: "pending",
+                        data: response
+                    });
                 } else if (response.bookingReference) {
                     console.log("New booking created with reference:", response.bookingReference);
-                    resolve({ status: "new", data: response });
+                    resolve({
+                        status: "new",
+                        data: response
+                    });
                 } else if (response.error) {
                     console.error("Error:", response.message);
                     reject(new Error(response.message || "An error occurred during booking."));
@@ -893,6 +952,7 @@ function onSuccess(response, status, bookingNum) {
         chkBookingStatus(bookingNum); // Pass booking reference
     }
 }
+
 function onError(errorMessage) {
     console.error("Error occurred:", errorMessage);
 }
@@ -909,73 +969,74 @@ async function GetCurrentLocation(addressText, addressCoor, CurrLatElement = nul
         // Request high-accuracy location
         navigator.geolocation.getCurrentPosition(
             async (position) => {
-                const latitude = position.coords.latitude;
-                const longitude = position.coords.longitude;
+                    const latitude = position.coords.latitude;
+                    const longitude = position.coords.longitude;
 
-                // Update the hidden inputs
-                addressCoorElement.val(`${latitude},${longitude}`);
-                if (CurrLatElement !== null) $(CurrLatElement).val(`${latitude}`);
-                if (CurrLongElement !== null) $(CurrLongElement).val(`${longitude}`);
+                    // Update the hidden inputs
+                    addressCoorElement.val(`${latitude},${longitude}`);
+                    if (CurrLatElement !== null) $(CurrLatElement).val(`${latitude}`);
+                    if (CurrLongElement !== null) $(CurrLongElement).val(`${longitude}`);
 
-                // Perform reverse geocoding using Google Maps Geocoder
-                const geocoder = new google.maps.Geocoder();
-                const latlng = new google.maps.LatLng(latitude, longitude);
+                    // Perform reverse geocoding using Google Maps Geocoder
+                    const geocoder = new google.maps.Geocoder();
+                    const latlng = new google.maps.LatLng(latitude, longitude);
 
-                geocoder.geocode(
-                    {
-                        location: latlng,
-                        bounds: new google.maps.LatLngBounds(
-                            new google.maps.LatLng(12.0, 123.0), // Example Southwest bound for Albay/Sorsogon
-                            new google.maps.LatLng(13.5, 124.0) // Example Northeast bound
-                        ),
-                    },
-                    (results, status) => {
-                        if (status === google.maps.GeocoderStatus.OK && results[0]) {
-                            const address = results[0].formatted_address;
+                    geocoder.geocode({
+                            location: latlng,
+                            bounds: new google.maps.LatLngBounds(
+                                new google.maps.LatLng(12.0, 123.0), // Example Southwest bound for Albay/Sorsogon
+                                new google.maps.LatLng(13.5, 124.0) // Example Northeast bound
+                            ),
+                        },
+                        (results, status) => {
+                            if (status === google.maps.GeocoderStatus.OK && results[0]) {
+                                const address = results[0].formatted_address;
 
-                            // Update the address field
-                            addressTxt.val(address);
+                                // Update the address field
+                                addressTxt.val(address);
 
-                            // Resolve with the fetched data
-                            resolve({
-                                address: address,
-                                coordinates: { lat: latitude, lng: longitude },
-                            });
-                        } else if (status === google.maps.GeocoderStatus.OVER_QUERY_LIMIT) {
-                            reject(new Error("Quota exceeded for Google Maps API."));
-                        } else if (status === google.maps.GeocoderStatus.REQUEST_DENIED) {
-                            reject(new Error("Request denied. Check your API key or permissions."));
-                        } else if (status === google.maps.GeocoderStatus.INVALID_REQUEST) {
-                            reject(new Error("Invalid request. Ensure location parameters are correct."));
-                        } else {
-                            reject(new Error(`Geocoder failed with status: ${status}`));
+                                // Resolve with the fetched data
+                                resolve({
+                                    address: address,
+                                    coordinates: {
+                                        lat: latitude,
+                                        lng: longitude
+                                    },
+                                });
+                            } else if (status === google.maps.GeocoderStatus.OVER_QUERY_LIMIT) {
+                                reject(new Error("Quota exceeded for Google Maps API."));
+                            } else if (status === google.maps.GeocoderStatus.REQUEST_DENIED) {
+                                reject(new Error("Request denied. Check your API key or permissions."));
+                            } else if (status === google.maps.GeocoderStatus.INVALID_REQUEST) {
+                                reject(new Error("Invalid request. Ensure location parameters are correct."));
+                            } else {
+                                reject(new Error(`Geocoder failed with status: ${status}`));
+                            }
                         }
+                    );
+                },
+                (error) => {
+                    let errorMessage = "";
+                    switch (error.code) {
+                        case error.PERMISSION_DENIED:
+                            errorMessage = "User denied the request for Geolocation.";
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            errorMessage = "Location information is unavailable.";
+                            break;
+                        case error.TIMEOUT:
+                            errorMessage = "The request to get user location timed out.";
+                            break;
+                        default:
+                            errorMessage = "An unknown error occurred.";
                     }
-                );
-            },
-            (error) => {
-                let errorMessage = "";
-                switch (error.code) {
-                    case error.PERMISSION_DENIED:
-                        errorMessage = "User denied the request for Geolocation.";
-                        break;
-                    case error.POSITION_UNAVAILABLE:
-                        errorMessage = "Location information is unavailable.";
-                        break;
-                    case error.TIMEOUT:
-                        errorMessage = "The request to get user location timed out.";
-                        break;
-                    default:
-                        errorMessage = "An unknown error occurred.";
-                }
 
-                reject(new Error(errorMessage));
-            },
-            {
-                enableHighAccuracy: true,
-                timeout: 10000, // Increased timeout for better accuracy
-                maximumAge: 0,
-            }
+                    reject(new Error(errorMessage));
+                }, {
+                    enableHighAccuracy: true,
+                    timeout: 10000, // Increased timeout for better accuracy
+                    maximumAge: 0,
+                }
         );
     }).catch((error) => {
         console.error("Error in GetCurrentLocation:", error.message);
@@ -987,9 +1048,9 @@ async function GetCurrentLocation(addressText, addressCoor, CurrLatElement = nul
 
 
 function handleLocationError(isGeolocationError) {
-    const errorMessage = isGeolocationError
-        ? "Geolocation service failed. Please enable location services in your browser."
-        : "Your browser does not support geolocation.";
+    const errorMessage = isGeolocationError ?
+        "Geolocation service failed. Please enable location services in your browser." :
+        "Your browser does not support geolocation.";
     console.error(errorMessage);
 }
 
@@ -1001,9 +1062,10 @@ function genBookRefNum(len, prefix = "") {
 
     for (let i = 0; i < len; i++) {
         // Choose a random index from the appropriate subset of alphaNum
-        key += i % 2 === 0 
-            ? alphaNum[Math.floor(Math.random() * 26)] // Letters (A-Z)
-            : alphaNum[Math.floor(Math.random() * 10) + 26]; // Numbers (0-9)
+        key += i % 2 === 0 ?
+            alphaNum[Math.floor(Math.random() * 26)] // Letters (A-Z)
+            :
+            alphaNum[Math.floor(Math.random() * 10) + 26]; // Numbers (0-9)
     }
 
     return (prefix + key);
@@ -1023,7 +1085,7 @@ $(document).on("submit", "#formFindAngkas", async function (e) {
 
     try {
         const response = await processAngkasBooking(serializedData);
-        
+
         console.log("Booking response:", response);
         chkBooking();
 
@@ -1033,30 +1095,29 @@ $(document).on("submit", "#formFindAngkas", async function (e) {
 
         const bsOffcanvas = new bootstrap.Offcanvas('#offcanvasBottom');
         bsOffcanvas.show();
-        
+
     } catch (error) {
         console.error("Error processing booking:", error);
     }
 });
 
 let AppPendingBookingInterval = -1;
-$(document).on('click','#appMenuBtn', (e)=>{
-    
+$(document).on('click', '#appMenuBtn', (e) => {
+
     e.preventDefault;
-     if(handleCheckPendingBooking()){
-         clearInterval(AppPendingBookingInterval);
-     }
-     else{
+    if (handleCheckPendingBooking()) {
+        clearInterval(AppPendingBookingInterval);
+    } else {
         AppPendingBookingInterval = setInterval(() => {
             handleCheckPendingBooking();
         }, 5000); // Check every 5 seconds
-     }
+    }
 
 });
 
 // Document ready event
 $(document).ready(function () {
-    
+
     chkBooking(elements);
     setInterval(() => {
         if (isElementLoaded('#BookingReferenceNumber')) {
@@ -1066,7 +1127,7 @@ $(document).ready(function () {
             }
         }
     }, 15000);
-    
+
     if (elements.transactionHistoryTable.length) {
         console.log("Transaction history table loaded. Initializing data load...");
         loadTransactionHistory();
@@ -1087,10 +1148,10 @@ $(document).ready(function () {
         $('#riderNameModal').text(riderUsername);
         $('#rideruserid').val(riderUserId);
     });
-     
+
     $('[data-bs-toggle="popover"]').each(function () {
-    new bootstrap.Popover(this);
-  });
+        new bootstrap.Popover(this);
+    });
 });
 
 
@@ -1102,7 +1163,7 @@ $(document).on("click", "#PayNowBtn, .PayNowBtn, .btn-pay", function (e) {
     let FShopCost, FDeliveryFee, FOrderRefNum, FBookingRefNum, walletBalance, estimatedCost, dataPaymentApp, row;
 
     if ($(this).attr('id') === 'btnPayRider') {
-      
+
         // For Ride Payment
         walletBalance = parseFloat(elements.walletBalance.text().replace('Php ', '').replace(',', '').trim());
         dataPaymentApp = elements.btnPayRider.attr('data-payment-app');
@@ -1110,7 +1171,6 @@ $(document).on("click", "#PayNowBtn, .PayNowBtn, .btn-pay", function (e) {
         estimatedCost = parseFloat($('#RideEstCost').text().replace('Php ', '').replace(',', '').trim());
 
         if (!isNaN(estimatedCost) && estimatedCost > 0 && walletBalance > estimatedCost) {
-            alert(1);
             console.log("::Payment:", estimatedCost, dataPaymentApp, 'R', 'Ride Payment');
             makePayment(estimatedCost, null, null, dataPaymentApp, 'R', 'Ride Payment');
             updatePaymentStatus(dataPaymentApp, 'C', 'A'); //for booking
@@ -1185,29 +1245,25 @@ $(document).on('submit', '#topUpForm', function (event) {
                 // Process data (e.g., refresh transaction history and update wallet balance)
                 loadTransactionHistory();
                 fetchAndAssignWalletBalance(elements.walletBalance);
-        
+
                 // Simulate processing delay
                 setTimeout(() => {
                     // Replace the button icon with the confirmation icon
                     submitButton.html(chkIcon);
-        
+
                     // Re-enable the button and hide the modal after a short delay
                     setTimeout(() => {
                         $('#topUpModal').modal('hide');
                         submitButton.prop('disabled', false).html('Top-Up'); // Reset button text for future use
                     }, 2000); // Delay before closing the modal
                 }, 2000); // Delay for showing the loading icon
-            }  else {
+            } else {
                 console.error(response.error || 'Top-up failed. Please try again.');
             }
         },
         error: function () {
-        
+
             console.log("An error occurred. Please try again later.");
         }
     });
 });
-
-
-
-

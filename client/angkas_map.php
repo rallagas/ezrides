@@ -171,10 +171,10 @@ include_once "../_sql_utility.php";
                                     <div class="mb-2">
                                        <div class="card shadow border-0">
                                            <div class="card-body">
-                                                <small class="text-muted"> <img src="../icons/originlocation.png" style="width:30px;" alt="" class="img-responsive"> Origin</small>
+                                                <small class="text-muted"> <img src="../icons/originlocation.png" style="width:30px;" alt="" class="img-fluid"> Origin</small>
                                                 <span class="fw-semibold" id="CustomerOrigin"></span>
                                                 <br>
-                                                <small class="text-muted">Destination</small>
+                                                <small class="text-muted"><img src="../icons/flag.png" style="width:30px;" alt="" class="img-fluid">  Destination</small>
                                                 <span class="fw-semibold" id="CustomerDestination"></span>
                                            </div>
                                        </div>
@@ -182,10 +182,10 @@ include_once "../_sql_utility.php";
                                     </div>
 
                                     <div class="mb-3 row">
-                                        <div class="col-lg-2 col-12 p-2">
+                                        <div class="col-lg-6 col-12 p-2">
                                             <span class="badge text-bg-secondary fs-5" id="riderInfoBookingStatus"></span>
                                         </div>
-                                        <div class="col-lg-10 col-12 p-2">
+                                        <div class="col-lg-6 col-12 p-2">
                                             <div class="badge d-flex shadow text-bg-light rounded-3 p-2" id="ratingcontainer"></div>
                                         </div>
                                         
