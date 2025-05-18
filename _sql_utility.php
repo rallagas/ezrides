@@ -15,6 +15,8 @@ function gen_book_ref_num($len, $prefix=""){
     return $prefix . $key;
 }
 
+
+
 function insert_data($table, $data) {
     // Database connection, assuming CONN is a valid connection
     
@@ -68,6 +70,7 @@ function select_data($table, $where = null, $order_by = null, $limit = null) {
     }
     return $data;
 }
+
 
 function select($table, $where = null, $order_by = null, $limit = null) {
     $query = "SELECT * FROM $table";
@@ -309,6 +312,22 @@ function query($sql, $params = []) {
             $data[] = $row;
         }
         return $data;
+    }
+}
+
+
+
+function getUserFullName($user_id) {
+
+    $user_id = intval($user_id); // Sanitize
+    $sql = "SELECT user_firstname, user_lastname FROM user_profile WHERE user_id = $user_id LIMIT 1";
+    $result = query($sql);
+
+    if ($result && count($result) > 0) {
+        $user = $result[0];
+        return $user['user_firstname'] . ' ' . $user['user_lastname'];
+    } else {
+        return 'Unknown User';
     }
 }
 

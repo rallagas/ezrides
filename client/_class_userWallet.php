@@ -130,6 +130,9 @@ class UserWallet {
         $payTo = $payTo ?? -1;
         $payFrom = $payFrom ?? USER_LOGGED; 
         $walletAction = $wallet_action ?? "Payment";
+        
+       // $payToName = getUserFullName($payTo);
+        $$payFromName = getUserFullName($payFrom);
     
         try {
             if ($amount <= 0 || $amount > 9999999999.99) {
@@ -167,7 +170,7 @@ class UserWallet {
                     'payFrom' => USER_LOGGED,
                     'wallet_txn_amt' => number_format($amountToRider, 2, '.', ''),
                     'txn_type_id' => $_SESSION['txn_cat_id'],
-                    'wallet_action' => "$walletAction from $payFrom",
+                    'wallet_action' => "$walletAction from $payFromName",
                     'reference_number' => $refNum,
                     'payment_type' => $payType,
                     'wallet_txn_status' => 'C'

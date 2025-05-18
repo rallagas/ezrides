@@ -39,6 +39,8 @@ class SessionManager {
     }
 }
 
+
+
 // Function to get distance and ETA from Google Distance Matrix API
 function getDistanceAndETA($fromLat, $fromLng, $toLat, $toLng, $APIKey = Config::GOOGLE_MAPS_API_KEY) {
     $url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=metric"
