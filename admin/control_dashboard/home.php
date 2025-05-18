@@ -51,11 +51,9 @@ $sql_top_up_approval = "SELECT uw.user_wallet_id
 $pendingTopupList = query($sql_top_up_approval);    
 
 
-
-
 ?>
 
-    <div class="container mt-4">
+    <div class="container-fluid mt-4">
         <div class="row g-2">
             <div class="col-lg-3">
                 <div class="card border-0 shadow">

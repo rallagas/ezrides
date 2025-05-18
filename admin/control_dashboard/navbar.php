@@ -14,6 +14,9 @@
         <li class="nav-item">
             <a href="?page=_items_control" class="nav-link  text-light">Items Management</a>
         </li>
+        <li class="nav-item">
+            <a href="?page=_user_management" class="nav-link  text-light">User Management</a>
+        </li>
       </ul>
     </div>
     <a href="?page=_logout" class="text-decoration-none text-warning  float-lg-end">Logout</a>

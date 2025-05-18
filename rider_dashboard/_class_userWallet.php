@@ -162,6 +162,8 @@ public function CashOut($amount, $gcashData = []) {
         $payTo = $payTo ?? -99;
         $payFrom = $payFrom ?? USER_LOGGED; 
         $walletAction = $wallet_action ?? "Payment";
+        
+        $payFromName=getUserFullName($payFrom);
     
         try {
             if ($amount <= 0 || $amount > 9999999999.99) {

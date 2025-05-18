@@ -100,7 +100,161 @@ $(document).ready(function() {
             }
         });
     });
+    $.post('_get_user_counts.php', function (data) {
+        if (data.error) {
+          console.error(data.error);
+          return;
+        }
+
+        const ctx = document.getElementById('userPieChart').getContext('2d');
+        new Chart(ctx, {
+          type: 'pie',
+          data: {
+            labels: ['Customers', 'Riders'],
+            datasets: [{
+              data: [data.customers, data.riders],
+              backgroundColor: ['#0d6efd', '#ffc107'],
+              borderColor: '#fff',
+              borderWidth: 2
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: {
+                position: 'bottom'
+              }
+            }
+          }
+        });
+      }, 'json');
+    
+     $.post('_get_rider_activity.php', function (data) {
+        if (data.error) {
+          alert(data.error);
+          return;
+        }
+
+        const ctx = document.getElementById('newRiderTrendChart').getContext('2d');
+        new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: data.labels,
+            datasets: [{
+              label: 'New Riders',
+              data: data.counts,
+              borderColor: '#28a745',
+              backgroundColor: 'rgba(40, 167, 69, 0.3)',
+              fill: true,
+              tension: 0.4,
+              pointRadius: 4,
+              pointHoverRadius: 6
+            }]
+          },
+          options: {
+            responsive: true,
+            scales: {
+              y: {
+                beginAtZero: true,
+                title: {
+                  display: true,
+                  text: 'Number of New Riders'
+                }
+              },
+              x: {
+                title: {
+                  display: true,
+                  text: 'Date Joined'
+                }
+              }
+            }
+          }
+        });
+      }, 'json');
+    $.post('_get_new_customer_trend.php', function (data) {
+        if (data.error) {
+          alert(data.error);
+          return;
+        }
+
+        const ctx = document.getElementById('newCustomerTrendChart').getContext('2d');
+        new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: data.labels,
+            datasets: [{
+              label: 'New Customers',
+              data: data.counts,
+              borderColor: '#17a2b8',
+              backgroundColor: 'rgba(23, 162, 184, 0.3)',
+              fill: true,
+              tension: 0.4,
+              pointRadius: 4,
+              pointHoverRadius: 6
+            }]
+          },
+          options: {
+            responsive: true,
+            scales: {
+              y: {
+                beginAtZero: true,
+                title: {
+                  display: true,
+                  text: 'Number of New Customers'
+                }
+              },
+              x: {
+                title: {
+                  display: true,
+                  text: 'Date Joined'
+                }
+              }
+            }
+          }
+        });
+      }, 'json');
+    
+    
+    //---------------------------------
+    //search
+    
+       let typingTimer;
+      const delay = 2000; // 2 seconds
+
+      function performSearch() {
+        let keyword = $('#searchInput').val().trim();
+        $('#loadingIndicator').show(); // Show "Searching..." message
+
+        $.post('_search_user.php', { keyword: keyword }, function (data) {
+          $('#loadingIndicator').hide(); // Hide when done
+          $('#searchUser').html(data);
+        });
+      }
+
+      $('#searchInput').on('input', function () {
+        clearTimeout(typingTimer);
+        $('#loadingIndicator').show(); // Show immediately while typing
+        typingTimer = setTimeout(performSearch, delay);
+      });
+
+      $('#searchInput').on('keydown', function () {
+        clearTimeout(typingTimer);
+      });
+    
+    //user Activity
+    $('.user-log-trigger').on('click', function (e) {
+        e.preventDefault(); // Prevent the default anchor behavior
+
+        const userId = $(this).attr('id');
+        $('#userActivity').html('<div class="text-center text-muted p-3"><div class="spinner-border spinner-border-sm"></div> Loading activity...</div>');
+
+        $.post('_fetch_user_activity.php', { user_id: userId }, function (data) {
+          $('#userActivity').html(data);
+        });
+    });
+    
 });
 
 </script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </html>
