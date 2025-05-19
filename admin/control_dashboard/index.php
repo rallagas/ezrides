@@ -248,38 +248,55 @@ if (isset($_GET['approveCashout'])) {
 
 
     });
-    $(document).on('click', '#downloadPDF', function() {
-        const element = document.getElementById('totalSummary');
-        
-          $('#totalSummary canvas').each(function () {
-        const parentWidth = $(this).parent().width();
-        $(this).css({
-            width: parentWidth + 'px',
+       $(document).on('click', '#downloadPDF', function () {
+    const element = document.getElementById('userActivity');
+
+    // Expand all Bootstrap cols to full width
+    $('#userActivity .row [class*="col-lg-"]').each(function () {
+        $(this).removeClass(function (index, className) {
+            return (className.match(/col-lg-\S+/g) || []).join(' ');
+        }).addClass('col-12');
+    });
+
+    // Resize canvases to fit parent width
+    $('#userActivity canvas').each(function () {
+        const $canvas = $(this);
+        const $parent = $canvas.parent();
+        $canvas.css({
+            width: 'auto',
             height: 'auto'
         });
     });
 
-        // Ensure all canvas (charts) are drawn before generating PDF
-        html2pdf().set({
-            margin: 0.5,
-            filename: 'user-summary.pdf',
-            image: {
-                type: 'jpeg',
-                quality: 0.98
-            },
-            html2canvas: {
-                scale: 2,
-                useCORS: true, // allow cross-origin images if any
-                logging: true
-            },
-            jsPDF: {
-                unit: 'in',
-                format: 'letter',
-                orientation: 'portrait'
-            }
-        }).from(element).save();
+    // Expand all scrollable elements (overflow-y) to full height for capture
+    $('#userActivity .overflow_y-scroll, #userActivity .overflow-y-scroll, #userActivity tbody').each(function () {
+        $(this).css({
+            'overflow': 'visible',
+            'max-height': 'none'
+        });
+    });
 
-    })
+    // Temporarily expand the container height
+    $('#userActivity').css('height', 'auto');
+
+    // Generate PDF
+    html2pdf().set({
+        margin: 0.5,
+        filename: 'user-activity-summary.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: {
+            scale: 2,
+            useCORS: true,
+            logging: true
+        },
+        jsPDF: {
+            unit: 'in',
+            format: 'letter',
+            orientation: 'portrait'
+        }
+    }).from(element).save();
+});
+
 
 
     $(document).on('click', '.user-log-trigger', function(e) {

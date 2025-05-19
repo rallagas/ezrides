@@ -115,11 +115,8 @@ function getUserTotalContribution($user_id) {
                         </div>
                     </div>
                 </div>
-            </div>
-<!--            User List Tabular-->
-       
-           <div class="row gx-2 mb-3">
-               <div class="col-lg-12 card">
+           
+               <div class="col-lg-12 card shadow mb-3">
                   <h3 class="card-header">Customers</h3>
                    <table class="table table-responsive card-body">
                            <thead>
@@ -145,9 +142,7 @@ function getUserTotalContribution($user_id) {
                             </tbody>
                    </table>
                </div>
-           </div>
-           <div class="row gx-2">
-               <div class="col-lg-12 card">
+               <div class="col-lg-12 shadow card mb-3">
                   <h3 class="card-header">Riders</h3>
                    <table class="table table-responsive card-body">
                            <thead>
