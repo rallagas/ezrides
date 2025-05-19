@@ -227,7 +227,8 @@ $(document).ready(function() {
 
         $.post('_search_user.php', { keyword: keyword }, function (data) {
           $('#loadingIndicator').hide(); // Hide when done
-          $('#searchUser').html(data);
+          
+          $('#searchUser').html('<span class="small text-muted">Search Result</span><br>').append(data).append("<hr>");
         });
       }
 
@@ -241,9 +242,11 @@ $(document).ready(function() {
         clearTimeout(typingTimer);
       });
     
-    //user Activity
-    $('.user-log-trigger').on('click', function (e) {
-        e.preventDefault(); // Prevent the default anchor behavior
+    
+});
+    
+        $(document).on('click','.user-log-trigger',function(e){
+           e.preventDefault(); // Prevent the default anchor behavior
 
         const userId = $(this).attr('id');
         $('#userActivity').html('<div class="text-center text-muted p-3"><div class="spinner-border spinner-border-sm"></div> Loading activity...</div>');
@@ -251,9 +254,8 @@ $(document).ready(function() {
         $.post('_fetch_user_activity.php', { user_id: userId }, function (data) {
           $('#userActivity').html(data);
         });
-    });
-    
-});
+        
+        });
 
 </script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

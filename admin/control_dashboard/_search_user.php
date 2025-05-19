@@ -33,8 +33,8 @@ foreach ($results as $u) {
     $fullName = strtoupper($u['user_lastname'] . ", " . $u['user_firstname']);
     $user_id = $u['user_id'];
     $userclass=($u['rider_plate_no'] == NULL ? 'btn-primary' : 'btn-warning');
-    echo "<a href='#'  id='$user_id' 
-            class='user-log-trigger btn w-100 $btnClass text-start p-2 mb-2 user-log-trigger'>
+    echo "<a id='$user_id' 
+            class='user-log-trigger btn w-100 $btnClass text-start p-2 mb-2'>
                 $fullName
           </a>";
 }
