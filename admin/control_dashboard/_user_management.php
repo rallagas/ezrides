@@ -27,7 +27,8 @@ $all=query($allUserSQL);
           <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
           Searching...
         </div>
-        <div class="overflow-y-scroll d-none d-lg-block" id="searchUser">
+        <div id="searchUser" class="mb-3"></div>
+        <div class="overflow-y-scroll d-none d-lg-block">
             <?php 
             foreach($all as $u){ ?>
             <a id="<?php echo $u['user_id'];?>" class="user-log-trigger btn <?php echo $u['rider_plate_no'] == NULL ? 'btn-primary' : 'btn-warning'; ?> w-100 text-start p-2 mb-2" >
